@@ -1,0 +1,11 @@
+Derived/
+Tuist/.build/
+Tuist/.mise.toml
+.DS_Store
+.swiftpm/
+build/
+Products/
+.tuist-cache/
+.mise/
+Config/local.override.xcconfig
+

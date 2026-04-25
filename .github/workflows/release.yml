@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: macos-15
+    permissions:
+      contents: write
+
+    env:
+      APPLE_TEAM_ID: H3BMXM4W7H
+      APPLE_CODE_SIGN_IDENTITY: Developer ID Application: Alex Goodkind (H3BMXM4W7H)
+      APPLE_NOTARY_KEY_ID: JHC8GR65Q3
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v2
+
+      - name: Compute release metadata
+        id: meta
+        run: |
+          TS=$(date -u +%Y%m%d%H%M)
+          HEX=$(printf '%x' "$GITHUB_RUN_NUMBER")
+          SHA=$(git rev-parse --short HEAD)
+          TAG="${TS}-${HEX}-${SHA}"
+          SHORT_VERSION=$(date -u +%Y.%-m.%-d)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "build_version=$TS" >> "$GITHUB_OUTPUT"
+          echo "marketing_version=$SHORT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install signing certificate
+        env:
+          APPLE_DEVELOPER_ID_P12_BASE64: ${{ secrets.APPLE_DEVELOPER_ID_P12_BASE64 }}
+          APPLE_DEVELOPER_ID_P12_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
+        run: |
+          CERT_PATH="$RUNNER_TEMP/Developer-ID-Application.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          printf '%s' "$APPLE_DEVELOPER_ID_P12_BASE64" | base64 --decode > "$CERT_PATH"
+          security create-keychain -p "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" \
+            -P "$APPLE_DEVELOPER_ID_P12_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+
+      - name: Write release xcconfig
+        run: |
+          cat > Config/local.xcconfig <<EOF
+          APP_BUNDLE_ID = io.goodkind.plainstickies
+          ICLOUD_CONTAINER_IDENTIFIER = iCloud.io.goodkind.plainstickies
+          DEVELOPMENT_TEAM = ${APPLE_TEAM_ID}
+          CODE_SIGN_IDENTITY = ${APPLE_CODE_SIGN_IDENTITY}
+          MARKETING_VERSION = ${{ steps.meta.outputs.marketing_version }}
+          CURRENT_PROJECT_VERSION = ${{ steps.meta.outputs.build_version }}
+          SPARKLE_FEED_URL = https://goodkind.io/plainstickies/appcast.xml
+          SPARKLE_PUBLIC_ED_KEY = ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
+          DMG_SIGN_IDENTITY = ${APPLE_CODE_SIGN_IDENTITY}
+          EOF
+
+      - name: Generate project
+        run: tuist generate --no-open
+
+      - name: Build release DMG
+        run: |
+          make release-assets \
+            MARKETING_VERSION="${{ steps.meta.outputs.marketing_version }}" \
+            CURRENT_PROJECT_VERSION="${{ steps.meta.outputs.build_version }}"
+
+      - name: Notarize DMG
+        env:
+          APPLE_NOTARY_KEY_BASE64: ${{ secrets.APPLE_NOTARY_KEY_BASE64 }}
+          APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        run: |
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${APPLE_NOTARY_KEY_ID}.p8"
+          printf '%s' "$APPLE_NOTARY_KEY_BASE64" | base64 --decode > "$KEY_PATH"
+          xcrun notarytool submit "Products/PlainStickies-${{ steps.meta.outputs.build_version }}.dmg" \
+            --key "$KEY_PATH" \
+            --key-id "$APPLE_NOTARY_KEY_ID" \
+            --issuer "$APPLE_NOTARY_ISSUER_ID" \
+            --wait
+          xcrun stapler staple "Products/PlainStickies-${{ steps.meta.outputs.build_version }}.dmg"
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.meta.outputs.tag }}" \
+            --title "${{ steps.meta.outputs.tag }}" \
+            --notes "Automated release for $GITHUB_SHA"
+
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ steps.meta.outputs.tag }}" \
+            "Products/PlainStickies-${{ steps.meta.outputs.build_version }}.dmg" \
+            --clobber
+
+      - name: Generate Sparkle appcast
+        env:
+          RELEASE_TAG: ${{ steps.meta.outputs.tag }}
+          BUILD_VERSION: ${{ steps.meta.outputs.build_version }}
+          SPARKLE_PRIVATE_ED_KEY: ${{ secrets.SPARKLE_PRIVATE_ED_KEY }}
+        run: |
+          export SPARKLE_PRIVATE_KEY_FILE="$RUNNER_TEMP/sparkle_private_key"
+          printf '%s' "$SPARKLE_PRIVATE_ED_KEY" > "$SPARKLE_PRIVATE_KEY_FILE"
+          make prepare-sparkle-updates \
+            CURRENT_PROJECT_VERSION="$BUILD_VERSION" \
+            RELEASE_TAG="$RELEASE_TAG" \
+            GITHUB_RELEASE_BASE_URL="https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Deploy Cloudflare worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cp build/sparkle-updates/appcast.xml deploy/appcast-worker/public/appcast.xml
+          npx wrangler deploy --config deploy/appcast-worker/wrangler.toml

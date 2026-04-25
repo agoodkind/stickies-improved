@@ -1,0 +1,11 @@
+import Foundation
+
+enum BuildConfig {
+    static let appBundleID = "@@APP_BUNDLE_ID@@"
+    static let iCloudContainerIdentifier = "@@ICLOUD_CONTAINER_IDENTIFIER@@"
+    static let sparkleFeedURL = "@@SPARKLE_FEED_URL@@"
+    static let sparklePublicKey = "@@SPARKLE_PUBLIC_ED_KEY@@"
+    static let buildVersion = "@@CURRENT_PROJECT_VERSION@@"
+    static let marketingVersion = "@@MARKETING_VERSION@@"
+}
+

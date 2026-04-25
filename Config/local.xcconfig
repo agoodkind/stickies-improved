@@ -1,0 +1,9 @@
+APP_BUNDLE_ID = io.goodkind.plainstickies
+ICLOUD_CONTAINER_IDENTIFIER = iCloud.io.goodkind.plainstickies
+DEVELOPMENT_TEAM = H3BMXM4W7H
+CODE_SIGN_IDENTITY = Developer ID Application: Alex Goodkind (H3BMXM4W7H)
+MARKETING_VERSION = 0.1.0
+CURRENT_PROJECT_VERSION = 1
+SPARKLE_FEED_URL = https://goodkind.io/plainstickies/appcast.xml
+SPARKLE_PUBLIC_ED_KEY =
+
