@@ -29,3 +29,12 @@ GitHub Actions expects these repository secrets:
 Sparkle appcast signing is part of the default release path. The workflow writes
 `SPARKLE_PUBLIC_ED_KEY` into `Config/local.xcconfig` for release builds and uses
 `SPARKLE_PRIVATE_ED_KEY` to sign appcast assets.
+
+## Update Feed Hosting
+
+Sparkle updates are published at
+`https://goodkind.io/plainstickies/appcast.xml`.
+The Cloudflare Worker for that route lives under
+`deploy/appcast-worker/`, and the release workflow copies the generated
+`build/sparkle-updates/appcast.xml` into the worker's `public/` assets
+before deploying with Wrangler.

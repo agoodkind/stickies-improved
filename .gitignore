@@ -7,5 +7,5 @@ build/
 Products/
 .tuist-cache/
 .mise/
+.wrangler/
 Config/local.override.xcconfig
-
