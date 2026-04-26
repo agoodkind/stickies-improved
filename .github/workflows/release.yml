@@ -96,12 +96,29 @@ jobs:
           APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
         run: |
           KEY_PATH="$RUNNER_TEMP/AuthKey_${APPLE_NOTARY_KEY_ID}.p8"
+          NOTARY_OUTPUT="$RUNNER_TEMP/notarytool-submit.json"
           printf '%s' "$APPLE_NOTARY_KEY_BASE64" | base64 --decode > "$KEY_PATH"
+          set +e
           xcrun notarytool submit "Products/StickiesImproved-${{ steps.meta.outputs.build_version }}.dmg" \
             --key "$KEY_PATH" \
             --key-id "$APPLE_NOTARY_KEY_ID" \
             --issuer "$APPLE_NOTARY_ISSUER_ID" \
-            --wait
+            --wait \
+            --output-format json > "$NOTARY_OUTPUT"
+          NOTARY_STATUS=$?
+          set -e
+          cat "$NOTARY_OUTPUT"
+          SUBMISSION_ID="$(plutil -extract id raw -o - "$NOTARY_OUTPUT" 2>/dev/null || true)"
+          SUBMISSION_STATUS="$(plutil -extract status raw -o - "$NOTARY_OUTPUT" 2>/dev/null || true)"
+          if [[ -n "$SUBMISSION_ID" ]]; then
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --key "$KEY_PATH" \
+              --key-id "$APPLE_NOTARY_KEY_ID" \
+              --issuer "$APPLE_NOTARY_ISSUER_ID" || true
+          fi
+          if [[ "$NOTARY_STATUS" -ne 0 || "$SUBMISSION_STATUS" != "Accepted" ]]; then
+            exit 1
+          fi
           xcrun stapler staple "Products/StickiesImproved-${{ steps.meta.outputs.build_version }}.dmg"
 
       - name: Create GitHub release
