@@ -14,6 +14,7 @@ DMG_PATH = $(PRODUCTS_DIR)/$(DMG_NAME)
 APP_PATH = $(PRODUCTS_DIR)/$(APP_NAME).app
 XCODE_PRODUCTS_DIR = $(BUILD_DIR)/Build/Products/$(CONFIGURATION)
 BUILT_APP_PATH = $(XCODE_PRODUCTS_DIR)/$(APP_NAME).app
+APP_SPARKLE_PATH = $(APP_PATH)/Contents/Frameworks/Sparkle.framework
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
 RELEASE_DMG_NAME = $(APP_NAME)-$(CURRENT_PROJECT_VERSION).dmg
 RELEASE_DMG_PATH = $(PRODUCTS_DIR)/$(RELEASE_DMG_NAME)
@@ -46,6 +47,19 @@ app: build
 	@mkdir -p "$(PRODUCTS_DIR)"
 	@rm -rf "$(APP_PATH)"
 	@cp -R "$(BUILT_APP_PATH)" "$(APP_PATH)"
+	@if [ -n "$(DMG_SIGN_IDENTITY)" ]; then \
+		for item in \
+			"$(APP_SPARKLE_PATH)/Versions/B/Autoupdate" \
+			"$(APP_SPARKLE_PATH)/Versions/B/Updater.app" \
+			"$(APP_SPARKLE_PATH)/Versions/B/XPCServices/Downloader.xpc" \
+			"$(APP_SPARKLE_PATH)/Versions/B/XPCServices/Installer.xpc"; do \
+			if [ -e "$$item" ]; then \
+				codesign --force --sign "$(DMG_SIGN_IDENTITY)" --timestamp --options runtime --preserve-metadata=identifier,entitlements,flags "$$item"; \
+			fi; \
+		done; \
+		codesign --force --sign "$(DMG_SIGN_IDENTITY)" --timestamp --options runtime --preserve-metadata=identifier,entitlements,flags "$(APP_SPARKLE_PATH)"; \
+		codesign --force --sign "$(DMG_SIGN_IDENTITY)" --timestamp --options runtime --preserve-metadata=identifier,entitlements,flags "$(APP_PATH)"; \
+	fi
 
 dmg: app
 	@mkdir -p "$(PRODUCTS_DIR)" "$(DMG_STAGING_DIR)"
