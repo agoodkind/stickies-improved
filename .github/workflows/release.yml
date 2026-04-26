@@ -66,18 +66,17 @@ jobs:
           security list-keychains -d user -s "$KEYCHAIN_PATH"
 
       - name: Write release xcconfig
-        run: |
-          cat > Config/local.xcconfig <<EOF
-          APP_BUNDLE_ID = io.goodkind.stickies-improved
-          ICLOUD_CONTAINER_IDENTIFIER = iCloud.io.goodkind.stickies-improved
-          DEVELOPMENT_TEAM = ${APPLE_TEAM_ID}
-          CODE_SIGN_IDENTITY = ${APPLE_CODE_SIGN_IDENTITY}
-          MARKETING_VERSION = ${{ steps.meta.outputs.marketing_version }}
-          CURRENT_PROJECT_VERSION = ${{ steps.meta.outputs.build_version }}
-          SPARKLE_FEED_URL = https://goodkind.io/stickies-improved/appcast.xml
-          SPARKLE_PUBLIC_ED_KEY = ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
-          DMG_SIGN_IDENTITY = ${APPLE_CODE_SIGN_IDENTITY}
-          EOF
+        env:
+          APP_BUNDLE_ID: io.goodkind.stickies-improved
+          ICLOUD_CONTAINER_IDENTIFIER: iCloud.io.goodkind.stickies-improved
+          DEVELOPMENT_TEAM: ${{ env.APPLE_TEAM_ID }}
+          CODE_SIGN_IDENTITY: ${{ env.APPLE_CODE_SIGN_IDENTITY }}
+          MARKETING_VERSION: ${{ steps.meta.outputs.marketing_version }}
+          CURRENT_PROJECT_VERSION: ${{ steps.meta.outputs.build_version }}
+          SPARKLE_FEED_URL: https://goodkind.io/stickies-improved/appcast.xml
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
+          DMG_SIGN_IDENTITY: ${{ env.APPLE_CODE_SIGN_IDENTITY }}
+        run: Scripts/write-release-xcconfig.sh
 
       - name: Generate project
         run: tuist generate --no-open
