@@ -64,6 +64,12 @@ jobs:
             -k "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -d user -s "$KEYCHAIN_PATH"
+          DMG_SIGN_IDENTITY_SHA1="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | awk '/Developer ID Application: Alex Goodkind \\(H3BMXM4W7H\\)/ { print $2; exit }')"
+          if [[ -z "$DMG_SIGN_IDENTITY_SHA1" ]]; then
+              echo "Developer ID Application signing identity was not found in temporary keychain" >&2
+              exit 1
+          fi
+          echo "DMG_SIGN_IDENTITY_SHA1=$DMG_SIGN_IDENTITY_SHA1" >> "$GITHUB_ENV"
 
       - name: Write release xcconfig
         env:
@@ -75,7 +81,7 @@ jobs:
           CURRENT_PROJECT_VERSION: ${{ steps.meta.outputs.build_version }}
           SPARKLE_FEED_URL: https://goodkind.io/stickies-improved/appcast.xml
           SPARKLE_PUBLIC_ED_KEY: ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
-          DMG_SIGN_IDENTITY: ${{ env.APPLE_CODE_SIGN_IDENTITY }}
+          DMG_SIGN_IDENTITY: ${{ env.DMG_SIGN_IDENTITY_SHA1 }}
         run: Scripts/write-release-xcconfig.sh
 
       - name: Generate project
