@@ -7,7 +7,7 @@ TEMPLATES_DIR="${SRCROOT}/Templates"
 mkdir -p "${GENERATED_DIR}"
 
 APP_BUNDLE_ID="${APP_BUNDLE_ID:-io.goodkind.stickies-improved}"
-ICLOUD_CONTAINER_IDENTIFIER="${ICLOUD_CONTAINER_IDENTIFIER:-iCloud.io.goodkind.stickies-improved}"
+ICLOUD_CONTAINER_IDENTIFIER="${ICLOUD_CONTAINER_IDENTIFIER:-H3BMXM4W7H.io.goodkind.stickies-improved}"
 SPARKLE_FEED_URL="${SPARKLE_FEED_URL:-}"
 SPARKLE_PUBLIC_ED_KEY="${SPARKLE_PUBLIC_ED_KEY:-}"
 CURRENT_PROJECT_VERSION="${CURRENT_PROJECT_VERSION:-1}"
@@ -22,4 +22,3 @@ sed \
   -e "s|@@MARKETING_VERSION@@|${MARKETING_VERSION}|g" \
   "${TEMPLATES_DIR}/Config.generated.swift.template" \
   > "${GENERATED_DIR}/Config.generated.swift"
-

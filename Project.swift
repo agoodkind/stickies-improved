@@ -31,14 +31,29 @@ let settings = Settings.settings(
         "SWIFT_VERSION": "6.0",
         "CODE_SIGN_STYLE": "Manual",
         "DEVELOPMENT_TEAM": "$(DEVELOPMENT_TEAM)",
-        "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
+        "CODE_SIGN_IDENTITY": "$(SIGNING_CERTIFICATE)",
         "MARKETING_VERSION": "$(MARKETING_VERSION)",
         "CURRENT_PROJECT_VERSION": "$(CURRENT_PROJECT_VERSION)",
         "ENABLE_HARDENED_RUNTIME": "YES",
+        "OTHER_CODE_SIGN_FLAGS": "--timestamp",
     ],
     configurations: [debug, release],
     defaultSettings: .recommended
 )
+
+let targetSigningSettings: SettingsDictionary = [
+    "CODE_SIGN_STYLE": "Manual",
+    "DEVELOPMENT_TEAM": "$(DEVELOPMENT_TEAM)",
+    "CODE_SIGN_IDENTITY": "$(SIGNING_CERTIFICATE)",
+    "CODE_SIGN_INJECT_BASE_ENTITLEMENTS": "NO",
+    "ENABLE_HARDENED_RUNTIME": "YES",
+    "OTHER_CODE_SIGN_FLAGS": "--timestamp",
+    "PROVISIONING_PROFILE_SPECIFIER": "",
+]
+
+let appSigningSettings = targetSigningSettings.merging([
+    "PROVISIONING_PROFILE_SPECIFIER": "$(PROVISIONING_PROFILE_SPECIFIER)",
+]) { _, new in new }
 
 let infoPlist: [String: Plist.Value] = [
     "CFBundleDisplayName": .string(appName),
@@ -78,7 +93,8 @@ let project = Project(
             scripts: scripts,
             dependencies: [
                 .external(name: "Sparkle"),
-            ]
+            ],
+            settings: .settings(base: targetSigningSettings)
         ),
         .target(
             name: appName,
@@ -99,10 +115,10 @@ let project = Project(
                 .target(name: "\(appName)Core"),
             ],
             settings: .settings(
-                base: [
+                base: appSigningSettings.merging([
                     "PRODUCT_NAME": .string(appName),
                     "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
-                ]
+                ]) { _, new in new }
             )
         ),
         .target(
