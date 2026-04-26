@@ -53,6 +53,11 @@ jobs:
             --passphrase="$APPLE_DEVELOPER_ID_P12_GPG_PASSPHRASE" \
             --output "$CERT_PATH" \
             Config/signing/Developer-ID-Application.p12.gpg
+          DMG_SIGN_IDENTITY_SHA1="$(openssl pkcs12 -in "$CERT_PATH" -nokeys -passin pass:"$APPLE_DEVELOPER_ID_P12_PASSWORD" 2>/dev/null | openssl x509 -noout -fingerprint -sha1 | awk -F= '{ gsub(":", "", $2); print $2; exit }')"
+          if [[ -z "$DMG_SIGN_IDENTITY_SHA1" ]]; then
+              echo "Developer ID Application signing identity fingerprint could not be derived from decrypted certificate" >&2
+              exit 1
+          fi
           security create-keychain -p "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
@@ -64,11 +69,6 @@ jobs:
             -k "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -d user -s "$KEYCHAIN_PATH"
-          DMG_SIGN_IDENTITY_SHA1="$(security find-certificate -a -c "Developer ID Application: Alex Goodkind (H3BMXM4W7H)" -Z "$KEYCHAIN_PATH" | awk '/^SHA-1 hash:/ { print $3; exit }')"
-          if [[ -z "$DMG_SIGN_IDENTITY_SHA1" ]]; then
-              echo "Developer ID Application signing identity was not found in temporary keychain" >&2
-              exit 1
-          fi
           echo "DMG_SIGN_IDENTITY_SHA1=$DMG_SIGN_IDENTITY_SHA1" >> "$GITHUB_ENV"
 
       - name: Write release xcconfig
