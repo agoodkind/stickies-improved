@@ -49,11 +49,6 @@ jobs:
           CERT_PATH="$RUNNER_TEMP/Developer-ID-Application.p12"
           KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
           printf '%s' "$APPLE_DEVELOPER_ID_P12_BASE64" | base64 --decode > "$CERT_PATH"
-          DMG_SIGN_IDENTITY_SHA1="$(openssl pkcs12 -in "$CERT_PATH" -nokeys -passin pass:"$APPLE_DEVELOPER_ID_P12_PASSWORD" 2>/dev/null | openssl x509 -noout -fingerprint -sha1 | awk -F= '{ gsub(":", "", $2); print $2; exit }')"
-          if [[ -z "$DMG_SIGN_IDENTITY_SHA1" ]]; then
-              echo "Developer ID Application signing identity fingerprint could not be derived from decrypted certificate" >&2
-              exit 1
-          fi
           security create-keychain -p "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
@@ -65,7 +60,14 @@ jobs:
             -k "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -d user -s "$KEYCHAIN_PATH"
-          echo "DMG_SIGN_IDENTITY_SHA1=$DMG_SIGN_IDENTITY_SHA1" >> "$GITHUB_ENV"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+          DEVELOPER_ID_SIGN_IDENTITY_SHA1="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | awk -v identity="\"$APPLE_CODE_SIGN_IDENTITY\"" 'index($0, identity) { print $2; exit }')"
+          if [[ -z "$DEVELOPER_ID_SIGN_IDENTITY_SHA1" ]]; then
+              echo "Developer ID Application signing identity was not found in imported keychain" >&2
+              exit 1
+          fi
+          echo "DEVELOPER_ID_SIGN_IDENTITY_SHA1=$DEVELOPER_ID_SIGN_IDENTITY_SHA1" >> "$GITHUB_ENV"
+          echo "DMG_SIGN_IDENTITY=$DEVELOPER_ID_SIGN_IDENTITY_SHA1" >> "$GITHUB_ENV"
 
       - name: Write release xcconfig
         env:
@@ -77,7 +79,6 @@ jobs:
           CURRENT_PROJECT_VERSION: ${{ steps.meta.outputs.build_version }}
           SPARKLE_FEED_URL: https://goodkind.io/stickies-improved/appcast.xml
           SPARKLE_PUBLIC_ED_KEY: ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
-          DMG_SIGN_IDENTITY: ${{ env.DMG_SIGN_IDENTITY_SHA1 }}
         run: Scripts/write-release-xcconfig.sh
 
       - name: Generate project
