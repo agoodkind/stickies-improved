@@ -7,7 +7,7 @@ public final class UbiquityMetadataMonitor: NSObject {
     private let query = NSMetadataQuery()
     private var didConfigure = false
 
-    public func startMonitoring(rootURL: URL) {
+    public func startMonitoring(rootURL _: URL) {
         guard !didConfigure else { return }
         didConfigure = true
 

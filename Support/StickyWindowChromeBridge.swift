@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 struct StickyWindowChromeBridge: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSView {
+    func makeNSView(context _: Context) -> NSView {
         let view = NSView(frame: .zero)
         DispatchQueue.main.async {
             configureWindowIfNeeded(from: view)
@@ -10,7 +10,7 @@ struct StickyWindowChromeBridge: NSViewRepresentable {
         return view
     }
 
-    func updateNSView(_ nsView: NSView, context: Context) {
+    func updateNSView(_ nsView: NSView, context _: Context) {
         DispatchQueue.main.async {
             configureWindowIfNeeded(from: nsView)
         }

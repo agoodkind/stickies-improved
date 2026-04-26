@@ -6,9 +6,9 @@ public enum NotePackageStoreError: LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .unsupportedMode(let mode):
+        case let .unsupportedMode(mode):
             return "Unsupported note mode: \(mode.rawValue)"
-        case .missingMetadata(let url):
+        case let .missingMetadata(url):
             return "Missing metadata at \(url.path)"
         }
     }
@@ -73,7 +73,7 @@ public actor NotePackageStore {
     }
 
     public func loadDocument(id: NoteID) throws -> NoteDocument {
-        try loadDocument(packageURL: try packageURL(for: id))
+        try loadDocument(packageURL: packageURL(for: id))
     }
 
     private func loadDocument(packageURL: URL) throws -> NoteDocument {

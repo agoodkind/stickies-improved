@@ -1,5 +1,5 @@
-import XCTest
 @testable import StickiesImprovedCore
+import XCTest
 
 final class NoteMetadataTests: XCTestCase {
     func testUnknownFutureModeFallsBackSafely() throws {

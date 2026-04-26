@@ -9,13 +9,13 @@ public final class AppUpdater {
 
     public init(enabled: Bool = true) {
         if enabled {
-            self.controller = SPUStandardUpdaterController(
+            controller = SPUStandardUpdaterController(
                 startingUpdater: true,
                 updaterDelegate: nil,
                 userDriverDelegate: nil
             )
         } else {
-            self.controller = nil
+            controller = nil
         }
     }
 

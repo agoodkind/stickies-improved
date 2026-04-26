@@ -52,7 +52,7 @@ struct PlainTextEditorView: View {
             LinearGradient(
                 colors: [
                     Color.white.opacity(0.30),
-                    Color.white.opacity(0.08)
+                    Color.white.opacity(0.08),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -71,7 +71,7 @@ struct PlainTextEditorView: View {
         LinearGradient(
             colors: [
                 Color(red: 1.00, green: 0.97, blue: 0.70),
-                Color(red: 0.98, green: 0.92, blue: 0.55)
+                Color(red: 0.98, green: 0.92, blue: 0.55),
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing

@@ -8,14 +8,14 @@ public struct NoteID: Hashable, Codable, Identifiable, RawRepresentable, Lossles
     }
 
     public init() {
-        self.rawValue = UUID()
+        rawValue = UUID()
     }
 
     public init?(_ description: String) {
         guard let uuid = UUID(uuidString: description) else {
             return nil
         }
-        self.rawValue = uuid
+        rawValue = uuid
     }
 
     public var description: String {

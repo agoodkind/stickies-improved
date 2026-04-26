@@ -1,5 +1,5 @@
-import XCTest
 @testable import StickiesImprovedCore
+import XCTest
 
 final class NotePackageStoreTests: XCTestCase {
     func testPlainTextRoundTrip() async throws {

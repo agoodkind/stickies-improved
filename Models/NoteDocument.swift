@@ -7,13 +7,13 @@ public struct NoteDocument: Equatable, Identifiable, Sendable {
     public init(metadata: NoteMetadata, plainText: String) {
         self.metadata = metadata
         self.plainText = plainText
-        self.refreshDerivedFields()
+        refreshDerivedFields()
     }
 
     public init(id: NoteID = NoteID(), mode: NoteMode = .plainText, plainText: String = "") {
-        self.metadata = NoteMetadata(id: id, mode: mode)
+        metadata = NoteMetadata(id: id, mode: mode)
         self.plainText = plainText
-        self.refreshDerivedFields()
+        refreshDerivedFields()
     }
 
     public var id: NoteID {

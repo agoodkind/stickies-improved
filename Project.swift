@@ -21,9 +21,9 @@ let scripts: [TargetScript] = [
         """,
         name: "Generate Build Config",
         outputPaths: [
-            "$(DERIVED_FILE_DIR)/Generated/Config.generated.swift"
+            "$(DERIVED_FILE_DIR)/Generated/Config.generated.swift",
         ]
-    )
+    ),
 ]
 
 let settings = Settings.settings(
@@ -34,7 +34,7 @@ let settings = Settings.settings(
         "CODE_SIGN_IDENTITY": "$(CODE_SIGN_IDENTITY)",
         "MARKETING_VERSION": "$(MARKETING_VERSION)",
         "CURRENT_PROJECT_VERSION": "$(CURRENT_PROJECT_VERSION)",
-        "ENABLE_HARDENED_RUNTIME": "YES"
+        "ENABLE_HARDENED_RUNTIME": "YES",
     ],
     configurations: [debug, release],
     defaultSettings: .recommended
@@ -48,12 +48,12 @@ let infoPlist: [String: Plist.Value] = [
     "NSUbiquitousContainers": .dictionary([
         "$(ICLOUD_CONTAINER_IDENTIFIER)": .dictionary([
             "NSUbiquitousContainerName": .string(appName),
-            "NSUbiquitousContainerSupportedFolderLevels": .string("Any")
-        ])
+            "NSUbiquitousContainerSupportedFolderLevels": .string("Any"),
+        ]),
     ]),
     "SUEnableAutomaticChecks": .boolean(true),
     "SUAllowsAutomaticUpdates": .boolean(true),
-    "SUFeedURL": .string("$(SPARKLE_FEED_URL)")
+    "SUFeedURL": .string("$(SPARKLE_FEED_URL)"),
 ]
 
 let project = Project(
@@ -73,11 +73,11 @@ let project = Project(
                 "Stores/**",
                 "Services/**",
                 "Support/BuildConfig.swift",
-                "Support/RuntimeEnvironment.swift"
+                "Support/RuntimeEnvironment.swift",
             ],
             scripts: scripts,
             dependencies: [
-                .external(name: "Sparkle")
+                .external(name: "Sparkle"),
             ]
         ),
         .target(
@@ -91,17 +91,17 @@ let project = Project(
                 "App/**",
                 "Views/**",
                 "Support/NoteCommands.swift",
-                "Support/StickyWindowChromeBridge.swift"
+                "Support/StickyWindowChromeBridge.swift",
             ],
             resources: [],
             entitlements: "Config/StickiesImproved.entitlements",
             dependencies: [
-                .target(name: "\(appName)Core")
+                .target(name: "\(appName)Core"),
             ],
             settings: .settings(
                 base: [
                     "PRODUCT_NAME": .string(appName),
-                    "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)")
+                    "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
                 ]
             )
         ),
@@ -114,9 +114,9 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/StickiesTests/**"],
             dependencies: [
-                .target(name: "\(appName)Core")
+                .target(name: "\(appName)Core"),
             ]
-        )
+        ),
     ],
     schemes: [
         .scheme(
@@ -128,6 +128,6 @@ let project = Project(
             archiveAction: .archiveAction(configuration: "Release"),
             profileAction: .profileAction(configuration: "Release"),
             analyzeAction: .analyzeAction(configuration: "Debug")
-        )
+        ),
     ]
 )
