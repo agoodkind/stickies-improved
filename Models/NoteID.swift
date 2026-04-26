@@ -1,6 +1,8 @@
 import Foundation
 
-public struct NoteID: Hashable, Codable, Identifiable, RawRepresentable, LosslessStringConvertible, Sendable {
+public struct NoteID: Hashable, Codable, Identifiable, RawRepresentable, LosslessStringConvertible,
+    Sendable
+{
     public let rawValue: UUID
 
     public init(rawValue: UUID) {

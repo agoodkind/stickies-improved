@@ -7,9 +7,9 @@ public enum NotePackageStoreError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case let .unsupportedMode(mode):
-            return "Unsupported note mode: \(mode.rawValue)"
+            "Unsupported note mode: \(mode.rawValue)"
         case let .missingMetadata(url):
-            return "Missing metadata at \(url.path)"
+            "Missing metadata at \(url.path)"
         }
     }
 }
@@ -97,7 +97,10 @@ public actor NotePackageStore {
             return document
         case .markdown:
             metadata.mode = .plainText
-            return NoteDocument(metadata: metadata, plainText: String(decoding: contentData, as: UTF8.self))
+            return NoteDocument(
+                metadata: metadata,
+                plainText: String(decoding: contentData, as: UTF8.self)
+            )
         }
     }
 
@@ -112,7 +115,9 @@ public actor NotePackageStore {
             return rootURLOverride
         }
 
-        if let ubiquityURL = fileManager.url(forUbiquityContainerIdentifier: BuildConfig.iCloudContainerIdentifier) {
+        if let ubiquityURL = fileManager
+            .url(forUbiquityContainerIdentifier: BuildConfig.iCloudContainerIdentifier)
+        {
             return ubiquityURL
                 .appendingPathComponent("Documents", isDirectory: true)
                 .appendingPathComponent("Notes", isDirectory: true)
@@ -148,13 +153,14 @@ public actor NotePackageStore {
         let coordinator = NSFileCoordinator()
         var error: NSError?
         var writeError: Error?
-        coordinator.coordinate(writingItemAt: url, options: .forReplacing, error: &error) { writeURL in
-            do {
-                try data.write(to: writeURL, options: .atomic)
-            } catch {
-                writeError = error
+        coordinator
+            .coordinate(writingItemAt: url, options: .forReplacing, error: &error) { writeURL in
+                do {
+                    try data.write(to: writeURL, options: .atomic)
+                } catch {
+                    writeError = error
+                }
             }
-        }
 
         if let error {
             throw error
@@ -169,9 +175,9 @@ private extension NoteMode {
     var contentFileName: String {
         switch self {
         case .plainText:
-            return "content.txt"
+            "content.txt"
         case .markdown:
-            return "content.md"
+            "content.md"
         }
     }
 }

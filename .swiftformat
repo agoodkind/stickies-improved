@@ -1,0 +1,9 @@
+--exclude build,Derived,Tuist/.build
+--swift-version 6.0
+--indent 4
+--max-width 100
+--self remove
+--patternlet hoist
+--stripunusedargs always
+--trailing-commas always
+--import-grouping alpha
