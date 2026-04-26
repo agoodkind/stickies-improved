@@ -64,7 +64,7 @@ jobs:
             -k "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "$APPLE_DEVELOPER_ID_P12_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -d user -s "$KEYCHAIN_PATH"
-          DMG_SIGN_IDENTITY_SHA1="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | awk '/Developer ID Application: Alex Goodkind \\(H3BMXM4W7H\\)/ { print $2; exit }')"
+          DMG_SIGN_IDENTITY_SHA1="$(security find-certificate -a -c "Developer ID Application: Alex Goodkind (H3BMXM4W7H)" -Z "$KEYCHAIN_PATH" | awk '/^SHA-1 hash:/ { print $3; exit }')"
           if [[ -z "$DMG_SIGN_IDENTITY_SHA1" ]]; then
               echo "Developer ID Application signing identity was not found in temporary keychain" >&2
               exit 1
