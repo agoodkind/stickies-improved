@@ -1,6 +1,6 @@
-# PlainStickies
+# Stickies Improved
 
-PlainStickies is a native macOS sticky-notes app built with SwiftUI and Tuist.
+Stickies Improved is a native macOS sticky-notes app built with SwiftUI and Tuist.
 It ships plain-text notes in v1, uses an app-managed iCloud document library,
 and is structured so a Markdown editor can be added later without reworking the
 note model or release pipeline.
@@ -33,7 +33,7 @@ Sparkle appcast signing is part of the default release path. The workflow writes
 ## Update Feed Hosting
 
 Sparkle updates are published at
-`https://goodkind.io/plainstickies/appcast.xml`.
+`https://goodkind.io/stickies-improved/appcast.xml`.
 The Cloudflare Worker for that route lives under
 `deploy/appcast-worker/`, and the release workflow copies the generated
 `build/sparkle-updates/appcast.xml` into the worker's `public/` assets

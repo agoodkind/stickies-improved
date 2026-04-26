@@ -1,8 +1,8 @@
 import ProjectDescription
 
-let appName = "PlainStickies"
+let appName = "StickiesImproved"
 let organizationName = "goodkind.io"
-let bundleId = "io.goodkind.plainstickies"
+let bundleId = "io.goodkind.stickies-improved"
 
 let debug = Configuration.debug(
     name: "Debug",
@@ -90,10 +90,11 @@ let project = Project(
             sources: [
                 "App/**",
                 "Views/**",
-                "Support/NoteCommands.swift"
+                "Support/NoteCommands.swift",
+                "Support/StickyWindowChromeBridge.swift"
             ],
             resources: [],
-            entitlements: "Config/PlainStickies.entitlements",
+            entitlements: "Config/StickiesImproved.entitlements",
             dependencies: [
                 .target(name: "\(appName)Core")
             ],

@@ -67,13 +67,13 @@ jobs:
       - name: Write release xcconfig
         run: |
           cat > Config/local.xcconfig <<EOF
-          APP_BUNDLE_ID = io.goodkind.plainstickies
-          ICLOUD_CONTAINER_IDENTIFIER = iCloud.io.goodkind.plainstickies
+          APP_BUNDLE_ID = io.goodkind.stickies-improved
+          ICLOUD_CONTAINER_IDENTIFIER = iCloud.io.goodkind.stickies-improved
           DEVELOPMENT_TEAM = ${APPLE_TEAM_ID}
           CODE_SIGN_IDENTITY = ${APPLE_CODE_SIGN_IDENTITY}
           MARKETING_VERSION = ${{ steps.meta.outputs.marketing_version }}
           CURRENT_PROJECT_VERSION = ${{ steps.meta.outputs.build_version }}
-          SPARKLE_FEED_URL = https://goodkind.io/plainstickies/appcast.xml
+          SPARKLE_FEED_URL = https://goodkind.io/stickies-improved/appcast.xml
           SPARKLE_PUBLIC_ED_KEY = ${{ secrets.SPARKLE_PUBLIC_ED_KEY }}
           DMG_SIGN_IDENTITY = ${APPLE_CODE_SIGN_IDENTITY}
           EOF
@@ -94,12 +94,12 @@ jobs:
         run: |
           KEY_PATH="$RUNNER_TEMP/AuthKey_${APPLE_NOTARY_KEY_ID}.p8"
           printf '%s' "$APPLE_NOTARY_KEY_BASE64" | base64 --decode > "$KEY_PATH"
-          xcrun notarytool submit "Products/PlainStickies-${{ steps.meta.outputs.build_version }}.dmg" \
+          xcrun notarytool submit "Products/StickiesImproved-${{ steps.meta.outputs.build_version }}.dmg" \
             --key "$KEY_PATH" \
             --key-id "$APPLE_NOTARY_KEY_ID" \
             --issuer "$APPLE_NOTARY_ISSUER_ID" \
             --wait
-          xcrun stapler staple "Products/PlainStickies-${{ steps.meta.outputs.build_version }}.dmg"
+          xcrun stapler staple "Products/StickiesImproved-${{ steps.meta.outputs.build_version }}.dmg"
 
       - name: Create GitHub release
         env:
@@ -114,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload "${{ steps.meta.outputs.tag }}" \
-            "Products/PlainStickies-${{ steps.meta.outputs.build_version }}.dmg" \
+            "Products/StickiesImproved-${{ steps.meta.outputs.build_version }}.dmg" \
             --clobber
 
       - name: Generate Sparkle appcast

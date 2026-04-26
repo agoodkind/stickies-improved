@@ -1,4 +1,4 @@
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 struct NoteSceneView: View {
@@ -15,9 +15,10 @@ struct NoteSceneView: View {
                 ContentUnavailableView("No Note", systemImage: "note.text")
             }
         }
-        .frame(minWidth: 240, idealWidth: 280, minHeight: 180, idealHeight: 240)
+        .frame(minWidth: 300, idealWidth: 360, minHeight: 260, idealHeight: 360)
         .navigationTitle(noteID.map(workspace.displayTitle(for:)) ?? "Note")
         .containerBackground(.clear, for: .window)
+        .background(StickyWindowChromeBridge())
         .onAppear {
             if let noteID {
                 windowStateStore.noteWindowOpened(noteID)

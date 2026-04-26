@@ -20,14 +20,14 @@ jobs:
       - name: Build app
         run: |
           tuist xcodebuild build \
-            -scheme PlainStickies \
+            -scheme StickiesImproved \
             -configuration Debug \
             -derivedDataPath build
 
       - name: Run tests
         run: |
           tuist xcodebuild test \
-            -scheme PlainStickies \
+            -scheme StickiesImproved \
             -configuration Debug \
             -derivedDataPath build
 

@@ -1,4 +1,4 @@
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 struct PlainTextEditorView: View {
@@ -14,7 +14,7 @@ struct PlainTextEditorView: View {
                 .font(.system(size: 14, weight: .regular, design: .monospaced))
                 .padding(.horizontal, 14)
                 .padding(.bottom, 14)
-                .padding(.top, 10)
+                .padding(.top, 6)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
         }
@@ -24,7 +24,7 @@ struct PlainTextEditorView: View {
                 .strokeBorder(Color.black.opacity(0.08), lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .padding(10)
+        .ignoresSafeArea(.container, edges: .top)
     }
 
     private var header: some View {
@@ -46,7 +46,7 @@ struct PlainTextEditorView: View {
                 .frame(width: 7, height: 7)
         }
         .padding(.horizontal, 14)
-        .padding(.top, 12)
+        .padding(.top, 10)
         .padding(.bottom, 10)
         .background(
             LinearGradient(

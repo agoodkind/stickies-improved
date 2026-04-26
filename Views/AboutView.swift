@@ -1,10 +1,10 @@
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 struct AboutView: View {
     var body: some View {
         VStack(spacing: 12) {
-            Text("PlainStickies")
+            Text("Stickies Improved")
                 .font(.title)
             Text("Plain-text notes with iCloud sync.")
                 .foregroundStyle(.secondary)

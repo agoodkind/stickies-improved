@@ -1,8 +1,8 @@
 import Foundation
 
 public enum BuildConfig {
-    public static let appBundleID = Bundle.main.bundleIdentifier ?? "io.goodkind.plainstickies"
-    public static let iCloudContainerIdentifier = "iCloud.io.goodkind.plainstickies"
+    public static let appBundleID = Bundle.main.bundleIdentifier ?? "io.goodkind.stickies-improved"
+    public static let iCloudContainerIdentifier = "iCloud.io.goodkind.stickies-improved"
     public static let sparkleFeedURL = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") as? String ?? ""
     public static let sparklePublicKey = ""
     public static let buildVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"

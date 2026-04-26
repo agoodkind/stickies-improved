@@ -1,8 +1,8 @@
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 @main
-struct PlainStickiesApp: App {
+struct StickiesImprovedApp: App {
     @State private var workspace = NoteWorkspaceStore()
     @State private var windowStateStore = NoteWindowStateStore()
     @State private var appUpdater = AppUpdater(enabled: !RuntimeEnvironment.isRunningTests)
@@ -14,7 +14,8 @@ struct PlainStickiesApp: App {
                 .environment(windowStateStore)
                 .environment(appUpdater)
         }
-        .defaultSize(width: 300, height: 150)
+        .defaultSize(width: 1, height: 1)
+        .windowResizability(.contentSize)
 
         WindowGroup("Note", for: NoteID.self) { $noteID in
             NoteSceneView(noteID: $noteID)
@@ -24,7 +25,7 @@ struct PlainStickiesApp: App {
         }
         .defaultSize(width: 280, height: 240)
         .commands {
-            NoteCommands()
+            NoteCommands(workspace: workspace, appUpdater: appUpdater)
         }
 
         Settings {

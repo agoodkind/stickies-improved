@@ -1,4 +1,4 @@
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 struct NoteEditorHost: View {

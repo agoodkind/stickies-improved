@@ -1,4 +1,4 @@
-name = "plainstickies-appcast"
+name = "stickies-improved-appcast"
 main = "src/index.ts"
 compatibility_date = "2026-04-25"
 workers_dev = false
@@ -9,6 +9,6 @@ binding = "ASSETS"
 run_worker_first = true
 
 [[routes]]
-pattern = "goodkind.io/plainstickies*"
+pattern = "goodkind.io/stickies-improved*"
 zone_name = "goodkind.io"
 

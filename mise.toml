@@ -1,5 +1,5 @@
 [tools]
 node = "22"
 swiftformat = "0.58.5"
-tuist = "4.111.1"
+tuist = "4.186.2"
 

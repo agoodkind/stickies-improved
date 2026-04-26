@@ -6,7 +6,7 @@ SWIFTFORMAT := $(shell command -v swiftformat 2>/dev/null || printf '%s' "mise x
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
 PRODUCTS_DIR ?= Products
-APP_NAME = PlainStickies
+APP_NAME = StickiesImproved
 DMG_STAGING_DIR = $(BUILD_DIR)/dmg
 DMG_VOLUME_NAME = $(APP_NAME)
 DMG_NAME = $(APP_NAME)-$(CONFIGURATION).dmg
@@ -18,7 +18,7 @@ RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/
 RELEASE_DMG_NAME = $(APP_NAME)-$(CURRENT_PROJECT_VERSION).dmg
 RELEASE_DMG_PATH = $(PRODUCTS_DIR)/$(RELEASE_DMG_NAME)
 SPARKLE_UPDATES_DIR = $(BUILD_DIR)/sparkle-updates
-GITHUB_RELEASE_BASE_URL ?= https://github.com/agoodkind/plainstickies/releases/download/$(RELEASE_TAG)/
+GITHUB_RELEASE_BASE_URL ?= https://github.com/agoodkind/stickies-improved/releases/download/$(RELEASE_TAG)/
 
 .PHONY: generate-project open-project build test app dmg release-assets prepare-sparkle-updates run clean format
 
@@ -26,11 +26,11 @@ generate-project:
 	$(TUIST) generate --no-open
 
 open-project: generate-project
-	open PlainStickies.xcworkspace
+	open StickiesImproved.xcworkspace
 
 build: generate-project
 	$(TUIST) xcodebuild build \
-		-scheme PlainStickies \
+		-scheme StickiesImproved \
 		-configuration $(CONFIGURATION) \
 		-derivedDataPath $(BUILD_DIR) \
 		MARKETING_VERSION="$(MARKETING_VERSION)" \
@@ -38,7 +38,7 @@ build: generate-project
 
 test: generate-project
 	$(TUIST) xcodebuild test \
-		-scheme PlainStickies \
+		-scheme StickiesImproved \
 		-configuration Debug \
 		-derivedDataPath $(BUILD_DIR)
 
@@ -88,4 +88,4 @@ format:
 	$(SWIFTFORMAT) .
 
 clean:
-	rm -rf "$(BUILD_DIR)" "$(PRODUCTS_DIR)" PlainStickies.xcworkspace PlainStickies.xcodeproj
+	rm -rf "$(BUILD_DIR)" "$(PRODUCTS_DIR)" StickiesImproved.xcworkspace StickiesImproved.xcodeproj

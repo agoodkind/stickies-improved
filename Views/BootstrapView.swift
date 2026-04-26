@@ -1,5 +1,5 @@
 import AppKit
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 struct BootstrapView: View {
@@ -10,47 +10,21 @@ struct BootstrapView: View {
     @State private var didOpenWindows = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(RuntimeEnvironment.isRunningTests ? "Running tests…" : "Loading notes…")
-                .font(.headline)
+        Color.clear
+            .frame(width: 1, height: 1)
+            .task {
+                guard !RuntimeEnvironment.isRunningTests else { return }
+                guard !didOpenWindows else { return }
+                didOpenWindows = true
 
-            Text(RuntimeEnvironment.isRunningTests ? "The host app is idle while XCTest runs." : "PlainStickies restores your note windows and keeps note content in your iCloud document library.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            if let error = workspace.lastErrorMessage {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-
-            Button("Create New Note") {
-                Task {
-                    let noteID = await workspace.createNote()
+                let noteIDs = await workspace.bootstrap(openNoteIDs: windowStateStore.openNoteIDs)
+                for noteID in noteIDs {
                     openWindow(value: noteID)
-                    closeBootstrapWindow()
+                }
+
+                if !noteIDs.isEmpty {
+                    NSApp.activate(ignoringOtherApps: true)
                 }
             }
-        }
-        .padding(20)
-        .task {
-            guard !RuntimeEnvironment.isRunningTests else { return }
-            guard !didOpenWindows else { return }
-            didOpenWindows = true
-
-            let noteIDs = await workspace.bootstrap(openNoteIDs: windowStateStore.openNoteIDs)
-            for noteID in noteIDs {
-                openWindow(value: noteID)
-            }
-
-            if !noteIDs.isEmpty {
-                try? await Task.sleep(for: .milliseconds(250))
-                closeBootstrapWindow()
-            }
-        }
-    }
-
-    private func closeBootstrapWindow() {
-        NSApp.keyWindow?.close()
     }
 }

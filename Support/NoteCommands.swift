@@ -1,10 +1,11 @@
-import PlainStickiesCore
+import StickiesImprovedCore
 import SwiftUI
 
 struct NoteCommands: Commands {
-    @Environment(NoteWorkspaceStore.self) private var workspace
-    @Environment(AppUpdater.self) private var appUpdater
     @Environment(\.openWindow) private var openWindow
+
+    let workspace: NoteWorkspaceStore
+    let appUpdater: AppUpdater
 
     var body: some Commands {
         CommandMenu("Notes") {

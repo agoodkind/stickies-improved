@@ -1,5 +1,5 @@
 import XCTest
-@testable import PlainStickiesCore
+@testable import StickiesImprovedCore
 
 final class NoteDocumentTests: XCTestCase {
     func testTitleFallsBackToUntitled() {
