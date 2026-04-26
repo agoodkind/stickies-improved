@@ -16,7 +16,7 @@ jobs:
 
     env:
       APPLE_TEAM_ID: H3BMXM4W7H
-      APPLE_CODE_SIGN_IDENTITY: Developer ID Application: Alex Goodkind (H3BMXM4W7H)
+      APPLE_CODE_SIGN_IDENTITY: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
       APPLE_NOTARY_KEY_ID: JHC8GR65Q3
 
     steps:
@@ -25,6 +25,9 @@ jobs:
           fetch-depth: 0
 
       - uses: jdx/mise-action@v2
+
+      - name: Install Tuist dependencies
+        run: tuist install
 
       - name: Compute release metadata
         id: meta
