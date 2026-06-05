@@ -14,6 +14,90 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F45620C80428825F40C057B7"
+               BuildableName = "StickiesApplication.framework"
+               BlueprintName = "StickiesApplication"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "939C66B6E0761F66FC6D4C7B"
+               BuildableName = "StickiesApplicationTests.xctest"
+               BlueprintName = "StickiesApplicationTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DF1B4E9B511CD1AD6C5E828E"
+               BuildableName = "StickiesDesignSystem.framework"
+               BlueprintName = "StickiesDesignSystem"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1D7207DA875EC8F29DE8E134"
+               BuildableName = "StickiesDomain.framework"
+               BlueprintName = "StickiesDomain"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF8A35CC228FF347D356B824"
+               BuildableName = "StickiesDomainTests.xctest"
+               BlueprintName = "StickiesDomainTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3A801AB05E1A69C42D3D2CE7"
+               BuildableName = "StickiesFeatures.framework"
+               BlueprintName = "StickiesFeatures"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "466E1D5E66AAD47A36CCEFE5"
                BuildableName = "StickiesImproved.app"
                BlueprintName = "StickiesImproved"
@@ -28,9 +112,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "25BAADED5CB984EF99626A13"
-               BuildableName = "StickiesImprovedCore.framework"
-               BlueprintName = "StickiesImprovedCore"
+               BlueprintIdentifier = "88A6DF0C6248A233DD6D1463"
+               BuildableName = "StickiesPersistence.framework"
+               BlueprintName = "StickiesPersistence"
                ReferencedContainer = "container:StickiesImproved.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -42,9 +126,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "ADFBEF32E0149C7A165C47D6"
-               BuildableName = "StickiesImprovedTests.xctest"
-               BlueprintName = "StickiesImprovedTests"
+               BlueprintIdentifier = "EF42FB4CC436E91CC1F0FB91"
+               BuildableName = "StickiesPersistenceTests.xctest"
+               BlueprintName = "StickiesPersistenceTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "34E0922B1F92B887FCBA0170"
+               BuildableName = "StickiesTestSupport.framework"
+               BlueprintName = "StickiesTestSupport"
                ReferencedContainer = "container:StickiesImproved.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -61,9 +159,31 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "ADFBEF32E0149C7A165C47D6"
-               BuildableName = "StickiesImprovedTests.xctest"
-               BlueprintName = "StickiesImprovedTests"
+               BlueprintIdentifier = "939C66B6E0761F66FC6D4C7B"
+               BuildableName = "StickiesApplicationTests.xctest"
+               BlueprintName = "StickiesApplicationTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF8A35CC228FF347D356B824"
+               BuildableName = "StickiesDomainTests.xctest"
+               BlueprintName = "StickiesDomainTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EF42FB4CC436E91CC1F0FB91"
+               BuildableName = "StickiesPersistenceTests.xctest"
+               BlueprintName = "StickiesPersistenceTests"
                ReferencedContainer = "container:StickiesImproved.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -79,16 +199,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "466E1D5E66AAD47A36CCEFE5"
-            BuildableName = "StickiesImproved.app"
-            BlueprintName = "StickiesImproved"
+            BlueprintIdentifier = "F45620C80428825F40C057B7"
+            BuildableName = "StickiesApplication.framework"
+            BlueprintName = "StickiesApplication"
             ReferencedContainer = "container:StickiesImproved.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -96,16 +215,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "466E1D5E66AAD47A36CCEFE5"
-            BuildableName = "StickiesImproved.app"
-            BlueprintName = "StickiesImproved"
+            BlueprintIdentifier = "F45620C80428825F40C057B7"
+            BuildableName = "StickiesApplication.framework"
+            BlueprintName = "StickiesApplication"
             ReferencedContainer = "container:StickiesImproved.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

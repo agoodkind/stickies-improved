@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "25BAADED5CB984EF99626A13"
-               BuildableName = "StickiesImprovedCore.framework"
-               BlueprintName = "StickiesImprovedCore"
+               BlueprintIdentifier = "DF1B4E9B511CD1AD6C5E828E"
+               BuildableName = "StickiesDesignSystem.framework"
+               BlueprintName = "StickiesDesignSystem"
                ReferencedContainer = "container:StickiesImproved.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "25BAADED5CB984EF99626A13"
-            BuildableName = "StickiesImprovedCore.framework"
-            BlueprintName = "StickiesImprovedCore"
+            BlueprintIdentifier = "DF1B4E9B511CD1AD6C5E828E"
+            BuildableName = "StickiesDesignSystem.framework"
+            BlueprintName = "StickiesDesignSystem"
             ReferencedContainer = "container:StickiesImproved.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -60,9 +60,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "25BAADED5CB984EF99626A13"
-            BuildableName = "StickiesImprovedCore.framework"
-            BlueprintName = "StickiesImprovedCore"
+            BlueprintIdentifier = "DF1B4E9B511CD1AD6C5E828E"
+            BuildableName = "StickiesDesignSystem.framework"
+            BlueprintName = "StickiesDesignSystem"
             ReferencedContainer = "container:StickiesImproved.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

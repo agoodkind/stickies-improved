@@ -11,6 +11,7 @@ import ProjectDescription
 let appName = "StickiesImproved"
 let organizationName = "goodkind.io"
 let bundleId = "io.goodkind.stickies-improved"
+let deploymentTargets: DeploymentTargets = .macOS("26.0")
 
 let debug = Configuration.debug(
     name: "Debug",
@@ -21,18 +22,6 @@ let release = Configuration.release(
     name: "Release",
     xcconfig: "Config/release.xcconfig"
 )
-
-let scripts: [TargetScript] = [
-    .pre(
-        script: """
-            "${SRCROOT}/Scripts/generate-config.sh"
-            """,
-        name: "Generate Build Config",
-        outputPaths: [
-            "$(DERIVED_FILE_DIR)/Generated/Config.generated.swift"
-        ]
-    )
-]
 
 let settings = Settings.settings(
     base: [
@@ -84,75 +73,150 @@ let infoPlist: [String: Plist.Value] = [
     "UIDesignRequiresCompatibility": .boolean(true),
 ]
 
+// MARK: - Module helpers
+
+func frameworkTarget(
+    _ name: String,
+    dependencies: [TargetDependency]
+) -> Target {
+    .target(
+        name: name,
+        destinations: [.mac],
+        product: .framework,
+        bundleId: "\(bundleId).\(name.lowercased())",
+        deploymentTargets: deploymentTargets,
+        infoPlist: .default,
+        sources: ["Modules/\(name)/Sources/**"],
+        dependencies: dependencies,
+        settings: .settings(base: targetSigningSettings)
+    )
+}
+
+func unitTestTarget(
+    _ name: String,
+    dependencies: [TargetDependency]
+) -> Target {
+    .target(
+        name: name,
+        destinations: [.mac],
+        product: .unitTests,
+        bundleId: "\(bundleId).\(name.lowercased())",
+        deploymentTargets: deploymentTargets,
+        infoPlist: .default,
+        sources: ["Modules/\(moduleName(forTests: name))/Tests/**"],
+        dependencies: dependencies
+    )
+}
+
+func moduleName(forTests target: String) -> String {
+    if target.hasSuffix("Tests") {
+        return String(target.dropLast("Tests".count))
+    }
+    return target
+}
+
+// MARK: - Targets
+
+let domain = frameworkTarget("StickiesDomain", dependencies: [])
+let persistence = frameworkTarget(
+    "StickiesPersistence",
+    dependencies: [.target(name: "StickiesDomain")]
+)
+let designSystem = frameworkTarget(
+    "StickiesDesignSystem",
+    dependencies: [.target(name: "StickiesDomain")]
+)
+let application = frameworkTarget(
+    "StickiesApplication",
+    dependencies: [.target(name: "StickiesDomain")]
+)
+let features = frameworkTarget(
+    "StickiesFeatures",
+    dependencies: [
+        .target(name: "StickiesApplication"),
+        .target(name: "StickiesDesignSystem"),
+        .target(name: "StickiesDomain"),
+    ]
+)
+let testSupport = frameworkTarget(
+    "StickiesTestSupport",
+    dependencies: [.target(name: "StickiesDomain")]
+)
+
+let app: Target = .target(
+    name: appName,
+    destinations: [.mac],
+    product: .app,
+    bundleId: bundleId,
+    deploymentTargets: deploymentTargets,
+    infoPlist: .extendingDefault(with: infoPlist),
+    sources: ["App/**"],
+    resources: [],
+    entitlements: "Config/StickiesImproved.entitlements",
+    dependencies: [
+        .target(name: "StickiesFeatures"),
+        .target(name: "StickiesApplication"),
+        .target(name: "StickiesDesignSystem"),
+        .target(name: "StickiesPersistence"),
+        .target(name: "StickiesDomain"),
+        .external(name: "Sparkle"),
+    ],
+    settings: .settings(
+        base: appSigningSettings.merging([
+            "PRODUCT_NAME": .string(appName),
+            "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
+        ]) { _, new in new }
+    )
+)
+
+let domainTests = unitTestTarget(
+    "StickiesDomainTests",
+    dependencies: [.target(name: "StickiesDomain")]
+)
+let persistenceTests = unitTestTarget(
+    "StickiesPersistenceTests",
+    dependencies: [
+        .target(name: "StickiesPersistence"),
+        .target(name: "StickiesTestSupport"),
+    ]
+)
+let applicationTests = unitTestTarget(
+    "StickiesApplicationTests",
+    dependencies: [
+        .target(name: "StickiesApplication"),
+        .target(name: "StickiesTestSupport"),
+    ]
+)
+
 let project = Project(
     name: appName,
     organizationName: organizationName,
     settings: settings,
     targets: [
-        .target(
-            name: "\(appName)Core",
-            destinations: [.mac],
-            product: .framework,
-            bundleId: "\(bundleId).core",
-            deploymentTargets: .macOS("15.0"),
-            infoPlist: .default,
-            sources: [
-                "Models/**",
-                "Stores/**",
-                "Services/**",
-                "Support/BuildConfig.swift",
-                "Support/RuntimeEnvironment.swift",
-            ],
-            scripts: scripts,
-            dependencies: [
-                .external(name: "Sparkle")
-            ],
-            settings: .settings(base: targetSigningSettings)
-        ),
-        .target(
-            name: appName,
-            destinations: [.mac],
-            product: .app,
-            bundleId: bundleId,
-            deploymentTargets: .macOS("15.0"),
-            infoPlist: .extendingDefault(with: infoPlist),
-            sources: [
-                "App/**",
-                "Views/**",
-                "Support/NoteCommands.swift",
-                "Support/StickyWindowChromeBridge.swift",
-            ],
-            resources: [],
-            entitlements: "Config/StickiesImproved.entitlements",
-            dependencies: [
-                .target(name: "\(appName)Core")
-            ],
-            settings: .settings(
-                base: appSigningSettings.merging([
-                    "PRODUCT_NAME": .string(appName),
-                    "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
-                ]) { _, new in new }
-            )
-        ),
-        .target(
-            name: "\(appName)Tests",
-            destinations: [.mac],
-            product: .unitTests,
-            bundleId: "\(bundleId).tests",
-            deploymentTargets: .macOS("15.0"),
-            infoPlist: .default,
-            sources: ["Tests/StickiesTests/**"],
-            dependencies: [
-                .target(name: "\(appName)Core")
-            ]
-        ),
+        domain,
+        persistence,
+        designSystem,
+        application,
+        features,
+        testSupport,
+        app,
+        domainTests,
+        persistenceTests,
+        applicationTests,
     ],
     schemes: [
         .scheme(
             name: appName,
             shared: true,
             buildAction: .buildAction(targets: ["\(appName)"]),
-            testAction: .targets(["\(appName)Tests"], configuration: "Debug"),
+            testAction: .targets(
+                [
+                    "StickiesDomainTests",
+                    "StickiesPersistenceTests",
+                    "StickiesApplicationTests",
+                ],
+                configuration: "Debug"
+            ),
             runAction: .runAction(configuration: "Debug"),
             archiveAction: .archiveAction(configuration: "Release"),
             profileAction: .profileAction(configuration: "Release"),

@@ -4,7 +4,7 @@ TUIST := $(shell command -v tuist 2>/dev/null || printf '%s' "mise x tuist@4.111
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
-SWIFT_SOURCE_TARGETS := Models Stores Services Support App Views Tests Project.swift Tuist.swift Tuist/Package.swift
+SWIFT_SOURCE_TARGETS := Modules App Project.swift Tuist.swift Tuist/Package.swift
 
 SWIFT_MK_MODULES := swift-build.mk swift-app.mk
 SWIFT_MK_DERIVED_DATA := $(BUILD_DIR)
@@ -22,6 +22,9 @@ SWIFT_GENERATE_CMD := $(TUIST) generate --no-open
 SWIFT_BUILD_CMD = $(TUIST) xcodebuild build -scheme $(SWIFT_APP_NAME) -configuration $(CONFIGURATION) -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)"
 SWIFT_TEST_CMD = $(TUIST) xcodebuild test -scheme $(SWIFT_APP_NAME) -configuration Debug -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS)
 SWIFT_DEADCODE_BUILD_CMD := $(MAKE) app-coverage-build
+# Build-for-testing so the test targets and StickiesTestSupport compile too,
+# giving the dead-code gate an index unit for every source under Modules/.
+SWIFT_APP_COVERAGE_BUILD_CMD = $(TUIST) xcodebuild build-for-testing -scheme $(SWIFT_APP_NAME) -configuration Debug -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) COMPILER_INDEX_STORE_ENABLE=YES
 SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace StickiesImproved.xcodeproj
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
