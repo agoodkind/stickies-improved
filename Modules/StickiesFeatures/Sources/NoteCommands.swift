@@ -14,6 +14,7 @@ import SwiftUI
 
 public struct NoteCommands: Commands {
     private static let colorSwatchSymbol = "circle.fill"
+    private static let managerWindowID = "manager"
 
     // Size bounds for the Bigger/Smaller commands, matching a sane editing range; the
     // original defaults to the system font at size 12.
@@ -24,6 +25,7 @@ public struct NoteCommands: Commands {
     }
 
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
     @FocusedValue(\.focusedNoteID) private var focusedNoteID
 
     private let workspace: NoteWorkspaceModel
@@ -44,11 +46,29 @@ public struct NoteCommands: Commands {
             }
             .keyboardShortcut("n")
 
+            Button("Delete") {
+                if let focusedNoteID {
+                    dismissWindow(value: focusedNoteID)
+                    workspace.trashNote(focusedNoteID)
+                }
+            }
+            .keyboardShortcut(.delete, modifiers: .command)
+            .disabled(focusedNoteID == nil)
+
             Divider()
 
             Button("Check for Updates") {
                 updaterModel.checkForUpdates()
             }
+        }
+
+        // Add to the system Window menu so "Show All Notes" sits next to the
+        // standard window list, opening the manager scene.
+        CommandGroup(after: .windowList) {
+            Button("Show All Notes") {
+                openWindow(id: Self.managerWindowID)
+            }
+            .keyboardShortcut("m", modifiers: [.command, .shift])
         }
 
         CommandMenu("Colour") {

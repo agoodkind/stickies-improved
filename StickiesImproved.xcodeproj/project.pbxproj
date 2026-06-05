@@ -37,6 +37,7 @@
 		4D1BECD49102F19CC77452A5 /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
 		4D4C99218CCBF254375D0B05 /* StorageLocationResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324AF9BDF2FC5E5639832AD /* StorageLocationResolving.swift */; };
 		550E52C18A44614369E31C44 /* NoteWorkspaceModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */; };
+		58C7C7A79C00B0736B0CC239 /* ManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156326902334544B4188AA8E /* ManagerView.swift */; };
 		5922436EC59347B66A31F91B /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */; };
 		5B426A59C149A6F3899C6BD5 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9537534E1BEF6C31639A05 /* NoteStore.swift */; };
 		5E8F04572FF5EF76E6E90D26 /* StickyTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */; };
@@ -324,6 +325,7 @@
 		0AD77A1578E0D93E033D704C /* ContinuousClockAutosaveScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousClockAutosaveScheduler.swift; sourceTree = "<group>"; };
 		0C09DE9BC9573B137604B1F5 /* NoteEditorHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorHost.swift; sourceTree = "<group>"; };
 		0ED7D5D68519BC5B35899277 /* BundleRuntimeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleRuntimeInfo.swift; sourceTree = "<group>"; };
+		156326902334544B4188AA8E /* ManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagerView.swift; sourceTree = "<group>"; };
 		1BF26DEF61BA7D4519F03BAD /* NoteFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFrame.swift; sourceTree = "<group>"; };
 		1CE3CEBA15AEB6863C54E125 /* StickiesImproved.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StickiesImproved.entitlements; sourceTree = "<group>"; };
 		1FA98EB11E4DD8A0FCD3C1BA /* AutosaveScheduling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutosaveScheduling.swift; sourceTree = "<group>"; };
@@ -557,6 +559,7 @@
 				FB673400310C8F7821884B6A /* BootstrapView.swift */,
 				7C54C7BD28D073293D7D0F2A /* ColorPickerMenuItems.swift */,
 				F7991C1729DE13C6CE1EAAED /* FocusedValues+NoteID.swift */,
+				156326902334544B4188AA8E /* ManagerView.swift */,
 				38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */,
 				8B0CEAB6A989EDC4065CE2D9 /* NoteSceneView.swift */,
 				013B61C4D9D9B30444D84ADD /* SettingsView.swift */,
@@ -1112,6 +1115,7 @@
 				EDF561B35EFE865267068EE1 /* NoteEditorHost.swift in Sources */,
 				0D6BA3C5226796E259661F71 /* PlainTextEditorView.swift in Sources */,
 				2AD0C047592A7CF118DB5A6C /* FocusedValues+NoteID.swift in Sources */,
+				58C7C7A79C00B0736B0CC239 /* ManagerView.swift in Sources */,
 				31BEB3AB67A283A0607AC5DF /* NoteCommands.swift in Sources */,
 				4BE26188BF74825D485FC378 /* NoteSceneView.swift in Sources */,
 				F60891E422130755DEC6D62E /* SettingsView.swift in Sources */,

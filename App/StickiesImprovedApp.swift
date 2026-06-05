@@ -18,7 +18,13 @@ struct StickiesImprovedApp: App {
         // Recovered from the original Stickie.nib: default content size 400x400.
         static let defaultNoteWindowWidth: CGFloat = 400
         static let defaultNoteWindowHeight: CGFloat = 400
+        // The manager is a modern list window, sized to comfortably show a handful
+        // of note rows across both sections.
+        static let managerWindowWidth: CGFloat = 480
+        static let managerWindowHeight: CGFloat = 520
     }
+
+    private static let managerWindowID = "manager"
 
     private let runtimeInfo = BundleRuntimeInfo()
 
@@ -79,6 +85,15 @@ struct StickiesImprovedApp: App {
         .commands {
             NoteCommands(workspace: workspace, updaterModel: updaterModel)
         }
+
+        Window("All Notes", id: Self.managerWindowID) {
+            injectModels(into: ManagerView())
+        }
+        .defaultSize(
+            width: Layout.managerWindowWidth,
+            height: Layout.managerWindowHeight
+        )
+        .windowResizability(.contentMinSize)
 
         Settings {
             injectModels(into: SettingsView())

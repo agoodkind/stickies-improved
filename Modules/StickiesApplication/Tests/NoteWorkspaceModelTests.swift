@@ -157,6 +157,70 @@ struct NoteWorkspaceModelTests {
         #expect(saved?.metadata.expandedHeight == 420)
     }
 
+    @Test func trashNoteMovesNoteToTrashAndPersistsFlag() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+
+        model.trashNote(noteID)
+
+        await pollUntilTrashedSaved(store: store, id: noteID, expected: true)
+
+        #expect(model.note(for: noteID) == nil)
+        #expect(model.activeNotes.contains { $0.id == noteID } == false)
+        #expect(model.trashedNotes.contains { $0.id == noteID })
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.isTrashed == true)
+    }
+
+    @Test func restoreNoteReversesTrash() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+        model.trashNote(noteID)
+        await pollUntilTrashedSaved(store: store, id: noteID, expected: true)
+
+        model.restoreNote(noteID)
+
+        await pollUntilTrashedSaved(store: store, id: noteID, expected: false)
+        #expect(model.note(for: noteID) != nil)
+        #expect(model.activeNotes.contains { $0.id == noteID })
+        #expect(model.trashedNotes.contains { $0.id == noteID } == false)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.isTrashed == false)
+    }
+
+    @Test func deleteNotePermanentlyRemovesFromStoreAndMemory() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+        model.trashNote(noteID)
+        await pollUntilTrashedSaved(store: store, id: noteID, expected: true)
+
+        await model.deleteNotePermanently(noteID)
+
+        #expect(model.note(for: noteID) == nil)
+        #expect(model.activeNotes.contains { $0.id == noteID } == false)
+        #expect(model.trashedNotes.contains { $0.id == noteID } == false)
+        let saved = await store.document(for: noteID)
+        #expect(saved == nil)
+    }
+
+    private func pollUntilTrashedSaved(
+        store: InMemoryNoteStore,
+        id: NoteID,
+        expected: Bool
+    ) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            let document = await store.document(for: id)
+            if document?.metadata.isTrashed == expected {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
     private func pollUntilFrameSaved(
         store: InMemoryNoteStore,
         id: NoteID,

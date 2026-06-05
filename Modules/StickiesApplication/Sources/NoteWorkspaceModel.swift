@@ -23,8 +23,13 @@ public final class NoteWorkspaceModel {
     private let libraryMonitor: any LibraryMonitoring
     private let autosaveScheduler: any AutosaveScheduling
 
+    // `notes` and `orderedNoteIDs` hold only the ACTIVE (non-trashed) notes, so the
+    // existing window, ordering, and bootstrap paths never see a trashed note.
+    // Trashed notes live in a parallel store the manager window reads from.
     public private(set) var notes: [NoteID: NoteDocument] = [:]
     public private(set) var orderedNoteIDs: [NoteID] = []
+    public private(set) var trashedNotesByID: [NoteID: NoteDocument] = [:]
+    public private(set) var orderedTrashedNoteIDs: [NoteID] = []
     public private(set) var storageLocationDescription = "Loading..."
     public private(set) var lastErrorMessage: String?
     public private(set) var didFinishBootstrap = false
@@ -71,16 +76,74 @@ public final class NoteWorkspaceModel {
     public func refreshFromDisk() async {
         do {
             let loaded = try await noteStore.loadAllDocuments()
-            notes = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
-            orderedNoteIDs =
-                loaded
-                .sorted { $0.metadata.updatedAt > $1.metadata.updatedAt }
-                .map(\.id)
+            let active = loaded.filter { !$0.metadata.isTrashed }
+            let trashed = loaded.filter(\.metadata.isTrashed)
+
+            notes = Dictionary(uniqueKeysWithValues: active.map { ($0.id, $0) })
+            orderedNoteIDs = Self.orderedByUpdatedDescending(active)
+            trashedNotesByID = Dictionary(uniqueKeysWithValues: trashed.map { ($0.id, $0) })
+            orderedTrashedNoteIDs = Self.orderedByUpdatedDescending(trashed)
         } catch {
             logger.error(
                 "Refresh from disk failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
+    }
+
+    /// Active notes in display order (newest first), for the manager's Notes section.
+    public var activeNotes: [NoteDocument] {
+        orderedNoteIDs.compactMap { notes[$0] }
+    }
+
+    /// Trashed notes in display order (newest first), for the manager's Trash section.
+    public var trashedNotes: [NoteDocument] {
+        orderedTrashedNoteIDs.compactMap { trashedNotesByID[$0] }
+    }
+
+    /// Soft delete: flags the note trashed and persists it, then moves it out of the
+    /// active collections so its window no longer counts as open and it drops from
+    /// the normal note set while staying on disk for the manager to list.
+    public func trashNote(_ noteID: NoteID) {
+        guard var document = notes[noteID] else { return }
+        document.metadata.isTrashed = true
+        document.metadata.updatedAt = .now
+        notes[noteID] = nil
+        trashedNotesByID[noteID] = document
+        reorderNotes()
+        reorderTrashedNotes()
+        Task { await persistImmediately(document) }
+    }
+
+    /// Reverses a soft delete: clears the trashed flag, persists, and moves the note
+    /// back into the active collections so it appears in the normal note set again.
+    public func restoreNote(_ noteID: NoteID) {
+        guard var document = trashedNotesByID[noteID] else { return }
+        document.metadata.isTrashed = false
+        document.metadata.updatedAt = .now
+        trashedNotesByID[noteID] = nil
+        notes[noteID] = document
+        reorderTrashedNotes()
+        reorderNotes()
+        Task { await persistImmediately(document) }
+    }
+
+    /// Permanently removes the note's package from disk and drops it from every
+    /// in-memory collection. There is no undo, so the manager confirms first.
+    public func deleteNotePermanently(_ noteID: NoteID) async {
+        do {
+            try await noteStore.delete(id: noteID)
+        } catch {
+            logger.error(
+                "Permanent delete failed: \(error.localizedDescription, privacy: .public)")
+            lastErrorMessage = error.localizedDescription
+            return
+        }
+        autosaveTasks[noteID]?.cancel()
+        autosaveTasks[noteID] = nil
+        notes[noteID] = nil
+        trashedNotesByID[noteID] = nil
+        reorderNotes()
+        reorderTrashedNotes()
     }
 
     public func createNote() async -> NoteID {
@@ -223,7 +286,17 @@ public final class NoteWorkspaceModel {
     }
 
     private func reorderNotes() {
-        orderedNoteIDs = notes.values
+        orderedNoteIDs = Self.orderedByUpdatedDescending(Array(notes.values))
+    }
+
+    private func reorderTrashedNotes() {
+        orderedTrashedNoteIDs = Self.orderedByUpdatedDescending(Array(trashedNotesByID.values))
+    }
+
+    private static func orderedByUpdatedDescending(
+        _ documents: [NoteDocument]
+    ) -> [NoteID] {
+        documents
             .sorted { $0.metadata.updatedAt > $1.metadata.updatedAt }
             .map(\.id)
     }
