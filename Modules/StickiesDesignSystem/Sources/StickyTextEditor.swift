@@ -15,16 +15,15 @@ import SwiftUI
 /// through, and it routes Fonts and Colors panel changes back to the workspace through
 /// the supplied callbacks.
 public struct StickyTextEditor: NSViewRepresentable {
-    /// Insets chosen so the first glyph lands in the same place as the prior SwiftUI
-    /// `TextEditor` build: the top inset clears the transparent titlebar zone where the
-    /// standard traffic lights float, and the horizontal inset matches the original's
-    /// modest content margin. `NSTextView` adds a small default line-fragment padding
-    /// inside the container, so the horizontal inset is slightly smaller than the old
-    /// SwiftUI padding to compensate.
+    /// Insets measured against a real Plain Text Stickies note, where the first text line
+    /// sits about 32pt below the window top, clearing the traffic lights, with a 5pt left
+    /// margin. SwiftUI already insets the editor below the titlebar by the window safe
+    /// area (about 30pt), so the top inset here is only a small fine-tune on top of that.
+    /// The left margin is the standard `NSTextView` line-fragment padding of 5pt.
     private enum Layout {
-        static let topInset: CGFloat = 28
-        static let horizontalInset: CGFloat = 10
-        static let bottomInset: CGFloat = 12
+        static let topInset: CGFloat = 2
+        static let horizontalInset: CGFloat = 0
+        static let lineFragmentPadding: CGFloat = 5
     }
 
     @Binding private var text: String
@@ -141,10 +140,9 @@ public struct StickyTextEditor: NSViewRepresentable {
         if textView.textContainerInset != inset {
             textView.textContainerInset = inset
         }
-        // The bottom inset is the container inset mirrored at the foot; AppKit applies
-        // `textContainerInset` symmetrically top and bottom, so a separate bottom value
-        // is folded into the layout via the container's line-fragment padding instead.
-        textView.textContainer?.lineFragmentPadding = Layout.bottomInset
+        // Line-fragment padding insets the start and end of each line, so it is the
+        // left margin (5pt, the standard NSTextView value that Plain Text Stickies uses).
+        textView.textContainer?.lineFragmentPadding = Layout.lineFragmentPadding
     }
 
     private static func resolveFont(name: String?, size: Double) -> NSFont {
