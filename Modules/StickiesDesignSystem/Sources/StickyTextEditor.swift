@@ -61,8 +61,15 @@ public struct StickyTextEditor: NSViewRepresentable {
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = false
         scrollView.autohidesScrollers = true
+        // Pin the editor to the light appearance so the default text color resolves
+        // dark on the pastel note. Pinning the window alone is not enough, since the
+        // SwiftUI hosting view re-imposes the system appearance on its subviews; setting
+        // it directly on the editor view is more specific and wins. This matches Plain
+        // Text Stickies, which always renders dark text regardless of system dark mode.
+        scrollView.appearance = NSAppearance(named: .aqua)
 
         let textView = StickyNoteTextView()
+        textView.appearance = NSAppearance(named: .aqua)
         textView.onFontChange = onFontChange
         textView.onColorChange = onColorChange
         textView.delegate = context.coordinator
@@ -213,10 +220,14 @@ public final class StickyNoteTextView: NSTextView {
         fontManager.target = self
         fontManager.action = #selector(handleFontPanelChange(_:))
 
+        // Only wire the target and action. Do NOT sync the panel's color here: setting
+        // `NSColorPanel.color` while the action is wired fires `handleColorPanelChange`,
+        // which would persist the resolved default text color as an explicit color the
+        // user never chose (white under system dark mode). The note keeps its nil default
+        // until the user actually picks a color in the panel.
         let colorPanel = NSColorPanel.shared
         colorPanel.setTarget(self)
         colorPanel.setAction(#selector(handleColorPanelChange(_:)))
-        colorPanel.color = textColor ?? NSColor.textColor
         ownsColorPanel = true
     }
 

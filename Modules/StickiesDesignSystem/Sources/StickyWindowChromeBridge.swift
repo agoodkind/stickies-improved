@@ -193,6 +193,11 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
 
         // Behaviors below are additive and only run for note windows (noteID set).
         guard noteID != nil else { return }
+        // This bridge owns each note's frame through the note metadata, so turn off the
+        // system's automatic window-state restoration. Otherwise macOS restores the
+        // window's previous frame (including a stale collapsed strip height) before the
+        // saved frame is applied, and the resize observer then persists that wrong height.
+        window.isRestorable = false
         restoreSavedFrame(on: window, coordinator: coordinator)
         bindZoomButton(on: window, coordinator: coordinator)
         observeFrameChanges(of: window, coordinator: coordinator)
@@ -238,9 +243,28 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
 
     @MainActor
     private func restoreSavedFrame(on window: NSWindow, coordinator: Coordinator) {
-        guard let frame = coordinator.savedFrame() else { return }
-        let restored = NSRect(x: frame.x, y: frame.y, width: frame.width, height: frame.height)
-        window.setFrame(restored, display: false)
+        if let frame = coordinator.savedFrame() {
+            let restored = NSRect(
+                x: frame.x,
+                y: frame.y,
+                width: frame.width,
+                height: frame.height
+            )
+            window.setFrame(restored, display: false)
+            return
+        }
+        // No frame was ever saved for this note. Force the recovered default size rather
+        // than inheriting whatever frame SwiftUI restored from a previous session (which
+        // can be a stale collapsed strip), keeping the current top-left anchor so the
+        // titlebar stays put and the note grows downward.
+        var frame = window.frame
+        let topEdge = frame.maxY
+        frame.size = NSSize(
+            width: Fold.defaultExpandedHeight,
+            height: Fold.defaultExpandedHeight
+        )
+        frame.origin.y = topEdge - Fold.defaultExpandedHeight
+        window.setFrame(frame, display: false)
     }
 
     /// Routes the green zoom button to the fold toggle without altering the button
