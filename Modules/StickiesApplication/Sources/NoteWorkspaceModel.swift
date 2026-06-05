@@ -123,6 +123,27 @@ public final class NoteWorkspaceModel {
         Task { await persistImmediately(document) }
     }
 
+    public func updateFont(name: String?, size: Double, for noteID: NoteID) {
+        guard var document = notes[noteID] else { return }
+        document.metadata.fontName = name
+        document.metadata.fontSize = size
+        document.metadata.updatedAt = .now
+        notes[noteID] = document
+        reorderNotes()
+        // A font pick is a discrete change with no rapid follow-up to coalesce, so
+        // persist straight away rather than through the typing debounce.
+        Task { await persistImmediately(document) }
+    }
+
+    public func updateFontColor(hex: String?, for noteID: NoteID) {
+        guard var document = notes[noteID] else { return }
+        document.metadata.fontColorHex = hex
+        document.metadata.updatedAt = .now
+        notes[noteID] = document
+        reorderNotes()
+        Task { await persistImmediately(document) }
+    }
+
     public func displayTitle(for noteID: NoteID) -> String {
         notes[noteID]?.metadata.title ?? "Untitled"
     }
@@ -159,7 +180,7 @@ public final class NoteWorkspaceModel {
             try await noteStore.save(document)
         } catch {
             logger.error(
-                "Color save failed: \(error.localizedDescription, privacy: .public)")
+                "Immediate save failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
     }

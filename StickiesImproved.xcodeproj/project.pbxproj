@@ -39,9 +39,11 @@
 		550E52C18A44614369E31C44 /* NoteWorkspaceModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */; };
 		5922436EC59347B66A31F91B /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */; };
 		5B426A59C149A6F3899C6BD5 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9537534E1BEF6C31639A05 /* NoteStore.swift */; };
+		5E8F04572FF5EF76E6E90D26 /* StickyTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */; };
 		6068AB214EC1CB1DA81527B0 /* NoteFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF26DEF61BA7D4519F03BAD /* NoteFrame.swift */; };
 		6CEA0743313AF8B10BB6A512 /* NoteMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41981312008A36B9D9D5E3C0 /* NoteMode.swift */; };
 		77CC72B5DC1C0E6B0A549746 /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
+		78719B0970DE24A90386E1BB /* HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659A91AC546107451821918C /* HexColor.swift */; };
 		80AB7353A3C828F9059DC1DD /* RuntimeInfoProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3140EEF62EF85EDBFDC74EB1 /* RuntimeInfoProviding.swift */; };
 		820B8A2339977334D3B0720D /* MarkdownEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D71ADB49EE7D8CFE5CC401 /* MarkdownEditorView.swift */; };
 		89C9A23D62F8CC85C0923D66 /* SparkleUpdaterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856F5EA10159A7379D340D05 /* SparkleUpdaterController.swift */; };
@@ -343,6 +345,7 @@
 		5ADE3117E2244F239D47CB2A /* LibraryMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMonitoring.swift; sourceTree = "<group>"; };
 		5DF3A11E2EE1F6A23D5FE6CE /* StickiesImproved-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesImproved-Info.plist"; sourceTree = "<group>"; };
 		6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteWorkspaceModelTests.swift; sourceTree = "<group>"; };
+		659A91AC546107451821918C /* HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexColor.swift; sourceTree = "<group>"; };
 		68EB2BCAFD0D46C6EBF385EA /* StickyWindowChromeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowChromeBridge.swift; sourceTree = "<group>"; };
 		69BC1D2E2231FDC66F9CA59C /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
 		746EBE7599E2A224A8E1DD75 /* StickiesPersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesPersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -382,6 +385,7 @@
 		F9AAF1BDF508AAD2DBB382B9 /* StickiesDesignSystem-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesDesignSystem-Info.plist"; sourceTree = "<group>"; };
 		FB673400310C8F7821884B6A /* BootstrapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapView.swift; sourceTree = "<group>"; };
 		FD9E439EDC3362FA9C326545 /* FilePackageNoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePackageNoteStore.swift; sourceTree = "<group>"; };
+		FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyTextEditor.swift; sourceTree = "<group>"; };
 		FF52601CA7D71443206D9AA8 /* NoopLibraryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoopLibraryMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -675,7 +679,9 @@
 		C99AB04E80D2376E92DBA8D2 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				659A91AC546107451821918C /* HexColor.swift */,
 				F85FB388B7B023D997A81FB8 /* NoteColor+SwiftUI.swift */,
+				FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */,
 				68EB2BCAFD0D46C6EBF385EA /* StickyWindowChromeBridge.swift */,
 			);
 			path = Sources;
@@ -1134,7 +1140,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78719B0970DE24A90386E1BB /* HexColor.swift in Sources */,
 				A0688955991BC0A5A05DB02F /* NoteColor+SwiftUI.swift in Sources */,
+				5E8F04572FF5EF76E6E90D26 /* StickyTextEditor.swift in Sources */,
 				F0541986D6FF964E79AD5D84 /* StickyWindowChromeBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

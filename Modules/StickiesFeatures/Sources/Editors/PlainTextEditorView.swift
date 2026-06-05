@@ -12,36 +12,37 @@ import StickiesDomain
 import SwiftUI
 
 struct PlainTextEditorView: View {
-    private enum Layout {
-        static let textHorizontalPadding: CGFloat = 12
-        static let textBottomPadding: CGFloat = 12
-        // Keep the text clear of the transparent titlebar zone where the
-        // standard traffic lights float, matching the original's content inset.
-        static let textTopPadding: CGFloat = 30
-        static let fontSize: CGFloat = 13
-    }
-
     @Environment(\.noteWorkspaceModel) private var workspace
 
     let noteID: NoteID
 
     var body: some View {
-        TextEditor(text: textBinding)
-            .font(.system(size: Layout.fontSize))
-            .scrollContentBackground(.hidden)
-            .padding(.horizontal, Layout.textHorizontalPadding)
-            .padding(.bottom, Layout.textBottomPadding)
-            .padding(.top, Layout.textTopPadding)
-            // The note's own color fills full-bleed; the yellow default is the
-            // original `-[StickieBackgroundView getYellowColour]` (sRGB).
-            .background(noteColor.color.ignoresSafeArea())
-            .contextMenu {
-                ColorPickerMenuItems(noteID: noteID)
+        StickyTextEditor(
+            text: textBinding,
+            fontName: metadata?.fontName,
+            fontSize: metadata?.fontSize ?? NoteMetadata.Default.fontSize,
+            fontColorHex: metadata?.fontColorHex,
+            onFontChange: { name, size in
+                workspace?.updateFont(name: name, size: size, for: noteID)
+            },
+            onColorChange: { hex in
+                workspace?.updateFontColor(hex: hex, for: noteID)
             }
+        )
+        // The note's own color fills full-bleed behind the transparent editor; the
+        // yellow default is the original `-[StickieBackgroundView getYellowColour]`.
+        .background(noteColor.color.ignoresSafeArea())
+        .contextMenu {
+            ColorPickerMenuItems(noteID: noteID)
+        }
+    }
+
+    private var metadata: NoteMetadata? {
+        workspace?.note(for: noteID)?.metadata
     }
 
     private var noteColor: NoteColor {
-        workspace?.note(for: noteID)?.metadata.colorName ?? .default
+        metadata?.colorName ?? .default
     }
 
     private var textBinding: Binding<String> {

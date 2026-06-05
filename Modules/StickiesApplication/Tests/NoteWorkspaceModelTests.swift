@@ -63,6 +63,82 @@ struct NoteWorkspaceModelTests {
         #expect(saved?.metadata.colorName == .blue)
     }
 
+    @Test func updateFontPersistsNameAndSize() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+
+        model.updateFont(name: "Menlo-Regular", size: 18, for: noteID)
+
+        await pollUntilFontSaved(store: store, id: noteID, expectedSize: 18)
+
+        #expect(model.note(for: noteID)?.metadata.fontName == "Menlo-Regular")
+        #expect(model.note(for: noteID)?.metadata.fontSize == 18)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.fontName == "Menlo-Regular")
+        #expect(saved?.metadata.fontSize == 18)
+    }
+
+    @Test func updateFontWithNilNameClearsToSystemFont() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+        model.updateFont(name: "Menlo-Regular", size: 18, for: noteID)
+        await pollUntilFontSaved(store: store, id: noteID, expectedSize: 18)
+
+        model.updateFont(name: nil, size: 12, for: noteID)
+
+        await pollUntilFontSaved(store: store, id: noteID, expectedSize: 12)
+        #expect(model.note(for: noteID)?.metadata.fontName == nil)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.fontName == nil)
+        #expect(saved?.metadata.fontSize == 12)
+    }
+
+    @Test func updateFontColorPersistsHex() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+
+        model.updateFontColor(hex: "#112233", for: noteID)
+
+        await pollUntilFontColorSaved(store: store, id: noteID, expected: "#112233")
+
+        #expect(model.note(for: noteID)?.metadata.fontColorHex == "#112233")
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.fontColorHex == "#112233")
+    }
+
+    private func pollUntilFontSaved(
+        store: InMemoryNoteStore,
+        id: NoteID,
+        expectedSize: Double
+    ) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            let document = await store.document(for: id)
+            if document?.metadata.fontSize == expectedSize {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
+    private func pollUntilFontColorSaved(
+        store: InMemoryNoteStore,
+        id: NoteID,
+        expected: String
+    ) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            let document = await store.document(for: id)
+            if document?.metadata.fontColorHex == expected {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
     private func pollUntilSaved(
         store: InMemoryNoteStore,
         id: NoteID,

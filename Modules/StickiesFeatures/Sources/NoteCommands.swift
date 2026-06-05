@@ -6,6 +6,7 @@
 //  Copyright © 2026, all rights reserved.
 //
 
+import AppKit
 import StickiesApplication
 import StickiesDesignSystem
 import StickiesDomain
@@ -13,6 +14,14 @@ import SwiftUI
 
 public struct NoteCommands: Commands {
     private static let colorSwatchSymbol = "circle.fill"
+
+    // Size bounds for the Bigger/Smaller commands, matching a sane editing range; the
+    // original defaults to the system font at size 12.
+    private enum FontSize {
+        static let step: Double = 1
+        static let minimum: Double = 8
+        static let maximum: Double = 96
+    }
 
     @Environment(\.openWindow) private var openWindow
     @FocusedValue(\.focusedNoteID) private var focusedNoteID
@@ -59,5 +68,47 @@ public struct NoteCommands: Commands {
                 .disabled(focusedNoteID == nil)
             }
         }
+
+        CommandMenu("Format") {
+            // The panels act on the first responder (the NSTextView), whose overridden
+            // changeFont/changeColor persist the result through the workspace.
+            Button("Show Fonts") {
+                NSFontManager.shared.orderFrontFontPanel(nil)
+            }
+            .keyboardShortcut("t")
+            .disabled(focusedNoteID == nil)
+
+            Button("Show Colors") {
+                NSColorPanel.shared.orderFront(nil)
+            }
+            .disabled(focusedNoteID == nil)
+
+            Divider()
+
+            Button("Bigger") {
+                adjustFocusedFontSize(by: FontSize.step)
+            }
+            .keyboardShortcut("+")
+            .disabled(focusedNoteID == nil)
+
+            Button("Smaller") {
+                adjustFocusedFontSize(by: -FontSize.step)
+            }
+            .keyboardShortcut("-")
+            .disabled(focusedNoteID == nil)
+        }
+    }
+
+    private func adjustFocusedFontSize(by delta: Double) {
+        guard let focusedNoteID, let note = workspace.note(for: focusedNoteID) else { return }
+        let currentSize = note.metadata.fontSize
+        let proposedSize = currentSize + delta
+        let clampedSize = min(max(proposedSize, FontSize.minimum), FontSize.maximum)
+        guard clampedSize != currentSize else { return }
+        workspace.updateFont(
+            name: note.metadata.fontName,
+            size: clampedSize,
+            for: focusedNoteID
+        )
     }
 }
