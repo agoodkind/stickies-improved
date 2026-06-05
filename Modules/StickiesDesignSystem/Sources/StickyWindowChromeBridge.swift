@@ -82,6 +82,11 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
         window.isOpaque = false
         window.backgroundColor = .clear
         window.hasShadow = true
+        // The note background is always a light pastel color, so pin the window to the
+        // light appearance. This keeps the default text color dark and legible under
+        // system dark mode, matching Plain Text Stickies, which always renders dark text
+        // on its pastel notes rather than following the system appearance.
+        window.appearance = NSAppearance(named: .aqua)
 
         applyFocusAlpha(to: window)
         observeFocus(of: window, coordinator: coordinator)
