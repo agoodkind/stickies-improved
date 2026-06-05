@@ -1,26 +1,36 @@
-@testable import StickiesImprovedCore
-import XCTest
+//
+//  NotePackageStoreTests.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
 
-final class NotePackageStoreTests: XCTestCase {
-    func testPlainTextRoundTrip() async throws {
-        let packageStore = NotePackageStore(rootURLOverride: temporaryDirectory())
+import Foundation
+import Testing
+
+@testable import StickiesImprovedCore
+
+struct NotePackageStoreTests {
+    @Test func plainTextRoundTrip() async throws {
+        let packageStore = NotePackageStore(rootURLOverride: try temporaryDirectory())
         let noteID = NoteID()
         let document = NoteDocument(id: noteID, plainText: "hello world")
 
         try await packageStore.save(document)
         let loaded = try await packageStore.loadDocument(id: noteID)
 
-        XCTAssertEqual(loaded.id, noteID)
-        XCTAssertEqual(loaded.plainText, "hello world")
-        XCTAssertEqual(loaded.metadata.mode, .plainText)
+        #expect(loaded.id == noteID)
+        #expect(loaded.plainText == "hello world")
+        #expect(loaded.metadata.mode == .plainText)
     }
 
-    private func temporaryDirectory() -> URL {
+    private func temporaryDirectory() throws -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(
             UUID().uuidString,
             isDirectory: true
         )
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
 }

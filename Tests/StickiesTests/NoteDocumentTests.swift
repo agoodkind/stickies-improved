@@ -1,15 +1,24 @@
-@testable import StickiesImprovedCore
-import XCTest
+//
+//  NoteDocumentTests.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
 
-final class NoteDocumentTests: XCTestCase {
-    func testTitleFallsBackToUntitled() {
+import Testing
+
+@testable import StickiesImprovedCore
+
+struct NoteDocumentTests {
+    @Test func titleFallsBackToUntitled() {
         let document = NoteDocument(plainText: "")
-        XCTAssertEqual(document.metadata.title, "Untitled")
+        #expect(document.metadata.title == "Untitled")
     }
 
-    func testTitleUsesFirstNonEmptyLine() {
+    @Test func titleUsesFirstNonEmptyLine() {
         let document = NoteDocument(plainText: "\n\n Grocery list\nMilk")
-        XCTAssertEqual(document.metadata.title, "Grocery list")
-        XCTAssertEqual(document.metadata.excerpt, "Grocery list Milk")
+        #expect(document.metadata.title == "Grocery list")
+        #expect(document.metadata.excerpt == "Grocery list Milk")
     }
 }

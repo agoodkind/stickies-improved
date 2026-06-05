@@ -1,7 +1,20 @@
+//
+//  SettingsView.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
+
 import StickiesImprovedCore
 import SwiftUI
 
 struct SettingsView: View {
+    private enum Layout {
+        static let formPadding: CGFloat = 20
+        static let windowWidth: CGFloat = 520
+    }
+
     @Environment(NoteWorkspaceStore.self) private var workspace
     @Environment(AppUpdater.self) private var appUpdater
 
@@ -25,7 +38,7 @@ struct SettingsView: View {
                 }
             }
         }
-        .padding(20)
-        .frame(width: 520)
+        .padding(Layout.formPadding)
+        .frame(width: Layout.windowWidth)
     }
 }

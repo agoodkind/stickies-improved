@@ -1,10 +1,23 @@
+//
+//  NoteWorkspaceStore.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
+
 import Foundation
 import Observation
 import SwiftUI
+import os
 
+@preconcurrency
 @Observable
 @MainActor
 public final class NoteWorkspaceStore {
+    private static let autosaveDelayMilliseconds = 450
+
+    private let logger = Logger(subsystem: BuildConfig.appBundleID, category: "NoteWorkspaceStore")
     private let packageStore: NotePackageStore
     private let metadataMonitor: UbiquityMetadataMonitor
 
@@ -39,6 +52,7 @@ public final class NoteWorkspaceStore {
             try await ensureSeedNoteIfNeeded()
             await refreshFromDisk()
         } catch {
+            logger.error("Bootstrap failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
 
@@ -54,10 +68,13 @@ public final class NoteWorkspaceStore {
         do {
             let loaded = try await packageStore.loadAllDocuments()
             notes = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
-            orderedNoteIDs = loaded
-                .sorted(by: { $0.metadata.updatedAt > $1.metadata.updatedAt })
+            orderedNoteIDs =
+                loaded
+                .sorted { $0.metadata.updatedAt > $1.metadata.updatedAt }
                 .map(\.id)
         } catch {
+            logger.error(
+                "Refresh from disk failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
     }
@@ -117,26 +134,35 @@ public final class NoteWorkspaceStore {
         do {
             try await packageStore.save(document)
         } catch {
+            logger.error("Upsert save failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
     }
 
     private func reorderNotes() {
         orderedNoteIDs = notes.values
-            .sorted(by: { $0.metadata.updatedAt > $1.metadata.updatedAt })
+            .sorted { $0.metadata.updatedAt > $1.metadata.updatedAt }
             .map(\.id)
     }
 
     private func scheduleAutosave(for document: NoteDocument) {
         autosaveTasks[document.id]?.cancel()
         autosaveTasks[document.id] = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(450))
+            let delay = Duration.milliseconds(Self.autosaveDelayMilliseconds)
+            do {
+                try await ContinuousClock().sleep(for: delay)
+            } catch {
+                return  // debounce cancelled before the delay elapsed
+            }
             guard !Task.isCancelled else { return }
 
             do {
                 try await self?.packageStore.save(document)
             } catch {
                 await MainActor.run {
+                    self?.logger.error(
+                        "Autosave failed: \(error.localizedDescription, privacy: .public)"
+                    )
                     self?.lastErrorMessage = error.localizedDescription
                 }
             }

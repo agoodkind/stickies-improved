@@ -1,6 +1,17 @@
+//
+//  NoteDocument.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
+
 import Foundation
 
 public struct NoteDocument: Equatable, Identifiable, Sendable {
+    private static let titleMaxLength = 40
+    private static let excerptMaxLength = 120
+
     public var metadata: NoteMetadata
     public var plainText: String
 
@@ -32,19 +43,21 @@ public struct NoteDocument: Equatable, Identifiable, Sendable {
     }
 
     public static func makeTitle(from text: String) -> String {
-        let firstLine = text
+        let firstLine =
+            text
             .split(whereSeparator: \.isNewline)
             .map(String.init)
-            .first(where: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+            .first { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
         let title = firstLine?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return title.isEmpty ? "Untitled" : String(title.prefix(40))
+        return title.isEmpty ? "Untitled" : String(title.prefix(Self.titleMaxLength))
     }
 
     public static func makeExcerpt(from text: String) -> String {
-        let collapsed = text
+        let collapsed =
+            text
             .replacingOccurrences(of: "\n", with: " ")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return String(collapsed.prefix(120))
+        return String(collapsed.prefix(Self.excerptMaxLength))
     }
 }

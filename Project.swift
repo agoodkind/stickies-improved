@@ -1,3 +1,11 @@
+//
+//  Project.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
+
 import ProjectDescription
 
 let appName = "StickiesImproved"
@@ -17,13 +25,13 @@ let release = Configuration.release(
 let scripts: [TargetScript] = [
     .pre(
         script: """
-        "${SRCROOT}/Scripts/generate-config.sh"
-        """,
+            "${SRCROOT}/Scripts/generate-config.sh"
+            """,
         name: "Generate Build Config",
         outputPaths: [
-            "$(DERIVED_FILE_DIR)/Generated/Config.generated.swift",
+            "$(DERIVED_FILE_DIR)/Generated/Config.generated.swift"
         ]
-    ),
+    )
 ]
 
 let settings = Settings.settings(
@@ -52,7 +60,7 @@ let targetSigningSettings: SettingsDictionary = [
 ]
 
 let appSigningSettings = targetSigningSettings.merging([
-    "PROVISIONING_PROFILE_SPECIFIER": "$(PROVISIONING_PROFILE_SPECIFIER)",
+    "PROVISIONING_PROFILE_SPECIFIER": "$(PROVISIONING_PROFILE_SPECIFIER)"
 ]) { _, new in new }
 
 let infoPlist: [String: Plist.Value] = [
@@ -64,11 +72,16 @@ let infoPlist: [String: Plist.Value] = [
         "$(ICLOUD_CONTAINER_IDENTIFIER)": .dictionary([
             "NSUbiquitousContainerName": .string(appName),
             "NSUbiquitousContainerSupportedFolderLevels": .string("Any"),
-        ]),
+        ])
     ]),
     "SUEnableAutomaticChecks": .boolean(true),
     "SUAllowsAutomaticUpdates": .boolean(true),
     "SUFeedURL": .string("$(SPARKLE_FEED_URL)"),
+    // Opt out of the macOS 26 (Tahoe) Liquid Glass redesign so the standard
+    // window traffic lights render at the legacy 12pt/20pt metrics, matching the
+    // SDK-11-built Plain Text Stickies exactly. Without this, linking against the
+    // macOS 26 SDK enlarges the system buttons and breaks pixel parity.
+    "UIDesignRequiresCompatibility": .boolean(true),
 ]
 
 let project = Project(
@@ -92,7 +105,7 @@ let project = Project(
             ],
             scripts: scripts,
             dependencies: [
-                .external(name: "Sparkle"),
+                .external(name: "Sparkle")
             ],
             settings: .settings(base: targetSigningSettings)
         ),
@@ -112,7 +125,7 @@ let project = Project(
             resources: [],
             entitlements: "Config/StickiesImproved.entitlements",
             dependencies: [
-                .target(name: "\(appName)Core"),
+                .target(name: "\(appName)Core")
             ],
             settings: .settings(
                 base: appSigningSettings.merging([
@@ -130,7 +143,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/StickiesTests/**"],
             dependencies: [
-                .target(name: "\(appName)Core"),
+                .target(name: "\(appName)Core")
             ]
         ),
     ],
@@ -144,6 +157,6 @@ let project = Project(
             archiveAction: .archiveAction(configuration: "Release"),
             profileAction: .profileAction(configuration: "Release"),
             analyzeAction: .analyzeAction(configuration: "Debug")
-        ),
+        )
     ]
 )

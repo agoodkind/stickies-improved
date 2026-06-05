@@ -1,13 +1,15 @@
+//
+//  NoteID.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
+
 import Foundation
 
-public struct NoteID: Hashable, Codable, Identifiable, RawRepresentable, LosslessStringConvertible,
-    Sendable
-{
+public struct NoteID: Hashable, Codable, Identifiable, LosslessStringConvertible, Sendable {
     public let rawValue: UUID
-
-    public init(rawValue: UUID) {
-        self.rawValue = rawValue
-    }
 
     public init() {
         rawValue = UUID()

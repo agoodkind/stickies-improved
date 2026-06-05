@@ -1,8 +1,17 @@
+//
+//  NotePackageStore.swift
+//  StickiesImproved
+//
+//  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
+//  Copyright © 2026, all rights reserved.
+//
+
 import Foundation
+import os
 
 public enum NotePackageStoreError: LocalizedError {
-    case unsupportedMode(NoteMode)
     case missingMetadata(URL)
+    case unsupportedMode(NoteMode)
 
     public var errorDescription: String? {
         switch self {
@@ -14,7 +23,10 @@ public enum NotePackageStoreError: LocalizedError {
     }
 }
 
+// MARK: - NotePackageStore
+
 public actor NotePackageStore {
+    private let logger = Logger(subsystem: BuildConfig.appBundleID, category: "NotePackageStore")
     private let fileManager = FileManager.default
     private let packageExtension = "stickynote"
     private let rootURLOverride: URL?
@@ -37,13 +49,15 @@ public actor NotePackageStore {
             options: [.skipsHiddenFiles]
         )
 
-        return try urls
+        return
+            try urls
             .filter { $0.pathExtension == packageExtension }
             .map(loadDocument(packageURL:))
     }
 
     public func save(_ document: NoteDocument) throws {
         let packageURL = try packageURL(for: document.id)
+        logger.debug("Saving note package at \(packageURL.path, privacy: .public)")
         try fileManager.createDirectory(at: packageURL, withIntermediateDirectories: true)
 
         let metadataURL = packageURL.appendingPathComponent("meta.json")
@@ -65,7 +79,7 @@ public actor NotePackageStore {
         case .plainText:
             try coordinatedWrite(data: Data(document.plainText.utf8), to: textURL)
             if fileManager.fileExists(atPath: markdownURL.path) {
-                try? fileManager.removeItem(at: markdownURL)
+                try fileManager.removeItem(at: markdownURL)
             }
         case .markdown:
             throw NotePackageStoreError.unsupportedMode(.markdown)
@@ -91,7 +105,7 @@ public actor NotePackageStore {
         case .plainText:
             var document = NoteDocument(
                 metadata: metadata,
-                plainText: String(decoding: contentData, as: UTF8.self)
+                plainText: String(bytes: contentData, encoding: .utf8) ?? ""
             )
             document.refreshDerivedFields()
             return document
@@ -99,7 +113,7 @@ public actor NotePackageStore {
             metadata.mode = .plainText
             return NoteDocument(
                 metadata: metadata,
-                plainText: String(decoding: contentData, as: UTF8.self)
+                plainText: String(bytes: contentData, encoding: .utf8) ?? ""
             )
         }
     }
@@ -115,10 +129,12 @@ public actor NotePackageStore {
             return rootURLOverride
         }
 
-        if let ubiquityURL = fileManager
-            .url(forUbiquityContainerIdentifier: BuildConfig.iCloudContainerIdentifier)
-        {
-            return ubiquityURL
+        let ubiquityURL = fileManager.url(
+            forUbiquityContainerIdentifier: BuildConfig.iCloudContainerIdentifier
+        )
+        if let ubiquityURL {
+            return
+                ubiquityURL
                 .appendingPathComponent("Documents", isDirectory: true)
                 .appendingPathComponent("Notes", isDirectory: true)
         }
@@ -130,7 +146,8 @@ public actor NotePackageStore {
             create: true
         )
 
-        return appSupport
+        return
+            appSupport
             .appendingPathComponent(BuildConfig.appBundleID, isDirectory: true)
             .appendingPathComponent("Notes", isDirectory: true)
     }
@@ -139,12 +156,22 @@ public actor NotePackageStore {
         let coordinator = NSFileCoordinator()
         var error: NSError?
         var result = Data()
+        var readError: Error?
         coordinator.coordinate(readingItemAt: url, options: [], error: &error) { readURL in
-            result = (try? Data(contentsOf: readURL)) ?? Data()
+            do {
+                result = try Data(contentsOf: readURL)
+            } catch {
+                logger.error(
+                    "Coordinated read failed: \(error.localizedDescription, privacy: .public)")
+                readError = error
+            }
         }
 
         if let error {
             throw error
+        }
+        if let readError {
+            throw readError
         }
         return result
     }
@@ -158,6 +185,8 @@ public actor NotePackageStore {
                 do {
                     try data.write(to: writeURL, options: .atomic)
                 } catch {
+                    logger.error(
+                        "Coordinated write failed: \(error.localizedDescription, privacy: .public)")
                     writeError = error
                 }
             }
@@ -171,7 +200,9 @@ public actor NotePackageStore {
     }
 }
 
-private extension NoteMode {
+// MARK: - NoteMode
+
+extension NoteMode {
     var contentFileName: String {
         switch self {
         case .plainText:
