@@ -9,3 +9,4 @@ Products/
 .mise/
 .wrangler/
 Config/local.override.xcconfig
+.make/

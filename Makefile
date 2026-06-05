@@ -1,105 +1,35 @@
 -include Config/local.xcconfig
 
 TUIST := $(shell command -v tuist 2>/dev/null || printf '%s' "mise x tuist@4.111.1 -- tuist")
-SWIFTFORMAT := $(shell command -v swiftformat 2>/dev/null || printf '%s' "mise x swiftformat@0.58.5 -- swiftformat")
-
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
-PRODUCTS_DIR ?= Products
-APP_NAME = StickiesImproved
-DMG_STAGING_DIR = $(BUILD_DIR)/dmg
-DMG_VOLUME_NAME = $(APP_NAME)
-DMG_NAME = $(APP_NAME)-$(CONFIGURATION).dmg
-DMG_PATH = $(PRODUCTS_DIR)/$(DMG_NAME)
-APP_PATH = $(PRODUCTS_DIR)/$(APP_NAME).app
-XCODE_PRODUCTS_DIR = $(BUILD_DIR)/Build/Products/$(CONFIGURATION)
-BUILT_APP_PATH = $(XCODE_PRODUCTS_DIR)/$(APP_NAME).app
-APP_SPARKLE_PATH = $(APP_PATH)/Contents/Frameworks/Sparkle.framework
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
-RELEASE_DMG_NAME = $(APP_NAME)-$(CURRENT_PROJECT_VERSION).dmg
-RELEASE_DMG_PATH = $(PRODUCTS_DIR)/$(RELEASE_DMG_NAME)
-SPARKLE_UPDATES_DIR = $(BUILD_DIR)/sparkle-updates
-GITHUB_RELEASE_BASE_URL ?= https://github.com/agoodkind/stickies-improved/releases/download/$(RELEASE_TAG)/
+SWIFT_SOURCE_TARGETS := Models Stores Services Support App Views Tests Project.swift Tuist.swift Tuist/Package.swift
 
-.PHONY: generate-project open-project build test app dmg release-assets prepare-sparkle-updates run clean format
+SWIFT_MK_MODULES := swift-build.mk swift-app.mk
+SWIFT_MK_DERIVED_DATA := $(BUILD_DIR)
+SWIFT_MK_OWN_RUN := 1
 
-generate-project:
-	$(TUIST) generate --no-open
+SWIFT_APP_NAME := StickiesImproved
+SWIFT_APP_CONFIGURATION := $(CONFIGURATION)
+SWIFT_APP_BUILD_DIR := $(BUILD_DIR)
+SWIFT_APP_SIGN_IDENTITY := $(DMG_SIGN_IDENTITY)
+SWIFT_APP_GITHUB_RELEASE_BASE_URL := https://github.com/agoodkind/stickies-improved/releases/download/$(RELEASE_TAG)/
+SWIFT_APP_SPARKLE_APPCAST_TOOL_CMD := Scripts/find-sparkle-tool.sh "$(BUILD_DIR)" generate_appcast
 
-open-project: generate-project
-	open StickiesImproved.xcworkspace
+# Recursive (=) so $(SWIFT_MK_XCODEBUILD_ARGS) from swift.mk binds at recipe time.
+SWIFT_GENERATE_CMD := $(TUIST) generate --no-open
+SWIFT_BUILD_CMD = $(TUIST) xcodebuild build -scheme $(SWIFT_APP_NAME) -configuration $(CONFIGURATION) -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)"
+SWIFT_TEST_CMD = $(TUIST) xcodebuild test -scheme $(SWIFT_APP_NAME) -configuration Debug -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS)
+SWIFT_DEADCODE_BUILD_CMD := $(MAKE) app-coverage-build
+SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace StickiesImproved.xcodeproj
+SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
+SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
+SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
 
-build: generate-project
-	$(TUIST) xcodebuild build \
-		-scheme StickiesImproved \
-		-configuration $(CONFIGURATION) \
-		-derivedDataPath $(BUILD_DIR) \
-		MARKETING_VERSION="$(MARKETING_VERSION)" \
-		CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)"
+include bootstrap.mk
+.DEFAULT_GOAL := check
 
-test: generate-project
-	$(TUIST) xcodebuild test \
-		-scheme StickiesImproved \
-		-configuration Debug \
-		-derivedDataPath $(BUILD_DIR)
-
-app: build
-	@mkdir -p "$(PRODUCTS_DIR)"
-	@rm -rf "$(APP_PATH)"
-	@cp -R "$(BUILT_APP_PATH)" "$(APP_PATH)"
-	@if [ -n "$(DMG_SIGN_IDENTITY)" ]; then \
-		for item in \
-			"$(APP_SPARKLE_PATH)/Versions/B/Autoupdate" \
-			"$(APP_SPARKLE_PATH)/Versions/B/Updater.app" \
-			"$(APP_SPARKLE_PATH)/Versions/B/XPCServices/Downloader.xpc" \
-			"$(APP_SPARKLE_PATH)/Versions/B/XPCServices/Installer.xpc"; do \
-			if [ -e "$$item" ]; then \
-				codesign --force --sign "$(DMG_SIGN_IDENTITY)" --timestamp --options runtime --preserve-metadata=identifier,entitlements,flags "$$item"; \
-			fi; \
-		done; \
-		codesign --force --sign "$(DMG_SIGN_IDENTITY)" --timestamp --options runtime --preserve-metadata=identifier,entitlements,flags "$(APP_SPARKLE_PATH)"; \
-		codesign --force --sign "$(DMG_SIGN_IDENTITY)" --timestamp --options runtime --preserve-metadata=identifier,entitlements,flags "$(APP_PATH)"; \
-	fi
-
-dmg: app
-	@mkdir -p "$(PRODUCTS_DIR)" "$(DMG_STAGING_DIR)"
-	@rm -rf "$(DMG_STAGING_DIR)/$(APP_NAME).app" "$(DMG_STAGING_DIR)/Applications" "$(DMG_PATH)"
-	@cp -R "$(APP_PATH)" "$(DMG_STAGING_DIR)/"
-	@ln -s /Applications "$(DMG_STAGING_DIR)/Applications"
-	hdiutil create -volname "$(DMG_VOLUME_NAME)" \
-		-srcfolder "$(DMG_STAGING_DIR)" \
-		-fs HFS+ \
-		-format UDZO \
-		-ov "$(DMG_PATH)"
-	@if [ -n "$(DMG_SIGN_IDENTITY)" ]; then \
-		codesign --force --sign "$(DMG_SIGN_IDENTITY)" "$(DMG_PATH)"; \
-	fi
-
-release-assets: dmg
-	@cp "$(DMG_PATH)" "$(RELEASE_DMG_PATH)"
-
-prepare-sparkle-updates:
-	@test -f "$(RELEASE_DMG_PATH)"
-	@rm -rf "$(SPARKLE_UPDATES_DIR)"
-	@mkdir -p "$(SPARKLE_UPDATES_DIR)"
-	@cp "$(RELEASE_DMG_PATH)" "$(SPARKLE_UPDATES_DIR)/"
-	@SPARKLE_APPCAST_TOOL="$$(Scripts/find-sparkle-tool.sh "$(BUILD_DIR)" generate_appcast)"; \
-	if [ -n "$${SPARKLE_PRIVATE_KEY_FILE:-}" ]; then \
-		"$${SPARKLE_APPCAST_TOOL}" \
-			--ed-key-file "$${SPARKLE_PRIVATE_KEY_FILE}" \
-			--download-url-prefix "$(GITHUB_RELEASE_BASE_URL)" \
-			"$(SPARKLE_UPDATES_DIR)"; \
-	else \
-		"$${SPARKLE_APPCAST_TOOL}" \
-			--download-url-prefix "$(GITHUB_RELEASE_BASE_URL)" \
-			"$(SPARKLE_UPDATES_DIR)"; \
-	fi
-
+.PHONY: run
 run: app
-	open "$(APP_PATH)"
-
-format:
-	$(SWIFTFORMAT) .
-
-clean:
-	rm -rf "$(BUILD_DIR)" "$(PRODUCTS_DIR)" StickiesImproved.xcworkspace StickiesImproved.xcodeproj
+	open "$(SWIFT_APP_DEST)"
