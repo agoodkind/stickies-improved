@@ -1,5 +1,5 @@
 //
-//  NotePackageStore.swift
+//  FilePackageNoteStore.swift
 //  StickiesImproved
 //
 //  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import StickiesDomain
 import os
 
-public enum NotePackageStoreError: LocalizedError {
+public enum FilePackageNoteStoreError: LocalizedError {
     case missingMetadata(URL)
     case unsupportedMode(NoteMode)
 
@@ -23,20 +24,27 @@ public enum NotePackageStoreError: LocalizedError {
     }
 }
 
-// MARK: - NotePackageStore
+// MARK: - FilePackageNoteStore
 
-public actor NotePackageStore {
-    private let logger = Logger(subsystem: BuildConfig.appBundleID, category: "NotePackageStore")
+public actor FilePackageNoteStore: NoteStore {
+    private let logger: Logger
     private let fileManager = FileManager.default
     private let packageExtension = "stickynote"
-    private let rootURLOverride: URL?
+    private let locationResolver: any StorageLocationResolving
+    private let contentCodec: any ContentCodec
 
-    public init(rootURLOverride: URL? = nil) {
-        self.rootURLOverride = rootURLOverride
+    public init(
+        locationResolver: any StorageLocationResolving,
+        contentCodec: any ContentCodec,
+        loggerSubsystem: String
+    ) {
+        self.locationResolver = locationResolver
+        self.contentCodec = contentCodec
+        logger = Logger(subsystem: loggerSubsystem, category: "FilePackageNoteStore")
     }
 
     public func ensureLibraryDirectory() throws -> URL {
-        let rootURL = try resolvedLibraryURL()
+        let rootURL = try locationResolver.resolveLibraryURL()
         try fileManager.createDirectory(at: rootURL, withIntermediateDirectories: true)
         return rootURL
     }
@@ -77,17 +85,24 @@ public actor NotePackageStore {
 
         switch metadata.mode {
         case .plainText:
-            try coordinatedWrite(data: Data(document.plainText.utf8), to: textURL)
+            let encoded = try contentCodec.encode(document.plainText)
+            try coordinatedWrite(data: encoded, to: textURL)
             if fileManager.fileExists(atPath: markdownURL.path) {
                 try fileManager.removeItem(at: markdownURL)
             }
         case .markdown:
-            throw NotePackageStoreError.unsupportedMode(.markdown)
+            throw FilePackageNoteStoreError.unsupportedMode(.markdown)
         }
     }
 
     public func loadDocument(id: NoteID) throws -> NoteDocument {
         try loadDocument(packageURL: packageURL(for: id))
+    }
+
+    public func delete(id: NoteID) throws {
+        let packageURL = try packageURL(for: id)
+        guard fileManager.fileExists(atPath: packageURL.path) else { return }
+        try coordinatedRemove(at: packageURL)
     }
 
     private func loadDocument(packageURL: URL) throws -> NoteDocument {
@@ -100,21 +115,16 @@ public actor NotePackageStore {
 
         let contentURL = packageURL.appendingPathComponent(metadata.mode.contentFileName)
         let contentData = try coordinatedRead(from: contentURL)
+        let decodedText = try contentCodec.decode(contentData)
 
         switch metadata.mode {
         case .plainText:
-            var document = NoteDocument(
-                metadata: metadata,
-                plainText: String(bytes: contentData, encoding: .utf8) ?? ""
-            )
+            var document = NoteDocument(metadata: metadata, plainText: decodedText)
             document.refreshDerivedFields()
             return document
         case .markdown:
             metadata.mode = .plainText
-            return NoteDocument(
-                metadata: metadata,
-                plainText: String(bytes: contentData, encoding: .utf8) ?? ""
-            )
+            return NoteDocument(metadata: metadata, plainText: decodedText)
         }
     }
 
@@ -122,34 +132,6 @@ public actor NotePackageStore {
         try ensureLibraryDirectory()
             .appendingPathComponent(noteID.description)
             .appendingPathExtension(packageExtension)
-    }
-
-    private func resolvedLibraryURL() throws -> URL {
-        if let rootURLOverride {
-            return rootURLOverride
-        }
-
-        let ubiquityURL = fileManager.url(
-            forUbiquityContainerIdentifier: BuildConfig.iCloudContainerIdentifier
-        )
-        if let ubiquityURL {
-            return
-                ubiquityURL
-                .appendingPathComponent("Documents", isDirectory: true)
-                .appendingPathComponent("Notes", isDirectory: true)
-        }
-
-        let appSupport = try fileManager.url(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        )
-
-        return
-            appSupport
-            .appendingPathComponent(BuildConfig.appBundleID, isDirectory: true)
-            .appendingPathComponent("Notes", isDirectory: true)
     }
 
     private func coordinatedRead(from url: URL) throws -> Data {
@@ -196,6 +178,30 @@ public actor NotePackageStore {
         }
         if let writeError {
             throw writeError
+        }
+    }
+
+    private func coordinatedRemove(at url: URL) throws {
+        let coordinator = NSFileCoordinator()
+        var error: NSError?
+        var removeError: Error?
+        coordinator
+            .coordinate(writingItemAt: url, options: .forDeleting, error: &error) { removeURL in
+                do {
+                    try fileManager.removeItem(at: removeURL)
+                } catch {
+                    logger.error(
+                        "Coordinated remove failed: \(error.localizedDescription, privacy: .public)"
+                    )
+                    removeError = error
+                }
+            }
+
+        if let error {
+            throw error
+        }
+        if let removeError {
+            throw removeError
         }
     }
 }

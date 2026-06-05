@@ -6,7 +6,10 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import StickiesImprovedCore
+import StickiesApplication
+import StickiesDomain
+import StickiesFeatures
+import StickiesPersistence
 import SwiftUI
 
 @main
@@ -17,25 +20,53 @@ struct StickiesImprovedApp: App {
         static let defaultNoteWindowHeight: CGFloat = 400
     }
 
-    @State private var workspace = NoteWorkspaceStore()
-    @State private var windowStateStore = NoteWindowStateStore()
-    @State private var appUpdater = AppUpdater(enabled: !RuntimeEnvironment.isRunningTests)
+    private let runtimeInfo = BundleRuntimeInfo()
+
+    @State private var workspace: NoteWorkspaceModel
+    @State private var windowStateModel = NoteWindowStateModel()
+    @State private var updaterModel: UpdaterModel
+
+    init() {
+        let info = BundleRuntimeInfo()
+        let resolver = StorageLocationResolver(
+            iCloudContainerIdentifier: info.iCloudContainerIdentifier,
+            localFolderName: info.bundleIdentifier
+        )
+        let noteStore = FilePackageNoteStore(
+            locationResolver: resolver,
+            contentCodec: IdentityContentCodec(),
+            loggerSubsystem: info.bundleIdentifier
+        )
+        let libraryMonitor = UbiquityLibraryMonitor()
+        let scheduler = ContinuousClockAutosaveScheduler()
+        _ = NoopActivityPublisher()
+
+        _workspace = State(
+            initialValue: NoteWorkspaceModel(
+                noteStore: noteStore,
+                libraryMonitor: libraryMonitor,
+                autosaveScheduler: scheduler,
+                loggerSubsystem: info.bundleIdentifier
+            )
+        )
+
+        let updaterController = SparkleUpdaterController(
+            enabled: !RuntimeEnvironment.isRunningTests
+        )
+        _updaterModel = State(
+            initialValue: UpdaterModel(controller: updaterController)
+        )
+    }
 
     var body: some Scene {
         WindowGroup(id: "launcher") {
-            BootstrapView()
-                .environment(workspace)
-                .environment(windowStateStore)
-                .environment(appUpdater)
+            injectModels(into: BootstrapView())
         }
         .defaultSize(width: 1, height: 1)
         .windowResizability(.contentSize)
 
         WindowGroup("Note", for: NoteID.self) { $noteID in
-            NoteSceneView(noteID: $noteID)
-                .environment(workspace)
-                .environment(windowStateStore)
-                .environment(appUpdater)
+            injectModels(into: NoteSceneView(noteID: $noteID))
         }
         .defaultSize(
             width: Layout.defaultNoteWindowWidth,
@@ -46,18 +77,26 @@ struct StickiesImprovedApp: App {
         // titlebar + fullSizeContentView chrome.
         .windowStyle(.hiddenTitleBar)
         .commands {
-            NoteCommands(workspace: workspace, appUpdater: appUpdater)
+            NoteCommands(workspace: workspace, updaterModel: updaterModel)
         }
 
         Settings {
-            SettingsView()
-                .environment(workspace)
-                .environment(appUpdater)
+            injectModels(into: SettingsView())
         }
 
         Window("About", id: "about") {
-            AboutView()
+            injectModels(into: AboutView())
         }
         .windowResizability(.contentSize)
+    }
+
+    // Inject every model and service the feature layer reads. Keeping the keys
+    // here means the App is the only place that knows the concrete graph.
+    private func injectModels(into content: some View) -> some View {
+        content
+            .environment(\.noteWorkspaceModel, workspace)
+            .environment(\.noteWindowStateModel, windowStateModel)
+            .environment(\.updaterModel, updaterModel)
+            .environment(\.runtimeInfo, runtimeInfo)
     }
 }

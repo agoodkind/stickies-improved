@@ -6,16 +6,21 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import StickiesImprovedCore
+import StickiesApplication
 import SwiftUI
 
-struct NoteCommands: Commands {
+public struct NoteCommands: Commands {
     @Environment(\.openWindow) private var openWindow
 
-    let workspace: NoteWorkspaceStore
-    let appUpdater: AppUpdater
+    private let workspace: NoteWorkspaceModel
+    private let updaterModel: UpdaterModel
 
-    var body: some Commands {
+    public init(workspace: NoteWorkspaceModel, updaterModel: UpdaterModel) {
+        self.workspace = workspace
+        self.updaterModel = updaterModel
+    }
+
+    public var body: some Commands {
         CommandMenu("Notes") {
             Button("New Note") {
                 Task {
@@ -28,7 +33,7 @@ struct NoteCommands: Commands {
             Divider()
 
             Button("Check for Updates") {
-                appUpdater.checkForUpdates()
+                updaterModel.checkForUpdates()
             }
         }
     }

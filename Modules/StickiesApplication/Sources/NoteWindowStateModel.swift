@@ -1,5 +1,5 @@
 //
-//  NoteWindowStateStore.swift
+//  NoteWindowStateModel.swift
 //  StickiesImproved
 //
 //  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
@@ -8,11 +8,12 @@
 
 import Foundation
 import Observation
+import StickiesDomain
 
 @preconcurrency
 @Observable
 @MainActor
-public final class NoteWindowStateStore {
+public final class NoteWindowStateModel {
     private let defaults: UserDefaults
     private let openNoteIDsKey = "open-note-ids"
 

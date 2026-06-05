@@ -6,16 +6,17 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import StickiesImprovedCore
+import StickiesApplication
+import StickiesDomain
 import SwiftUI
 
 struct NoteEditorHost: View {
-    @Environment(NoteWorkspaceStore.self) private var workspace
+    @Environment(\.noteWorkspaceModel) private var workspace
 
     let noteID: NoteID
 
     var body: some View {
-        switch workspace.note(for: noteID)?.metadata.mode ?? .plainText {
+        switch workspace?.note(for: noteID)?.metadata.mode ?? .plainText {
         case .plainText:
             PlainTextEditorView(noteID: noteID)
         case .markdown:

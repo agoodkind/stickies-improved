@@ -19,7 +19,7 @@ import SwiftUI
 /// inside an active layout pass, and it never touches the standard window buttons, so
 /// they stay the unmodified OS controls at the default inset, which is what makes them
 /// pixel-identical.
-struct StickyWindowChromeBridge: NSViewRepresentable {
+public struct StickyWindowChromeBridge: NSViewRepresentable {
     /// Recovered from `-[StickieWindowController windowDidResignKey:]`, which reads the
     /// `nonFocusTransparency` user default whose registered fallback is 0.97. A focused
     /// window is fully opaque; an unfocused one drops to this alpha.
@@ -29,7 +29,7 @@ struct StickyWindowChromeBridge: NSViewRepresentable {
         static let focusedAlpha: CGFloat = 1.0
     }
 
-    final class Coordinator {
+    public final class Coordinator {
         var didConfigure = false
         var observers: [NSObjectProtocol] = []
 
@@ -40,11 +40,15 @@ struct StickyWindowChromeBridge: NSViewRepresentable {
         }
     }
 
-    func makeCoordinator() -> Coordinator {
+    public init() {
+        // No configuration; the window is found at make time.
+    }
+
+    public func makeCoordinator() -> Coordinator {
         Coordinator()
     }
 
-    func makeNSView(context: Context) -> NSView {
+    public func makeNSView(context: Context) -> NSView {
         let view = NSView(frame: .zero)
         let coordinator = context.coordinator
         DispatchQueue.main.async {
@@ -53,7 +57,7 @@ struct StickyWindowChromeBridge: NSViewRepresentable {
         return view
     }
 
-    func updateNSView(_ nsView: NSView, context: Context) {
+    public func updateNSView(_ nsView: NSView, context: Context) {
         let coordinator = context.coordinator
         DispatchQueue.main.async {
             configureWindowOnce(from: nsView, coordinator: coordinator)

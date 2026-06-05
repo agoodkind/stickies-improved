@@ -1,5 +1,5 @@
 //
-//  NoteWorkspaceStore.swift
+//  NoteWorkspaceModel.swift
 //  StickiesImproved
 //
 //  Created by Alexander Goodkind <alex@goodkind.io> on 25/04/2026.
@@ -8,18 +8,20 @@
 
 import Foundation
 import Observation
+import StickiesDomain
 import SwiftUI
 import os
 
 @preconcurrency
-@Observable
 @MainActor
-public final class NoteWorkspaceStore {
+@Observable
+public final class NoteWorkspaceModel {
     private static let autosaveDelayMilliseconds = 450
 
-    private let logger = Logger(subsystem: BuildConfig.appBundleID, category: "NoteWorkspaceStore")
-    private let packageStore: NotePackageStore
-    private let metadataMonitor: UbiquityMetadataMonitor
+    private let logger: Logger
+    private let noteStore: any NoteStore
+    private let libraryMonitor: any LibraryMonitoring
+    private let autosaveScheduler: any AutosaveScheduling
 
     public private(set) var notes: [NoteID: NoteDocument] = [:]
     public private(set) var orderedNoteIDs: [NoteID] = []
@@ -30,24 +32,26 @@ public final class NoteWorkspaceStore {
     private var autosaveTasks: [NoteID: Task<Void, Never>] = [:]
 
     public init(
-        packageStore: NotePackageStore = NotePackageStore(),
-        metadataMonitor: UbiquityMetadataMonitor = UbiquityMetadataMonitor()
+        noteStore: any NoteStore,
+        libraryMonitor: any LibraryMonitoring,
+        autosaveScheduler: any AutosaveScheduling,
+        loggerSubsystem: String
     ) {
-        self.packageStore = packageStore
-        self.metadataMonitor = metadataMonitor
-
-        self.metadataMonitor.onLibraryDidChange = { [weak self] in
-            Task { @MainActor [weak self] in
-                await self?.refreshFromDisk()
-            }
-        }
+        self.noteStore = noteStore
+        self.libraryMonitor = libraryMonitor
+        self.autosaveScheduler = autosaveScheduler
+        logger = Logger(subsystem: loggerSubsystem, category: "NoteWorkspaceModel")
     }
 
     public func bootstrap(openNoteIDs preferredIDs: [NoteID]) async -> [NoteID] {
         do {
-            let resolvedRoot = try await packageStore.ensureLibraryDirectory()
+            let resolvedRoot = try await noteStore.ensureLibraryDirectory()
             storageLocationDescription = resolvedRoot.path
-            metadataMonitor.startMonitoring(rootURL: resolvedRoot)
+            libraryMonitor.startMonitoring(rootURL: resolvedRoot) { [weak self] in
+                Task { @MainActor [weak self] in
+                    await self?.refreshFromDisk()
+                }
+            }
 
             try await ensureSeedNoteIfNeeded()
             await refreshFromDisk()
@@ -66,7 +70,7 @@ public final class NoteWorkspaceStore {
 
     public func refreshFromDisk() async {
         do {
-            let loaded = try await packageStore.loadAllDocuments()
+            let loaded = try await noteStore.loadAllDocuments()
             notes = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
             orderedNoteIDs =
                 loaded
@@ -122,9 +126,9 @@ public final class NoteWorkspaceStore {
     }
 
     private func ensureSeedNoteIfNeeded() async throws {
-        if try await packageStore.loadAllDocuments().isEmpty {
+        if try await noteStore.loadAllDocuments().isEmpty {
             let note = NoteDocument()
-            try await packageStore.save(note)
+            try await noteStore.save(note)
         }
     }
 
@@ -132,7 +136,7 @@ public final class NoteWorkspaceStore {
         notes[document.id] = document
         reorderNotes()
         do {
-            try await packageStore.save(document)
+            try await noteStore.save(document)
         } catch {
             logger.error("Upsert save failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
@@ -147,17 +151,19 @@ public final class NoteWorkspaceStore {
 
     private func scheduleAutosave(for document: NoteDocument) {
         autosaveTasks[document.id]?.cancel()
+        let scheduler = autosaveScheduler
+        let store = noteStore
         autosaveTasks[document.id] = Task { [weak self] in
             let delay = Duration.milliseconds(Self.autosaveDelayMilliseconds)
             do {
-                try await ContinuousClock().sleep(for: delay)
+                try await scheduler.sleep(for: delay)
             } catch {
                 return  // debounce cancelled before the delay elapsed
             }
             guard !Task.isCancelled else { return }
 
             do {
-                try await self?.packageStore.save(document)
+                try await store.save(document)
             } catch {
                 await MainActor.run {
                     self?.logger.error(

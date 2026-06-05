@@ -8,7 +8,7 @@
 
 import Testing
 
-@testable import StickiesImprovedCore
+@testable import StickiesDomain
 
 struct NoteDocumentTests {
     @Test func titleFallsBackToUntitled() {

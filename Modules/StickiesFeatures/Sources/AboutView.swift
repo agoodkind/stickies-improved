@@ -6,23 +6,30 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import StickiesImprovedCore
+import StickiesApplication
+import StickiesDomain
 import SwiftUI
 
-struct AboutView: View {
+public struct AboutView: View {
     private enum Layout {
         static let contentSpacing: CGFloat = 12
         static let contentPadding: CGFloat = 24
         static let windowWidth: CGFloat = 280
     }
 
-    var body: some View {
+    @Environment(\.runtimeInfo) private var runtimeInfo
+
+    public init() {
+        // Reads version info from the environment.
+    }
+
+    public var body: some View {
         VStack(spacing: Layout.contentSpacing) {
             Text("Stickies Improved")
                 .font(.title)
             Text("Plain-text notes with iCloud sync.")
                 .foregroundStyle(.secondary)
-            Text("Version \(BuildConfig.marketingVersion) (\(BuildConfig.buildVersion))")
+            Text("Version \(runtimeInfo.marketingVersion) (\(runtimeInfo.buildVersion))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

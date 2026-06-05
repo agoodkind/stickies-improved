@@ -6,10 +6,12 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import StickiesImprovedCore
+import StickiesApplication
+import StickiesDesignSystem
+import StickiesDomain
 import SwiftUI
 
-struct NoteSceneView: View {
+public struct NoteSceneView: View {
     private enum Layout {
         static let minWidth: CGFloat = 200
         static let idealWidth: CGFloat = 400
@@ -17,12 +19,16 @@ struct NoteSceneView: View {
         static let idealHeight: CGFloat = 400
     }
 
-    @Environment(NoteWorkspaceStore.self) private var workspace
-    @Environment(NoteWindowStateStore.self) private var windowStateStore
+    @Environment(\.noteWorkspaceModel) private var workspace
+    @Environment(\.noteWindowStateModel) private var windowStateModel
 
     @Binding var noteID: NoteID?
 
-    var body: some View {
+    public init(noteID: Binding<NoteID?>) {
+        _noteID = noteID
+    }
+
+    public var body: some View {
         Group {
             if let noteID {
                 NoteEditorHost(noteID: noteID)
@@ -36,18 +42,23 @@ struct NoteSceneView: View {
             minHeight: Layout.minHeight,
             idealHeight: Layout.idealHeight
         )
-        .navigationTitle(noteID.map(workspace.displayTitle(for:)) ?? "Note")
+        .navigationTitle(navigationTitle)
         .containerBackground(.clear, for: .window)
         .background(StickyWindowChromeBridge())
         .onAppear {
             if let noteID {
-                windowStateStore.noteWindowOpened(noteID)
+                windowStateModel?.noteWindowOpened(noteID)
             }
         }
         .onDisappear {
             if let noteID {
-                windowStateStore.noteWindowClosed(noteID)
+                windowStateModel?.noteWindowClosed(noteID)
             }
         }
+    }
+
+    private var navigationTitle: String {
+        guard let noteID, let workspace else { return "Note" }
+        return workspace.displayTitle(for: noteID)
     }
 }

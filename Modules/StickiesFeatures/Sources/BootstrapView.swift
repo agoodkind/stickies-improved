@@ -7,25 +7,33 @@
 //
 
 import AppKit
-import StickiesImprovedCore
+import StickiesApplication
+import StickiesDomain
 import SwiftUI
 
-struct BootstrapView: View {
-    @Environment(NoteWorkspaceStore.self) private var workspace
-    @Environment(NoteWindowStateStore.self) private var windowStateStore
+public struct BootstrapView: View {
+    @Environment(\.noteWorkspaceModel) private var workspace
+    @Environment(\.noteWindowStateModel) private var windowStateModel
     @Environment(\.openWindow) private var openWindow
 
     @State private var didOpenWindows = false
 
-    var body: some View {
+    public init() {
+        // Stateless launcher view.
+    }
+
+    public var body: some View {
         Color.clear
             .frame(width: 1, height: 1)
             .task {
                 guard !RuntimeEnvironment.isRunningTests else { return }
                 guard !didOpenWindows else { return }
+                guard let workspace, let windowStateModel else { return }
                 didOpenWindows = true
 
-                let noteIDs = await workspace.bootstrap(openNoteIDs: windowStateStore.openNoteIDs)
+                let noteIDs = await workspace.bootstrap(
+                    openNoteIDs: windowStateModel.openNoteIDs
+                )
                 for noteID in noteIDs {
                     openWindow(value: noteID)
                 }

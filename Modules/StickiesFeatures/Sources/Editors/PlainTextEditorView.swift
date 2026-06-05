@@ -6,7 +6,9 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import StickiesImprovedCore
+import StickiesApplication
+import StickiesDesignSystem
+import StickiesDomain
 import SwiftUI
 
 struct PlainTextEditorView: View {
@@ -19,33 +21,23 @@ struct PlainTextEditorView: View {
         static let fontSize: CGFloat = 13
     }
 
-    /// Default new-note color recovered from the original
-    /// `-[StickieBackgroundView getYellowColour]` (sRGB).
-    private enum Palette {
-        static let yellowRed: Double = 0.98
-        static let yellowGreen: Double = 0.90
-        static let yellowBlue: Double = 0.45
-    }
-
-    @Environment(NoteWorkspaceStore.self) private var workspace
+    @Environment(\.noteWorkspaceModel) private var workspace
 
     let noteID: NoteID
 
     var body: some View {
-        TextEditor(text: workspace.binding(for: noteID))
+        TextEditor(text: textBinding)
             .font(.system(size: Layout.fontSize))
             .scrollContentBackground(.hidden)
             .padding(.horizontal, Layout.textHorizontalPadding)
             .padding(.bottom, Layout.textBottomPadding)
             .padding(.top, Layout.textTopPadding)
-            .background(noteColor.ignoresSafeArea())
+            // Default new-note color recovered from the original
+            // `-[StickieBackgroundView getYellowColour]` (sRGB).
+            .background(NoteColor.yellow.color.ignoresSafeArea())
     }
 
-    private var noteColor: Color {
-        Color(
-            red: Palette.yellowRed,
-            green: Palette.yellowGreen,
-            blue: Palette.yellowBlue
-        )
+    private var textBinding: Binding<String> {
+        workspace?.binding(for: noteID) ?? .constant("")
     }
 }
