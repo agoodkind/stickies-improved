@@ -144,6 +144,43 @@ public final class NoteWorkspaceModel {
         Task { await persistImmediately(document) }
     }
 
+    /// Records a new window frame for the note. A drag or live resize fires this
+    /// rapidly, so the write goes through the debounced autosave scheduler rather
+    /// than hitting disk on every event. The window frame is not user-visible
+    /// content, so it does not touch `updatedAt` and does not reorder the list.
+    public func updateFrame(_ frame: NoteFrame, for noteID: NoteID) {
+        guard var document = notes[noteID] else { return }
+        document.metadata.frame = frame
+        notes[noteID] = document
+        scheduleAutosave(for: document)
+    }
+
+    /// Persists the fold state and the height to restore on expand. A fold is a
+    /// discrete toggle with no rapid follow-up, so it saves immediately.
+    public func setCollapsed(
+        _ collapsed: Bool,
+        expandedHeight: Double?,
+        for noteID: NoteID
+    ) {
+        guard var document = notes[noteID] else { return }
+        document.metadata.collapsed = collapsed
+        document.metadata.expandedHeight = expandedHeight
+        notes[noteID] = document
+        Task { await persistImmediately(document) }
+    }
+
+    public func noteFrame(for noteID: NoteID) -> NoteFrame? {
+        notes[noteID]?.metadata.frame
+    }
+
+    public func isCollapsed(for noteID: NoteID) -> Bool {
+        notes[noteID]?.metadata.collapsed ?? NoteMetadata.Default.collapsed
+    }
+
+    public func expandedHeight(for noteID: NoteID) -> Double? {
+        notes[noteID]?.metadata.expandedHeight
+    }
+
     public func displayTitle(for noteID: NoteID) -> String {
         notes[noteID]?.metadata.title ?? "Untitled"
     }

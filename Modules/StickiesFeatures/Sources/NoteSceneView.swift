@@ -15,7 +15,11 @@ public struct NoteSceneView: View {
     private enum Layout {
         static let minWidth: CGFloat = 200
         static let idealWidth: CGFloat = 400
-        static let minHeight: CGFloat = 200
+        // The content can shrink to the titlebar strip when the note is folded, so the
+        // SwiftUI content minimum height must not impose a tall floor that would clamp
+        // the collapse. The fold target is the titlebar height (about 28pt), so a small
+        // content minimum lets AppKit settle the collapsed frame.
+        static let minHeight: CGFloat = 28
         static let idealHeight: CGFloat = 400
     }
 
@@ -44,7 +48,7 @@ public struct NoteSceneView: View {
         )
         .navigationTitle(navigationTitle)
         .containerBackground(.clear, for: .window)
-        .background(StickyWindowChromeBridge())
+        .background(chromeBridge)
         .focusedValue(\.focusedNoteID, noteID)
         .onAppear {
             if let noteID {
@@ -61,5 +65,26 @@ public struct NoteSceneView: View {
     private var navigationTitle: String {
         guard let noteID, let workspace else { return "Note" }
         return workspace.displayTitle(for: noteID)
+    }
+
+    /// Builds the chrome bridge for the active note, wiring fold and frame
+    /// persistence to the workspace model. Falls back to the chrome-only bridge when
+    /// there is no note or no workspace, so the placeholder window still gets chrome.
+    @ViewBuilder private var chromeBridge: some View {
+        if let noteID, let workspace {
+            StickyWindowChromeBridge(
+                noteID: noteID,
+                savedFrame: { workspace.noteFrame(for: noteID) },
+                onFrameChange: { frame in workspace.updateFrame(frame, for: noteID) },
+                initialCollapsed: workspace.isCollapsed(for: noteID),
+                expandedHeight: workspace.expandedHeight(for: noteID),
+                onCollapseChange: { collapsed, height in
+                    workspace.setCollapsed(collapsed, expandedHeight: height, for: noteID)
+                },
+                collapsedTitle: { workspace.displayTitle(for: noteID) }
+            )
+        } else {
+            StickyWindowChromeBridge()
+        }
     }
 }

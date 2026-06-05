@@ -109,6 +109,84 @@ struct NoteWorkspaceModelTests {
         #expect(saved?.metadata.fontColorHex == "#112233")
     }
 
+    @Test func updateFramePersistsThroughDebouncedAutosave() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+
+        let frame = NoteFrame(x: 120, y: 240, width: 360, height: 480)
+        model.updateFrame(frame, for: noteID)
+
+        await pollUntilFrameSaved(store: store, id: noteID, expected: frame)
+
+        #expect(model.noteFrame(for: noteID) == frame)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.frame == frame)
+    }
+
+    @Test func setCollapsedPersistsFlagAndExpandedHeight() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+
+        model.setCollapsed(true, expandedHeight: 420, for: noteID)
+
+        await pollUntilCollapsedSaved(store: store, id: noteID, expected: true)
+
+        #expect(model.isCollapsed(for: noteID) == true)
+        #expect(model.expandedHeight(for: noteID) == 420)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.collapsed == true)
+        #expect(saved?.metadata.expandedHeight == 420)
+    }
+
+    @Test func setCollapsedFalseClearsFlagAndKeepsExpandedHeight() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+        model.setCollapsed(true, expandedHeight: 420, for: noteID)
+        await pollUntilCollapsedSaved(store: store, id: noteID, expected: true)
+
+        model.setCollapsed(false, expandedHeight: 420, for: noteID)
+
+        await pollUntilCollapsedSaved(store: store, id: noteID, expected: false)
+        #expect(model.isCollapsed(for: noteID) == false)
+        #expect(model.expandedHeight(for: noteID) == 420)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.collapsed == false)
+        #expect(saved?.metadata.expandedHeight == 420)
+    }
+
+    private func pollUntilFrameSaved(
+        store: InMemoryNoteStore,
+        id: NoteID,
+        expected: NoteFrame
+    ) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            let document = await store.document(for: id)
+            if document?.metadata.frame == expected {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
+    private func pollUntilCollapsedSaved(
+        store: InMemoryNoteStore,
+        id: NoteID,
+        expected: Bool
+    ) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            let document = await store.document(for: id)
+            if document?.metadata.collapsed == expected {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
     private func pollUntilFontSaved(
         store: InMemoryNoteStore,
         id: NoteID,
