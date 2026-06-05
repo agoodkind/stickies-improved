@@ -112,6 +112,17 @@ public final class NoteWorkspaceModel {
         scheduleAutosave(for: document)
     }
 
+    public func updateColor(_ color: NoteColor, for noteID: NoteID) {
+        guard var document = notes[noteID] else { return }
+        document.metadata.colorName = color
+        document.metadata.updatedAt = .now
+        notes[noteID] = document
+        reorderNotes()
+        // Persist immediately rather than through the debounce: a color pick is a
+        // discrete, deliberate change with no rapid follow-up to coalesce.
+        Task { await persistImmediately(document) }
+    }
+
     public func displayTitle(for noteID: NoteID) -> String {
         notes[noteID]?.metadata.title ?? "Untitled"
     }
@@ -139,6 +150,16 @@ public final class NoteWorkspaceModel {
             try await noteStore.save(document)
         } catch {
             logger.error("Upsert save failed: \(error.localizedDescription, privacy: .public)")
+            lastErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func persistImmediately(_ document: NoteDocument) async {
+        do {
+            try await noteStore.save(document)
+        } catch {
+            logger.error(
+                "Color save failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
     }

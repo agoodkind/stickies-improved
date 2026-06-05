@@ -45,6 +45,7 @@ public struct NoteSceneView: View {
         .navigationTitle(navigationTitle)
         .containerBackground(.clear, for: .window)
         .background(StickyWindowChromeBridge())
+        .focusedValue(\.focusedNoteID, noteID)
         .onAppear {
             if let noteID {
                 windowStateModel?.noteWindowOpened(noteID)

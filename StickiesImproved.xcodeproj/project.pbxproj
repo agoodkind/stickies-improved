@@ -22,6 +22,7 @@
 		1DA5A0027734708DD72610F4 /* StickiesApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2238F1C4827EE23B5992678C /* StickiesApplication.framework */; };
 		2446DEC50B5B7B3FA0FFB57D /* ManualAutosaveScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AEB67943D3DC46F79931B0 /* ManualAutosaveScheduler.swift */; };
 		2582DE8C1D3F8CD3E8908BE2 /* NoteMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A7F9CF86F327F13FDAA56C /* NoteMetadata.swift */; };
+		2AD0C047592A7CF118DB5A6C /* FocusedValues+NoteID.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7991C1729DE13C6CE1EAAED /* FocusedValues+NoteID.swift */; };
 		2C82919FAC9CAFD7D10A89CE /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
 		30A53CFC907098713B092564 /* ContentCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD714A4DE507A94C4750AA0 /* ContentCodec.swift */; };
 		31BEB3AB67A283A0607AC5DF /* NoteCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */; };
@@ -46,6 +47,7 @@
 		89C9A23D62F8CC85C0923D66 /* SparkleUpdaterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856F5EA10159A7379D340D05 /* SparkleUpdaterController.swift */; };
 		8B294C8503058F94D7D6EF5A /* StickiesApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2238F1C4827EE23B5992678C /* StickiesApplication.framework */; };
 		8B2D9E584226968B681BD1AB /* ContinuousClockAutosaveScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD77A1578E0D93E033D704C /* ContinuousClockAutosaveScheduler.swift */; };
+		8C2895848D06951D27E9A6A5 /* ColorPickerMenuItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C54C7BD28D073293D7D0F2A /* ColorPickerMenuItems.swift */; };
 		9005BD2FCEFF0AA77F2473B6 /* NoteWorkspaceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560BF0A7A9A07FFC0D6426DB /* NoteWorkspaceModel.swift */; };
 		97BCFD1D8BE45501F688FFD5 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7144BB1EFFD90F3D41175D1 /* AboutView.swift */; };
 		A0688955991BC0A5A05DB02F /* NoteColor+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85FB388B7B023D997A81FB8 /* NoteColor+SwiftUI.swift */; };
@@ -346,6 +348,7 @@
 		746EBE7599E2A224A8E1DD75 /* StickiesPersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesPersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		787BE047946F04F040B8E7CC /* StickiesImprovedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickiesImprovedApp.swift; sourceTree = "<group>"; };
 		7948DE55F238EEE16F8F94C5 /* StickiesApplicationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesApplicationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C54C7BD28D073293D7D0F2A /* ColorPickerMenuItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerMenuItems.swift; sourceTree = "<group>"; };
 		856F5EA10159A7379D340D05 /* SparkleUpdaterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkleUpdaterController.swift; sourceTree = "<group>"; };
 		89A7F9CF86F327F13FDAA56C /* NoteMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadata.swift; sourceTree = "<group>"; };
 		8B0CEAB6A989EDC4065CE2D9 /* NoteSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSceneView.swift; sourceTree = "<group>"; };
@@ -374,6 +377,7 @@
 		EAF652C2A241A46CC41AB44E /* NoteWindowStateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteWindowStateModel.swift; sourceTree = "<group>"; };
 		F21B424A0B8D15078269F0C3 /* StickiesImproved.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickiesImproved.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3E17C68EEB541241814A1FE /* RuntimeEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeEnvironment.swift; sourceTree = "<group>"; };
+		F7991C1729DE13C6CE1EAAED /* FocusedValues+NoteID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FocusedValues+NoteID.swift"; sourceTree = "<group>"; };
 		F85FB388B7B023D997A81FB8 /* NoteColor+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteColor+SwiftUI.swift"; sourceTree = "<group>"; };
 		F9AAF1BDF508AAD2DBB382B9 /* StickiesDesignSystem-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesDesignSystem-Info.plist"; sourceTree = "<group>"; };
 		FB673400310C8F7821884B6A /* BootstrapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapView.swift; sourceTree = "<group>"; };
@@ -547,6 +551,8 @@
 				7606A4B549D0F754375B4D7C /* Editors */,
 				D7144BB1EFFD90F3D41175D1 /* AboutView.swift */,
 				FB673400310C8F7821884B6A /* BootstrapView.swift */,
+				7C54C7BD28D073293D7D0F2A /* ColorPickerMenuItems.swift */,
+				F7991C1729DE13C6CE1EAAED /* FocusedValues+NoteID.swift */,
 				38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */,
 				8B0CEAB6A989EDC4065CE2D9 /* NoteSceneView.swift */,
 				013B61C4D9D9B30444D84ADD /* SettingsView.swift */,
@@ -1095,9 +1101,11 @@
 			files = (
 				97BCFD1D8BE45501F688FFD5 /* AboutView.swift in Sources */,
 				C3014F62545D5767378EE8EF /* BootstrapView.swift in Sources */,
+				8C2895848D06951D27E9A6A5 /* ColorPickerMenuItems.swift in Sources */,
 				820B8A2339977334D3B0720D /* MarkdownEditorView.swift in Sources */,
 				EDF561B35EFE865267068EE1 /* NoteEditorHost.swift in Sources */,
 				0D6BA3C5226796E259661F71 /* PlainTextEditorView.swift in Sources */,
+				2AD0C047592A7CF118DB5A6C /* FocusedValues+NoteID.swift in Sources */,
 				31BEB3AB67A283A0607AC5DF /* NoteCommands.swift in Sources */,
 				4BE26188BF74825D485FC378 /* NoteSceneView.swift in Sources */,
 				F60891E422130755DEC6D62E /* SettingsView.swift in Sources */,

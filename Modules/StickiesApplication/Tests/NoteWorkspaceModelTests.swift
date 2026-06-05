@@ -49,6 +49,20 @@ struct NoteWorkspaceModelTests {
         #expect(saved.plainText == "edited body")
     }
 
+    @Test func updateColorPersistsAndReflectsInNote() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+
+        model.updateColor(.blue, for: noteID)
+
+        await pollUntilColorSaved(store: store, id: noteID, expected: .blue)
+
+        #expect(model.note(for: noteID)?.metadata.colorName == .blue)
+        let saved = await store.document(for: noteID)
+        #expect(saved?.metadata.colorName == .blue)
+    }
+
     private func pollUntilSaved(
         store: InMemoryNoteStore,
         id: NoteID,
@@ -58,6 +72,21 @@ struct NoteWorkspaceModelTests {
         for _ in 0..<maxAttempts {
             let document = await store.document(for: id)
             if document?.plainText == expected {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
+    private func pollUntilColorSaved(
+        store: InMemoryNoteStore,
+        id: NoteID,
+        expected: NoteColor
+    ) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            let document = await store.document(for: id)
+            if document?.metadata.colorName == expected {
                 return
             }
             await Task.yield()

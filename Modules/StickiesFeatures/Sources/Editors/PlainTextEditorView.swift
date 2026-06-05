@@ -32,9 +32,16 @@ struct PlainTextEditorView: View {
             .padding(.horizontal, Layout.textHorizontalPadding)
             .padding(.bottom, Layout.textBottomPadding)
             .padding(.top, Layout.textTopPadding)
-            // Default new-note color recovered from the original
-            // `-[StickieBackgroundView getYellowColour]` (sRGB).
-            .background(NoteColor.yellow.color.ignoresSafeArea())
+            // The note's own color fills full-bleed; the yellow default is the
+            // original `-[StickieBackgroundView getYellowColour]` (sRGB).
+            .background(noteColor.color.ignoresSafeArea())
+            .contextMenu {
+                ColorPickerMenuItems(noteID: noteID)
+            }
+    }
+
+    private var noteColor: NoteColor {
+        workspace?.note(for: noteID)?.metadata.colorName ?? .default
     }
 
     private var textBinding: Binding<String> {

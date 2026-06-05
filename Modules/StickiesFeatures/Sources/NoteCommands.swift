@@ -7,10 +7,15 @@
 //
 
 import StickiesApplication
+import StickiesDesignSystem
+import StickiesDomain
 import SwiftUI
 
 public struct NoteCommands: Commands {
+    private static let colorSwatchSymbol = "circle.fill"
+
     @Environment(\.openWindow) private var openWindow
+    @FocusedValue(\.focusedNoteID) private var focusedNoteID
 
     private let workspace: NoteWorkspaceModel
     private let updaterModel: UpdaterModel
@@ -34,6 +39,24 @@ public struct NoteCommands: Commands {
 
             Button("Check for Updates") {
                 updaterModel.checkForUpdates()
+            }
+        }
+
+        CommandMenu("Colour") {
+            ForEach(NoteColor.allCases, id: \.self) { color in
+                Button {
+                    if let focusedNoteID {
+                        workspace.updateColor(color, for: focusedNoteID)
+                    }
+                } label: {
+                    Label {
+                        Text(color.rawValue.capitalized)
+                    } icon: {
+                        Image(systemName: Self.colorSwatchSymbol)
+                            .foregroundStyle(color.color)
+                    }
+                }
+                .disabled(focusedNoteID == nil)
             }
         }
     }
