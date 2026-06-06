@@ -65,7 +65,10 @@ let infoPlist: [String: Plist.Value] = [
     ]),
     "SUEnableAutomaticChecks": .boolean(true),
     "SUAllowsAutomaticUpdates": .boolean(true),
-    "SUFeedURL": .string("$(SPARKLE_FEED_URL)"),
+    // Hardcoded rather than `$(SPARKLE_FEED_URL)`: an xcconfig value treats `//` as a
+    // comment, which truncates the URL to `https:` in the built Info.plist.
+    "SUFeedURL": .string("https://goodkind.io/stickies-improved/appcast.xml"),
+    "SUPublicEDKey": .string("$(SPARKLE_PUBLIC_ED_KEY)"),
 ]
 
 // MARK: - Module helpers
