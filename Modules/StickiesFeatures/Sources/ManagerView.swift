@@ -26,6 +26,7 @@ public struct ManagerView: View {
         static let inspectorIdealWidth: CGFloat = 380
         static let inspectorMaxWidth: CGFloat = 600
         static let rowSpacing: CGFloat = 10
+        static let newNoteIconNudge: CGFloat = 1
     }
 
     private static let updatedDateStyle = Date.FormatStyle.dateTime
@@ -266,7 +267,15 @@ public struct ManagerView: View {
     @ToolbarContentBuilder private var newNoteButton: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
             Button(action: createNote) {
-                Label("New Note", systemImage: "square.and.pencil")
+                // `square.and.pencil`'s pencil extends past the top-right of the square, so
+                // the glyph's ink sits low-left of its layout box and reads off-center in a
+                // round toolbar button. A 1pt up-right nudge optically recenters it.
+                Label {
+                    Text("New Note")
+                } icon: {
+                    Image(systemName: "square.and.pencil")
+                        .offset(x: Layout.newNoteIconNudge, y: -Layout.newNoteIconNudge)
+                }
             }
             .disabled(workspace == nil)
         }

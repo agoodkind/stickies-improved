@@ -79,32 +79,38 @@ struct NotePreviewView: View {
     }
 
     private var paper: some View {
-        ScrollView {
-            paperBody
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(Layout.paperPadding)
-        }
-        .background(note.metadata.colorName.backgroundColor(for: colorScheme))
-        .clipShape(RoundedRectangle(cornerRadius: Layout.paperCornerRadius))
-        .shadow(
-            color: .black.opacity(Layout.paperShadowOpacity),
-            radius: Layout.paperShadowRadius,
-            y: Layout.paperShadowY
-        )
-        .padding(Layout.panePadding)
+        paperBody
+            .background(note.metadata.colorName.backgroundColor(for: colorScheme))
+            .clipShape(RoundedRectangle(cornerRadius: Layout.paperCornerRadius))
+            .shadow(
+                color: .black.opacity(Layout.paperShadowOpacity),
+                radius: Layout.paperShadowRadius,
+                y: Layout.paperShadowY
+            )
+            .padding(Layout.panePadding)
     }
 
+    /// Renders the full note body with the same `NSTextView`-backed editor the note window
+    /// uses, in read-only mode. TextKit 2 lays out only the visible viewport, so even a very
+    /// large note shows its full text without blocking the main thread when selected, and the
+    /// preview stays DRY with the real editor instead of a separate SwiftUI `Text`.
     @ViewBuilder private var paperBody: some View {
         if note.plainText.isEmpty {
             Text("This note is empty.")
                 .italic()
                 .foregroundStyle(.secondary)
                 .font(.system(size: note.metadata.fontSize))
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(Layout.paperPadding)
         } else {
-            Text(note.plainText)
-                .foregroundStyle(.primary)
-                .font(.system(size: note.metadata.fontSize))
-                .textSelection(.enabled)
+            StickyTextEditor(
+                text: .constant(note.plainText),
+                fontName: note.metadata.fontName,
+                fontSize: note.metadata.fontSize,
+                fontColorHex: note.metadata.fontColorHex,
+                isEditable: false
+            )
+            .padding(Layout.paperPadding)
         }
     }
 

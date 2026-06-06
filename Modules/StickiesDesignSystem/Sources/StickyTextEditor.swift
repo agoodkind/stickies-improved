@@ -30,17 +30,20 @@ public struct StickyTextEditor: NSViewRepresentable {
     private let fontName: String?
     private let fontSize: Double
     private let fontColorHex: String?
+    private let isEditable: Bool
 
     public init(
         text: Binding<String>,
         fontName: String?,
         fontSize: Double,
-        fontColorHex: String?
+        fontColorHex: String?,
+        isEditable: Bool = true
     ) {
         _text = text
         self.fontName = fontName
         self.fontSize = fontSize
         self.fontColorHex = fontColorHex
+        self.isEditable = isEditable
     }
 
     public func makeNSView(context: Context) -> NSScrollView {
@@ -48,7 +51,7 @@ public struct StickyTextEditor: NSViewRepresentable {
         textView.isRichText = false
         textView.importsGraphics = false
         textView.allowsImageEditing = false
-        textView.isEditable = true
+        textView.isEditable = isEditable
         textView.isSelectable = true
         textView.allowsUndo = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
@@ -73,8 +76,10 @@ public struct StickyTextEditor: NSViewRepresentable {
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.automaticallyAdjustsContentInsets = false
+        // The editable note clears the floating traffic lights with a top inset; the
+        // read-only preview has no traffic lights over it, so it starts flush.
         scrollView.contentInsets = NSEdgeInsets(
-            top: Layout.scrollTopInset, left: 0, bottom: 0, right: 0
+            top: isEditable ? Layout.scrollTopInset : 0, left: 0, bottom: 0, right: 0
         )
 
         applyStyle(to: textView)
@@ -94,9 +99,9 @@ public struct StickyTextEditor: NSViewRepresentable {
             textView.string = text
         }
         applyStyle(to: textView)
-        // Focus the editor once the window exists so a freshly opened note takes the
-        // caret immediately. Retries across updates until the window is attached.
-        if !context.coordinator.didFocus, let window = textView.window {
+        // Focus the editable note once the window exists so a freshly opened note takes the
+        // caret immediately. The read-only preview must never steal first responder.
+        if isEditable, !context.coordinator.didFocus, let window = textView.window {
             if window.makeFirstResponder(textView) {
                 context.coordinator.didFocus = true
             }
