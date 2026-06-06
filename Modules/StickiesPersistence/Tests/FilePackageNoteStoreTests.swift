@@ -56,6 +56,28 @@ struct FilePackageNoteStoreTests {
         #expect(loadedLegacy.crdtData == nil)
     }
 
+    @Test func packageKeepsReadableMirrorsAlongsideCRDT() async throws {
+        let store = try makeStore()
+        let noteID = NoteID()
+        try await store.save(
+            NoteDocument(id: noteID, plainText: "mirror me", crdtData: Data([0x09, 0x0A]))
+        )
+
+        let root = try await store.ensureLibraryDirectory()
+        let packageURL =
+            root
+            .appendingPathComponent(noteID.description)
+            .appendingPathExtension("stickynote")
+        let fileManager = FileManager.default
+
+        #expect(fileManager.fileExists(atPath: packageURL.appendingPathComponent("meta.json").path))
+        #expect(
+            fileManager.fileExists(atPath: packageURL.appendingPathComponent("content.txt").path))
+        #expect(
+            fileManager.fileExists(
+                atPath: packageURL.appendingPathComponent("note.automerge").path))
+    }
+
     @Test func deleteRemovesDocument() async throws {
         let store = try makeStore()
         let noteID = NoteID()

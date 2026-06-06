@@ -96,6 +96,23 @@ struct NoteWorkspaceModelRefreshTests {
         #expect(saved?.crdtData != nil)
     }
 
+    @Test func refreshFromDiskDropsNoteDeletedOnAnotherDevice() async {
+        // A package removed on another device disappears from the loaded set; the note must
+        // leave memory rather than linger from the live CRDT map.
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+        let noteID = await model.createNote()
+        model.updatePlainText("remote will delete", for: noteID)
+        await pollUntilSaved(store: store, id: noteID, expected: "remote will delete")
+        #expect(model.note(for: noteID) != nil)
+
+        await store.delete(id: noteID)
+        await model.refreshFromDisk()
+
+        #expect(model.note(for: noteID) == nil)
+        #expect(model.anyDocument(for: noteID) == nil)
+    }
+
     private func pollUntilSaved(
         store: InMemoryNoteStore,
         id: NoteID,

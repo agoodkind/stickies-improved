@@ -33,6 +33,17 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF8A35CC228FF347D356B824"
+               BuildableName = "StickiesDomainTests.xctest"
+               BlueprintName = "StickiesDomainTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "EF42FB4CC436E91CC1F0FB91"
                BuildableName = "StickiesPersistenceTests.xctest"
                BlueprintName = "StickiesPersistenceTests"
