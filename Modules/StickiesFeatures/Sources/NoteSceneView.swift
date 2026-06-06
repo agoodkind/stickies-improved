@@ -58,7 +58,7 @@ public struct NoteSceneView: View {
         .containerBackground(.clear, for: .window)
         .opacity(appearsActive ? 1.0 : unfocusedAlpha)
         .background(chromeBridge)
-        .focusedValue(\.focusedNoteID, noteID)
+        .focusedSceneValue(\.focusedNoteID, noteID)
         .onAppear {
             if let noteID {
                 windowStateModel?.noteWindowOpened(noteID)
