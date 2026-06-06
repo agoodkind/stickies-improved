@@ -8,33 +8,23 @@
 
 import AppKit
 
-/// Restores a window when the user clicks the dock icon after closing every note. SwiftUI's
-/// scene system does not reopen a `Window`/`WindowGroup` on reactivation by itself, so the
-/// app would otherwise sit running with nothing on screen.
+/// Brings up the All Notes manager when the user clicks the dock icon. The manager is the
+/// app's main window, so a dock click should surface it whether or not a note window is open,
+/// and especially after every note has closed (SwiftUI does not reopen a scene on its own).
 final class StickiesAppDelegate: NSObject, NSApplicationDelegate {
-    // The launcher scene is a 1x1 helper window that stays alive for the app's lifetime, so it
-    // must not count as a real, user-facing window when deciding whether to reopen one.
-    private static let minVisibleWindowWidth: CGFloat = 50
-
     /// Opens (or focuses) the manager window. The App sets this once a scene can vend
     /// `openWindow`; it is held statically so it survives after every note window closes.
     @MainActor static var openManager: (() -> Void)?
 
     func applicationShouldHandleReopen(
-        _ sender: NSApplication,
+        _: NSApplication,
         hasVisibleWindows _: Bool
     ) -> Bool {
-        // The `hasVisibleWindows` flag counts the 1x1 launcher window, so it stays true even
-        // when every note has closed; scan for a real window instead. AppKit calls this on
-        // the main thread, so the main-actor `NSApplication`/`NSWindow` reads and the
-        // main-actor `openManager` access are safe to assume here.
+        // Always surface the manager. `openWindow(id:)` focuses it if it already exists, so
+        // this is idempotent. AppKit calls this on the main thread, so the main-actor
+        // `openManager` access is safe to assume here.
         MainActor.assumeIsolated {
-            let hasRealWindow = sender.windows.contains { window in
-                window.isVisible && window.frame.width >= Self.minVisibleWindowWidth
-            }
-            if !hasRealWindow {
-                Self.openManager?()
-            }
+            Self.openManager?()
         }
         return true
     }
