@@ -99,8 +99,9 @@ public final class NoteWorkspaceModel {
     public func refreshFromDisk() async {
         do {
             let loaded = try await noteStore.loadAllDocuments()
-            let active = loaded.filter { !$0.metadata.isTrashed }
-            let trashed = loaded.filter(\.metadata.isTrashed)
+            let merged = loaded.map(mergedWithMemory)
+            let active = merged.filter { !$0.metadata.isTrashed }
+            let trashed = merged.filter(\.metadata.isTrashed)
 
             notes = Dictionary(uniqueKeysWithValues: active.map { ($0.id, $0) })
             orderedNoteIDs = Self.orderedByUpdatedDescending(active)
@@ -111,6 +112,25 @@ public final class NoteWorkspaceModel {
                 "Refresh from disk failed: \(error.localizedDescription, privacy: .public)")
             lastErrorMessage = error.localizedDescription
         }
+    }
+
+    /// Picks the authoritative copy of a freshly loaded note. Our own debounced autosave
+    /// writes the file, and the library monitor surfaces that write back as a reload, so a
+    /// naive replace can drop the file over text the user is still typing. Every in-memory
+    /// edit stamps `updatedAt = .now` through `NoteDocument.updatePlainText`, so memory's
+    /// timestamp always reflects its latest edit: keep memory whenever it is at least as
+    /// recent as the file (our own write-back ties, and an unwritten edit leads), and take
+    /// the loaded copy only when it is strictly newer, which is the real external-edit case.
+    /// This is single-device last-writer-wins; a sequence CRDT is the planned successor that
+    /// merges concurrent multi-device edits instead of dropping the older side.
+    private func mergedWithMemory(_ loaded: NoteDocument) -> NoteDocument {
+        guard let inMemory = notes[loaded.id] ?? trashedNotesByID[loaded.id] else {
+            return loaded
+        }
+        if inMemory.metadata.updatedAt >= loaded.metadata.updatedAt {
+            return inMemory
+        }
+        return loaded
     }
 
     /// Active notes in display order (newest first), for the manager's Notes section.
