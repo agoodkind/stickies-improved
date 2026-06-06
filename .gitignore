@@ -4,6 +4,8 @@ Tuist/.mise.toml
 .DS_Store
 .swiftpm/
 build/
+build-*/
+.derived-data/
 Products/
 .tuist-cache/
 .mise/

@@ -7,15 +7,16 @@
 //
 
 import Foundation
+import StickiesCRDT
 import StickiesDomain
 import StickiesTestSupport
 import Testing
 
 @testable import StickiesApplication
 
-/// Covers `refreshFromDisk`'s merge policy. Our own debounced autosave surfaces back
-/// through the library monitor as a reload, so the reload must not clobber text the user
-/// just typed, while a genuinely newer external file must still be imported.
+/// Covers `refreshFromDisk`'s CRDT merge. Our own autosave surfaces back through the library
+/// monitor as a reload, so reloading our own write must not lose in-flight text, and a
+/// genuinely concurrent edit from another device must merge in rather than overwrite.
 @MainActor
 struct NoteWorkspaceModelRefreshTests {
     private func makeModel(store: InMemoryNoteStore) -> NoteWorkspaceModel {
@@ -28,57 +29,72 @@ struct NoteWorkspaceModelRefreshTests {
         )
     }
 
-    @Test func refreshFromDiskKeepsNewerInMemoryTextOverStaleFile() async {
+    @Test func reloadingOwnWriteKeepsText() async {
+        // The autosave write reloaded through the monitor must be idempotent: merging the
+        // note's own serialized history back into itself changes nothing.
         let store = InMemoryNoteStore()
         let model = makeModel(store: store)
         let noteID = await model.createNote()
-
-        model.updatePlainText("fresh in-memory text", for: noteID)
-        await pollUntilSaved(store: store, id: noteID, expected: "fresh in-memory text")
-
-        guard let memoryUpdatedAt = model.note(for: noteID)?.metadata.updatedAt else {
-            Issue.record("note missing after edit")
-            return
-        }
-        let staleMetadata = NoteMetadata(
-            id: noteID,
-            mode: .plainText,
-            updatedAt: memoryUpdatedAt.addingTimeInterval(-30)
-        )
-        let staleDocument = NoteDocument(metadata: staleMetadata, plainText: "stale file text")
-        await store.save(staleDocument)
+        model.updatePlainText("stable text", for: noteID)
+        await pollUntilSaved(store: store, id: noteID, expected: "stable text")
 
         await model.refreshFromDisk()
 
-        #expect(model.note(for: noteID)?.plainText == "fresh in-memory text")
+        #expect(model.note(for: noteID)?.plainText == "stable text")
     }
 
-    @Test func refreshFromDiskImportsStrictlyNewerExternalEdit() async {
+    @Test func concurrentExternalEditMergesInsteadOfOverwriting() async {
+        // Another device edits the same note from a shared base; both edits must survive the
+        // reload instead of one clobbering the other.
         let store = InMemoryNoteStore()
         let model = makeModel(store: store)
         let noteID = await model.createNote()
+        model.updatePlainText("Hello", for: noteID)
+        await pollUntilSaved(store: store, id: noteID, expected: "Hello")
 
-        model.updatePlainText("local text", for: noteID)
-        await pollUntilSaved(store: store, id: noteID, expected: "local text")
-
-        guard let memoryUpdatedAt = model.note(for: noteID)?.metadata.updatedAt else {
-            Issue.record("note missing after edit")
+        // Fork the persisted document on a simulated second device and edit it there.
+        guard let baseData = await store.document(for: noteID)?.crdtData,
+            let remote = try? NoteCRDT.load(from: baseData)
+        else {
+            Issue.record("missing persisted crdt data")
             return
         }
-        let externalMetadata = NoteMetadata(
-            id: noteID,
-            mode: .plainText,
-            updatedAt: memoryUpdatedAt.addingTimeInterval(30)
+        remote.setBodyText("Hello remote")
+        guard var remoteDocument = await store.document(for: noteID) else {
+            Issue.record("missing stored document")
+            return
+        }
+        remoteDocument.crdtData = remote.serialized()
+        await store.save(remoteDocument)
+
+        // Meanwhile edit locally, then reload: the merge keeps both insertions.
+        model.updatePlainText("Hello local", for: noteID)
+        await model.refreshFromDisk()
+
+        let merged = model.note(for: noteID)?.plainText ?? ""
+        #expect(merged.contains("Hello"))
+        #expect(merged.contains("local"))
+        #expect(merged.contains("remote"))
+    }
+
+    @Test func legacyNoteWithoutCRDTIsSeededAndPersisted() async {
+        // A package that predates the CRDT (no crdtData) loads, gets a seeded Automerge
+        // document, and that document is written back so it becomes merge-aware.
+        let store = InMemoryNoteStore()
+        let legacyID = NoteID()
+        let legacy = NoteDocument(
+            metadata: NoteMetadata(id: legacyID, mode: .plainText),
+            plainText: "legacy body"
         )
-        let externalDocument = NoteDocument(
-            metadata: externalMetadata,
-            plainText: "external device text"
-        )
-        await store.save(externalDocument)
+        await store.save(legacy)
+        let model = makeModel(store: store)
 
         await model.refreshFromDisk()
 
-        #expect(model.note(for: noteID)?.plainText == "external device text")
+        #expect(model.note(for: legacyID)?.plainText == "legacy body")
+        await pollUntilCRDTPersisted(store: store, id: legacyID)
+        let saved = await store.document(for: legacyID)
+        #expect(saved?.crdtData != nil)
     }
 
     private func pollUntilSaved(
@@ -90,6 +106,16 @@ struct NoteWorkspaceModelRefreshTests {
         for _ in 0..<maxAttempts {
             let document = await store.document(for: id)
             if document?.plainText == expected {
+                return
+            }
+            await Task.yield()
+        }
+    }
+
+    private func pollUntilCRDTPersisted(store: InMemoryNoteStore, id: NoteID) async {
+        let maxAttempts = 200
+        for _ in 0..<maxAttempts {
+            if await store.document(for: id)?.crdtData != nil {
                 return
             }
             await Task.yield()

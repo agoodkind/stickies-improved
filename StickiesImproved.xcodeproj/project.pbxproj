@@ -9,11 +9,9 @@
 /* Begin PBXBuildFile section */
 		004111784D8FC326CA5D66D6 /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A4726632A0D5573444187C2F /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		00E88FAE27DEA39A07D1D2CB /* NoteID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597DD18E01FF144A14B40467 /* NoteID.swift */; };
-		022DFB554A2076C816D33F50 /* StickiesTestSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DF97BF4DBDD8179830F3B9 /* StickiesTestSupport.framework */; };
 		024F4D146BD95C3C8EAE7472 /* NoteColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A515214A1E1F1753D076FBCD /* NoteColor.swift */; };
 		03FD9F2912336B3F9CAE67D1 /* BundleRuntimeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED7D5D68519BC5B35899277 /* BundleRuntimeInfo.swift */; };
 		04C32F97CC643833691C5068 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D23C9DE000492703C89361 /* NoteDocument.swift */; };
-		098A58349ABE0DFB0F7E6C5C /* NoteSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462FC5583A4983A4ED21130B /* NoteSearchTests.swift */; };
 		0D6BA3C5226796E259661F71 /* PlainTextEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18A64A72E6D8F4902BF9AF9 /* PlainTextEditorView.swift */; };
 		0F60AB9EE2EC51CDF7ED0B12 /* StickiesApplication.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2238F1C4827EE23B5992678C /* StickiesApplication.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		11F6430CD110347B4688EE2F /* StickiesDesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02A565CB8C21EFD11150B827 /* StickiesDesignSystem.framework */; };
@@ -33,24 +31,19 @@
 		30A53CFC907098713B092564 /* ContentCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD714A4DE507A94C4750AA0 /* ContentCodec.swift */; };
 		31BEB3AB67A283A0607AC5DF /* NoteCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */; };
 		32120AA86113364291087D40 /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
-		3B91B3E8DBD05FB9BF177D77 /* StickiesCRDT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F85D5468BD6CC4C06FFFEB7 /* StickiesCRDT.framework */; };
 		3BC8A312E2FE28671F7C50B6 /* StickiesFeatures.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E786A5A23BE7C8B3F80ACE9C /* StickiesFeatures.framework */; };
 		3BCDC2C138CCC4280A0DBD69 /* PlainTextDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F0ECB36CEA7F1FBBF5155D /* PlainTextDocument.swift */; };
 		3DFF6D01BA834A6D98BC7B9F /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4726632A0D5573444187C2F /* Sparkle.xcframework */; };
 		3E187DC5A4E900CBC31A6794 /* RuntimeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E17C68EEB541241814A1FE /* RuntimeEnvironment.swift */; };
-		3FF2ABBB9C67D1C6448BA590 /* StorageModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A8E5FAAC737D48082DCA6F /* StorageModeTests.swift */; };
 		410956E5AC2A8D8074E8A89C /* NoteSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE6200AA29EFA5A6B8A172C /* NoteSearchResult.swift */; };
 		41B58AFEE871E293C1A38329 /* StickiesTestSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DF97BF4DBDD8179830F3B9 /* StickiesTestSupport.framework */; };
 		42667D3D275CBCF85B671895 /* IdentityContentCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB840944D6F5498A37869C10 /* IdentityContentCodec.swift */; };
 		4A5CF79694372164D09BB2C1 /* PlaceholderRuntimeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07977EC40C90897DA9844530 /* PlaceholderRuntimeInfo.swift */; };
 		4BE26188BF74825D485FC378 /* NoteSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0CEAB6A989EDC4065CE2D9 /* NoteSceneView.swift */; };
-		4D1BECD49102F19CC77452A5 /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
 		4D4C99218CCBF254375D0B05 /* StorageLocationResolving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0324AF9BDF2FC5E5639832AD /* StorageLocationResolving.swift */; };
 		550E52C18A44614369E31C44 /* NoteWorkspaceModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */; };
 		56CBBAE4ABF68FCF4B86606B /* NoteCRDT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98258EC4CB473EA50DA0F479 /* NoteCRDT.swift */; };
-		5731E9B399544A2FC483FD8F /* NoteCRDTTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA535EAE705CA5BC7A5BB6D5 /* NoteCRDTTests.swift */; };
 		58C7C7A79C00B0736B0CC239 /* ManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156326902334544B4188AA8E /* ManagerView.swift */; };
-		5922436EC59347B66A31F91B /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */; };
 		5B190A7339D5B894D13E3783 /* NoteSearchRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62E5A0830F0E71E85A2610EF /* NoteSearchRunner.swift */; };
 		5B426A59C149A6F3899C6BD5 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9537534E1BEF6C31639A05 /* NoteStore.swift */; };
 		5E8F04572FF5EF76E6E90D26 /* StickyTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */; };
@@ -73,10 +66,9 @@
 		8CD062EA127B51772D02F5F4 /* StickiesCRDT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F85D5468BD6CC4C06FFFEB7 /* StickiesCRDT.framework */; };
 		9005BD2FCEFF0AA77F2473B6 /* NoteWorkspaceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560BF0A7A9A07FFC0D6426DB /* NoteWorkspaceModel.swift */; };
 		915E91A551920B66ED4A640D /* automergeFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307DB043513643A68AE6EE47 /* automergeFFI.xcframework */; };
-		9361FE291C653A087D2AE8DE /* FileLibraryMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A57A641E2F2A72020011EA /* FileLibraryMigratorTests.swift */; };
 		97BCFD1D8BE45501F688FFD5 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7144BB1EFFD90F3D41175D1 /* AboutView.swift */; };
 		9BECEDA177F547DA4510DA2D /* SettingsRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5A54D91BBFD4310286089F /* SettingsRootView.swift */; };
-		9E117C9FC24467985A4D8B8B /* ExportFilenameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF869DDC97436CED77F616 /* ExportFilenameTests.swift */; };
+		9DF68CF074F81A23DEA46693 /* StickiesCRDT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F85D5468BD6CC4C06FFFEB7 /* StickiesCRDT.framework */; };
 		A0688955991BC0A5A05DB02F /* NoteColor+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85FB388B7B023D997A81FB8 /* NoteColor+SwiftUI.swift */; };
 		A27F760769604CBAAFC0AE57 /* LibraryMonitoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADE3117E2244F239D47CB2A /* LibraryMonitoring.swift */; };
 		A2B7CA19ED5A8724D0383245 /* AutomergeUniffi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39FC580E989F1F5015CECBEB /* AutomergeUniffi.framework */; };
@@ -88,8 +80,6 @@
 		AAAB885D2AAD8A41043B4070 /* NoteWindowStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF652C2A241A46CC41AB44E /* NoteWindowStateModel.swift */; };
 		AE2470130C717A8DA838EB3F /* StorageMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E234F0EECD03E536E32DBF /* StorageMode.swift */; };
 		B356F96D37B7AFDA98EBA04D /* NoteWorkspaceModel+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E16CDC59783F81F70AB87 /* NoteWorkspaceModel+Search.swift */; };
-		B75F734240C3AC5F7AD13D3C /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
-		B967A880E598AF5C51D10DDB /* StickiesPersistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A378F23E9CF25E03DBDA92D3 /* StickiesPersistence.framework */; };
 		BEF2E1D41C5827A6511EFAED /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
 		BF27DC2DA90F15150E6DC7BD /* PreferencesModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F37B3D7E627DA71DFF083E9 /* PreferencesModelTests.swift */; };
 		BF8BE418C657E3D8D6174024 /* UbiquityLibraryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961C594441C3A07B519824E0 /* UbiquityLibraryMonitor.swift */; };
@@ -101,12 +91,10 @@
 		C8DEB1FCEA224384FDE219D1 /* InMemoryNoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5299BAC132BECDD9406B970 /* InMemoryNoteStore.swift */; };
 		D7FD52244C469BCC651C55C8 /* StickiesDesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02A565CB8C21EFD11150B827 /* StickiesDesignSystem.framework */; };
 		D8AF035506F2A28089558650 /* StickiesPersistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A378F23E9CF25E03DBDA92D3 /* StickiesPersistence.framework */; };
-		DDCFADB96A0D0E31641A07F0 /* NoteMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73EA88169B8AE57FAD96E9B /* NoteMetadataTests.swift */; };
 		DE43E7070F62844938354ECF /* StickiesCRDT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F85D5468BD6CC4C06FFFEB7 /* StickiesCRDT.framework */; };
 		DE5CCFEDBDBA8A64C0924370 /* LibraryMigrating.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1B2E7B51747E82E160F824 /* LibraryMigrating.swift */; };
 		DF7CC9E13B7E82CF45FA9372 /* FilePackageNoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD9E439EDC3362FA9C326545 /* FilePackageNoteStore.swift */; };
 		E2EB6C8A201C442C774A8CA8 /* UpdaterModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B534CDEA8D55C2BCDCCE5C /* UpdaterModelTests.swift */; };
-		E828AF2BBC3346DA32EC1A76 /* FilePackageNoteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FEEA7B78A9D3A49A5EE34A /* FilePackageNoteStoreTests.swift */; };
 		ECAFBC2A18F5DB8138C52DAB /* StickiesFeatures.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E786A5A23BE7C8B3F80ACE9C /* StickiesFeatures.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		ED86E84D245435A4D1D41285 /* AutomergeUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 643730C4B369677C09881502 /* AutomergeUtilities.framework */; };
 		EDF561B35EFE865267068EE1 /* NoteEditorHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C09DE9BC9573B137604B1F5 /* NoteEditorHost.swift */; };
@@ -120,13 +108,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		01E79F7946FAB2A96E5347F2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D7207DA875EC8F29DE8E134;
-			remoteInfo = StickiesDomain;
-		};
 		29C4878F2756807233DAE8D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
@@ -140,20 +121,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = F45620C80428825F40C057B7;
 			remoteInfo = StickiesApplication;
-		};
-		3B82A2A6D9AE5D534F370823 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D7207DA875EC8F29DE8E134;
-			remoteInfo = StickiesDomain;
-		};
-		40D16CB80322D0C77D09C27A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2615B067348380C398C20B93;
-			remoteInfo = StickiesCRDT;
 		};
 		41C832E64F3B6D90CE26D961 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -197,13 +164,6 @@
 			remoteGlobalIDString = 1D7207DA875EC8F29DE8E134;
 			remoteInfo = StickiesDomain;
 		};
-		8F1A8AE58E2001C0108F64F1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 88A6DF0C6248A233DD6D1463;
-			remoteInfo = StickiesPersistence;
-		};
 		9B02C819735313FAA3833E2F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
@@ -239,13 +199,6 @@
 			remoteGlobalIDString = 3A801AB05E1A69C42D3D2CE7;
 			remoteInfo = StickiesFeatures;
 		};
-		C81247DF85CA2646D72D9499 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 34E0922B1F92B887FCBA0170;
-			remoteInfo = StickiesTestSupport;
-		};
 		CE22B045EBD91C4E1F256B58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
@@ -266,6 +219,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F45620C80428825F40C057B7;
 			remoteInfo = StickiesApplication;
+		};
+		E815AD173644683A98EF6FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44C8EF4990967C355EC5A3C4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2615B067348380C398C20B93;
+			remoteInfo = StickiesCRDT;
 		};
 		EFDAE5B432CB15630D7EAD8E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -354,37 +314,7 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A713B855ED75342297CE355C /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B3945EBB0514AACEE2D4CDBC /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C8EC20B85D0224EB2FB35085 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D09BC49EDA8C1EF0998EFC2D /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -422,29 +352,22 @@
 		1BF26DEF61BA7D4519F03BAD /* NoteFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFrame.swift; sourceTree = "<group>"; };
 		1CE3CEBA15AEB6863C54E125 /* StickiesImproved.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StickiesImproved.entitlements; sourceTree = "<group>"; };
 		1FA98EB11E4DD8A0FCD3C1BA /* AutosaveScheduling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutosaveScheduling.swift; sourceTree = "<group>"; };
-		216FF025BFC5992DA22EE36A /* StickiesDomainTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesDomainTests-Info.plist"; sourceTree = "<group>"; };
 		2238F1C4827EE23B5992678C /* StickiesApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StickiesApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		252923D4AAFF2248C4FC5DA5 /* StickiesPersistenceTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesPersistenceTests-Info.plist"; sourceTree = "<group>"; };
 		2569C9F8AA6916541AAAEB83 /* StickiesDomain-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesDomain-Info.plist"; sourceTree = "<group>"; };
-		272E2AAAC657E4657956FB21 /* StickiesDomainTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesDomainTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FC29C463638DF294F6DAD27 /* NoteSearchResultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearchResultsTests.swift; sourceTree = "<group>"; };
 		307DB043513643A68AE6EE47 /* automergeFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = automergeFFI.xcframework; path = "/Users/agoodkind/Sites/stickies-improved/Tuist/.build/artifacts/automerge-swift/automergeFFI/automergeFFI.xcframework"; sourceTree = "<absolute>"; };
 		3140EEF62EF85EDBFDC74EB1 /* RuntimeInfoProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeInfoProviding.swift; sourceTree = "<group>"; };
 		32E234F0EECD03E536E32DBF /* StorageMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMode.swift; sourceTree = "<group>"; };
-		34FEEA7B78A9D3A49A5EE34A /* FilePackageNoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePackageNoteStoreTests.swift; sourceTree = "<group>"; };
 		38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCommands.swift; sourceTree = "<group>"; };
 		39FC580E989F1F5015CECBEB /* AutomergeUniffi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AutomergeUniffi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D9537534E1BEF6C31639A05 /* NoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStore.swift; sourceTree = "<group>"; };
 		3E2E6FB957AC9D1C60E206AE /* FocusedValues+NoteExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FocusedValues+NoteExport.swift"; sourceTree = "<group>"; };
 		41981312008A36B9D9D5E3C0 /* NoteMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMode.swift; sourceTree = "<group>"; };
 		4319846B45CE6A9C5A299645 /* FileLibraryMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLibraryMigrator.swift; sourceTree = "<group>"; };
-		462FC5583A4983A4ED21130B /* NoteSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearchTests.swift; sourceTree = "<group>"; };
 		4940B27E6A9A14000B5CE9B9 /* StickiesFeatures-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesFeatures-Info.plist"; sourceTree = "<group>"; };
-		4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocumentTests.swift; sourceTree = "<group>"; };
 		5005B0C83F9D5C5C4F2C1A99 /* StickiesApplicationTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesApplicationTests-Info.plist"; sourceTree = "<group>"; };
 		521D253C653B54CCB45FA9CB /* FakeLibraryMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeLibraryMigrator.swift; sourceTree = "<group>"; };
 		560BF0A7A9A07FFC0D6426DB /* NoteWorkspaceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteWorkspaceModel.swift; sourceTree = "<group>"; };
-		56A57A641E2F2A72020011EA /* FileLibraryMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLibraryMigratorTests.swift; sourceTree = "<group>"; };
 		580D68C91E0DFD82E2DD0A50 /* NoteWorkspaceModelRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteWorkspaceModelRefreshTests.swift; sourceTree = "<group>"; };
 		58A74D94A552CD96C377386A /* Automerge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Automerge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		597DD18E01FF144A14B40467 /* NoteID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteID.swift; sourceTree = "<group>"; };
@@ -456,12 +379,10 @@
 		659A91AC546107451821918C /* HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexColor.swift; sourceTree = "<group>"; };
 		68EB2BCAFD0D46C6EBF385EA /* StickyWindowChromeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowChromeBridge.swift; sourceTree = "<group>"; };
 		69BC1D2E2231FDC66F9CA59C /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
-		746EBE7599E2A224A8E1DD75 /* StickiesPersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesPersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		787BE047946F04F040B8E7CC /* StickiesImprovedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickiesImprovedApp.swift; sourceTree = "<group>"; };
 		7948DE55F238EEE16F8F94C5 /* StickiesApplicationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesApplicationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C54C7BD28D073293D7D0F2A /* ColorPickerMenuItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerMenuItems.swift; sourceTree = "<group>"; };
 		81F7E4B977D49480E0C324C0 /* ListRowDoubleClick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListRowDoubleClick.swift; sourceTree = "<group>"; };
-		8511A9FA6A7DCDE78A09977F /* StickiesCRDTTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesCRDTTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85523623DFE754253F046C96 /* NoteSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearch.swift; sourceTree = "<group>"; };
 		856F5EA10159A7379D340D05 /* SparkleUpdaterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkleUpdaterController.swift; sourceTree = "<group>"; };
 		89A7F9CF86F327F13FDAA56C /* NoteMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadata.swift; sourceTree = "<group>"; };
@@ -487,8 +408,6 @@
 		B5299BAC132BECDD9406B970 /* InMemoryNoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryNoteStore.swift; sourceTree = "<group>"; };
 		B5C4BE171428D7B4D9193913 /* ExportFilename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportFilename.swift; sourceTree = "<group>"; };
 		BA03C0576697EC65B665E910 /* PreferencesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesModel.swift; sourceTree = "<group>"; };
-		C1A8E5FAAC737D48082DCA6F /* StorageModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageModeTests.swift; sourceTree = "<group>"; };
-		C73EA88169B8AE57FAD96E9B /* NoteMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadataTests.swift; sourceTree = "<group>"; };
 		C7F0ECB36CEA7F1FBBF5155D /* PlainTextDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainTextDocument.swift; sourceTree = "<group>"; };
 		CADA61EAF35BEF8A9DB322E6 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		CC4D74E4664B2D0A91C5EA3B /* NoteColorSwatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteColorSwatch.swift; sourceTree = "<group>"; };
@@ -501,12 +420,9 @@
 		DB1B2E7B51747E82E160F824 /* LibraryMigrating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMigrating.swift; sourceTree = "<group>"; };
 		DB840944D6F5498A37869C10 /* IdentityContentCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityContentCodec.swift; sourceTree = "<group>"; };
 		E786A5A23BE7C8B3F80ACE9C /* StickiesFeatures.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StickiesFeatures.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		EA535EAE705CA5BC7A5BB6D5 /* NoteCRDTTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCRDTTests.swift; sourceTree = "<group>"; };
 		EAF652C2A241A46CC41AB44E /* NoteWindowStateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteWindowStateModel.swift; sourceTree = "<group>"; };
 		F21B424A0B8D15078269F0C3 /* StickiesImproved.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickiesImproved.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F367B01098B0DB0E0ADBA44B /* StickiesCRDTTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesCRDTTests-Info.plist"; sourceTree = "<group>"; };
 		F3E17C68EEB541241814A1FE /* RuntimeEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeEnvironment.swift; sourceTree = "<group>"; };
-		F4FF869DDC97436CED77F616 /* ExportFilenameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportFilenameTests.swift; sourceTree = "<group>"; };
 		F7991C1729DE13C6CE1EAAED /* FocusedValues+NoteID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FocusedValues+NoteID.swift"; sourceTree = "<group>"; };
 		F85FB388B7B023D997A81FB8 /* NoteColor+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NoteColor+SwiftUI.swift"; sourceTree = "<group>"; };
 		F9AAF1BDF508AAD2DBB382B9 /* StickiesDesignSystem-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesDesignSystem-Info.plist"; sourceTree = "<group>"; };
@@ -566,29 +482,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		667D6FFDD2211A7AA506D37A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3B91B3E8DBD05FB9BF177D77 /* StickiesCRDT.framework in Frameworks */,
-				B75F734240C3AC5F7AD13D3C /* StickiesDomain.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		84E523345CB847C4C7430B50 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				1DA5A0027734708DD72610F4 /* StickiesApplication.framework in Frameworks */,
+				9DF68CF074F81A23DEA46693 /* StickiesCRDT.framework in Frameworks */,
 				41B58AFEE871E293C1A38329 /* StickiesTestSupport.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9FFA3DC04A02C50940CE8834 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4D1BECD49102F19CC77452A5 /* StickiesDomain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,15 +517,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9377517D2572AD81FF2F6FA /* StickiesDomain.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F4F4BB86AEA7232E0DF56361 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B967A880E598AF5C51D10DDB /* StickiesPersistence.framework in Frameworks */,
-				022DFB554A2076C816D33F50 /* StickiesTestSupport.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,29 +566,14 @@
 				CDF015EEECF188B8EF19B87C /* StickiesApplication-Info.plist */,
 				5005B0C83F9D5C5C4F2C1A99 /* StickiesApplicationTests-Info.plist */,
 				93BD4803D812F41C382B7EA6 /* StickiesCRDT-Info.plist */,
-				F367B01098B0DB0E0ADBA44B /* StickiesCRDTTests-Info.plist */,
 				F9AAF1BDF508AAD2DBB382B9 /* StickiesDesignSystem-Info.plist */,
 				2569C9F8AA6916541AAAEB83 /* StickiesDomain-Info.plist */,
-				216FF025BFC5992DA22EE36A /* StickiesDomainTests-Info.plist */,
 				4940B27E6A9A14000B5CE9B9 /* StickiesFeatures-Info.plist */,
 				5DF3A11E2EE1F6A23D5FE6CE /* StickiesImproved-Info.plist */,
 				D896A7B481BF21050377FE05 /* StickiesPersistence-Info.plist */,
-				252923D4AAFF2248C4FC5DA5 /* StickiesPersistenceTests-Info.plist */,
 				AF90BD538504798C8C1461C7 /* StickiesTestSupport-Info.plist */,
 			);
 			path = InfoPlists;
-			sourceTree = "<group>";
-		};
-		3AEB96A730DCB6BAD10C2DB9 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F4FF869DDC97436CED77F616 /* ExportFilenameTests.swift */,
-				4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */,
-				C73EA88169B8AE57FAD96E9B /* NoteMetadataTests.swift */,
-				462FC5583A4983A4ED21130B /* NoteSearchTests.swift */,
-				C1A8E5FAAC737D48082DCA6F /* StorageModeTests.swift */,
-			);
-			path = Tests;
 			sourceTree = "<group>";
 		};
 		3E1E2286F10C92441EE596F8 /* Sources */ = {
@@ -796,14 +672,11 @@
 				2238F1C4827EE23B5992678C /* StickiesApplication.framework */,
 				7948DE55F238EEE16F8F94C5 /* StickiesApplicationTests.xctest */,
 				9F85D5468BD6CC4C06FFFEB7 /* StickiesCRDT.framework */,
-				8511A9FA6A7DCDE78A09977F /* StickiesCRDTTests.xctest */,
 				02A565CB8C21EFD11150B827 /* StickiesDesignSystem.framework */,
 				B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */,
-				272E2AAAC657E4657956FB21 /* StickiesDomainTests.xctest */,
 				E786A5A23BE7C8B3F80ACE9C /* StickiesFeatures.framework */,
 				F21B424A0B8D15078269F0C3 /* StickiesImproved.app */,
 				A378F23E9CF25E03DBDA92D3 /* StickiesPersistence.framework */,
-				746EBE7599E2A224A8E1DD75 /* StickiesPersistenceTests.xctest */,
 				02DF97BF4DBDD8179830F3B9 /* StickiesTestSupport.framework */,
 			);
 			name = Products;
@@ -813,7 +686,6 @@
 			isa = PBXGroup;
 			children = (
 				DDA81CB38E5B820D067FD5A5 /* Sources */,
-				DABA00459D12083BB5471F9A /* Tests */,
 			);
 			path = StickiesCRDT;
 			sourceTree = "<group>";
@@ -822,7 +694,6 @@
 			isa = PBXGroup;
 			children = (
 				798227F71FDC0405BD3D903E /* Sources */,
-				C69E1F8F2FDB43147F4DFDEC /* Tests */,
 			);
 			path = StickiesPersistence;
 			sourceTree = "<group>";
@@ -856,15 +727,6 @@
 			path = StickiesDesignSystem;
 			sourceTree = "<group>";
 		};
-		C69E1F8F2FDB43147F4DFDEC /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				56A57A641E2F2A72020011EA /* FileLibraryMigratorTests.swift */,
-				34FEEA7B78A9D3A49A5EE34A /* FilePackageNoteStoreTests.swift */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
 		C99AB04E80D2376E92DBA8D2 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -882,7 +744,6 @@
 			isa = PBXGroup;
 			children = (
 				14642884B3EAF962270858B0 /* Sources */,
-				3AEB96A730DCB6BAD10C2DB9 /* Tests */,
 			);
 			path = StickiesDomain;
 			sourceTree = "<group>";
@@ -896,14 +757,6 @@
 				55965E953170B6E7DCC91378 /* Modules */,
 			);
 			name = Project;
-			sourceTree = "<group>";
-		};
-		DABA00459D12083BB5471F9A /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				EA535EAE705CA5BC7A5BB6D5 /* NoteCRDTTests.swift */,
-			);
-			path = Tests;
 			sourceTree = "<group>";
 		};
 		DD3D8B2844770D649A6E9D22 = {
@@ -1076,28 +929,6 @@
 			productReference = F21B424A0B8D15078269F0C3 /* StickiesImproved.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5668076CB48B4690DCA2857F /* StickiesCRDTTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 45F1C50ADC89B4C14A4FB9CF /* Build configuration list for PBXNativeTarget "StickiesCRDTTests" */;
-			buildPhases = (
-				4FF4B7B71AD21150BB289DF7 /* Sources */,
-				A5313D100B0B6E8540F201AB /* Resources */,
-				667D6FFDD2211A7AA506D37A /* Frameworks */,
-				C8EC20B85D0224EB2FB35085 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				FA153F4DD10BF0F41ABF2DEE /* PBXTargetDependency */,
-				CE96B3EE1A70FADD1F123E5B /* PBXTargetDependency */,
-			);
-			name = StickiesCRDTTests;
-			packageProductDependencies = (
-			);
-			productName = StickiesCRDTTests;
-			productReference = 8511A9FA6A7DCDE78A09977F /* StickiesCRDTTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		88A6DF0C6248A233DD6D1463 /* StickiesPersistence */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B788537436776C4E266B2B32 /* Build configuration list for PBXNativeTarget "StickiesPersistence" */;
@@ -1132,6 +963,7 @@
 			);
 			dependencies = (
 				D075DD1E17334892CDA537C3 /* PBXTargetDependency */,
+				9B2B4F44A7B91FAA918D38BE /* PBXTargetDependency */,
 				53152927D9C7316AA7BC0D82 /* PBXTargetDependency */,
 			);
 			name = StickiesApplicationTests;
@@ -1139,27 +971,6 @@
 			);
 			productName = StickiesApplicationTests;
 			productReference = 7948DE55F238EEE16F8F94C5 /* StickiesApplicationTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		AF8A35CC228FF347D356B824 /* StickiesDomainTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 89FCAF5B1C827AC644D04398 /* Build configuration list for PBXNativeTarget "StickiesDomainTests" */;
-			buildPhases = (
-				03FFC5AE52349D8EAAABDA96 /* Sources */,
-				C55FC3EC1805A7DA9750CEE2 /* Resources */,
-				9FFA3DC04A02C50940CE8834 /* Frameworks */,
-				D09BC49EDA8C1EF0998EFC2D /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				12FDB9116AD9D581631F1124 /* PBXTargetDependency */,
-			);
-			name = StickiesDomainTests;
-			packageProductDependencies = (
-			);
-			productName = StickiesDomainTests;
-			productReference = 272E2AAAC657E4657956FB21 /* StickiesDomainTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		DF1B4E9B511CD1AD6C5E828E /* StickiesDesignSystem */ = {
@@ -1182,28 +993,6 @@
 			productName = StickiesDesignSystem;
 			productReference = 02A565CB8C21EFD11150B827 /* StickiesDesignSystem.framework */;
 			productType = "com.apple.product-type.framework";
-		};
-		EF42FB4CC436E91CC1F0FB91 /* StickiesPersistenceTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 78FAD32BC5AB1393C7EDC731 /* Build configuration list for PBXNativeTarget "StickiesPersistenceTests" */;
-			buildPhases = (
-				629A6C59F55ED467C9D92A61 /* Sources */,
-				4E7168DC6341D0E14DBB1610 /* Resources */,
-				F4F4BB86AEA7232E0DF56361 /* Frameworks */,
-				A713B855ED75342297CE355C /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				4F4E4275C701A039E5F989D0 /* PBXTargetDependency */,
-				7A8E5F3D94E2896B659A0FC5 /* PBXTargetDependency */,
-			);
-			name = StickiesPersistenceTests;
-			packageProductDependencies = (
-			);
-			productName = StickiesPersistenceTests;
-			productReference = 746EBE7599E2A224A8E1DD75 /* StickiesPersistenceTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		F45620C80428825F40C057B7 /* StickiesApplication */ = {
 			isa = PBXNativeTarget;
@@ -1254,14 +1043,11 @@
 				F45620C80428825F40C057B7 /* StickiesApplication */,
 				939C66B6E0761F66FC6D4C7B /* StickiesApplicationTests */,
 				2615B067348380C398C20B93 /* StickiesCRDT */,
-				5668076CB48B4690DCA2857F /* StickiesCRDTTests */,
 				DF1B4E9B511CD1AD6C5E828E /* StickiesDesignSystem */,
 				1D7207DA875EC8F29DE8E134 /* StickiesDomain */,
-				AF8A35CC228FF347D356B824 /* StickiesDomainTests */,
 				3A801AB05E1A69C42D3D2CE7 /* StickiesFeatures */,
 				466E1D5E66AAD47A36CCEFE5 /* StickiesImproved */,
 				88A6DF0C6248A233DD6D1463 /* StickiesPersistence */,
-				EF42FB4CC436E91CC1F0FB91 /* StickiesPersistenceTests */,
 				34E0922B1F92B887FCBA0170 /* StickiesTestSupport */,
 			);
 		};
@@ -1276,13 +1062,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		43A720905097E7AFBB7DA705 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4E7168DC6341D0E14DBB1610 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1310,21 +1089,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A5313D100B0B6E8540F201AB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BC4474B0A93C6899688FFC3F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C55FC3EC1805A7DA9750CEE2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1355,18 +1120,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		03FFC5AE52349D8EAAABDA96 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9E117C9FC24467985A4D8B8B /* ExportFilenameTests.swift in Sources */,
-				5922436EC59347B66A31F91B /* NoteDocumentTests.swift in Sources */,
-				DDCFADB96A0D0E31641A07F0 /* NoteMetadataTests.swift in Sources */,
-				098A58349ABE0DFB0F7E6C5C /* NoteSearchTests.swift in Sources */,
-				3FF2ABBB9C67D1C6448BA590 /* StorageModeTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		0935AA41311EF6A28345C4B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1401,14 +1154,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4FF4B7B71AD21150BB289DF7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5731E9B399544A2FC483FD8F /* NoteCRDTTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		614653C22F8A3DE706F27193 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1417,15 +1162,6 @@
 				C8DEB1FCEA224384FDE219D1 /* InMemoryNoteStore.swift in Sources */,
 				2446DEC50B5B7B3FA0FFB57D /* ManualAutosaveScheduler.swift in Sources */,
 				1B613E126E4031A1095A21A8 /* NoopLibraryMonitor.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		629A6C59F55ED467C9D92A61 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9361FE291C653A087D2AE8DE /* FileLibraryMigratorTests.swift in Sources */,
-				E828AF2BBC3346DA32EC1A76 /* FilePackageNoteStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1536,12 +1272,6 @@
 			target = 1D7207DA875EC8F29DE8E134 /* StickiesDomain */;
 			targetProxy = CE22B045EBD91C4E1F256B58 /* PBXContainerItemProxy */;
 		};
-		12FDB9116AD9D581631F1124 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = StickiesDomain;
-			target = 1D7207DA875EC8F29DE8E134 /* StickiesDomain */;
-			targetProxy = 01E79F7946FAB2A96E5347F2 /* PBXContainerItemProxy */;
-		};
 		1C1783A821D5BEEA41EB4820 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = StickiesDomain;
@@ -1559,12 +1289,6 @@
 			name = StickiesDesignSystem;
 			target = DF1B4E9B511CD1AD6C5E828E /* StickiesDesignSystem */;
 			targetProxy = B7AC3B8F56ECE698BA9E4D9E /* PBXContainerItemProxy */;
-		};
-		4F4E4275C701A039E5F989D0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = StickiesPersistence;
-			target = 88A6DF0C6248A233DD6D1463 /* StickiesPersistence */;
-			targetProxy = 8F1A8AE58E2001C0108F64F1 /* PBXContainerItemProxy */;
 		};
 		53152927D9C7316AA7BC0D82 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1584,12 +1308,6 @@
 			target = 1D7207DA875EC8F29DE8E134 /* StickiesDomain */;
 			targetProxy = 81FA2D107AD5BE11D180C1FC /* PBXContainerItemProxy */;
 		};
-		7A8E5F3D94E2896B659A0FC5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = StickiesTestSupport;
-			target = 34E0922B1F92B887FCBA0170 /* StickiesTestSupport */;
-			targetProxy = C81247DF85CA2646D72D9499 /* PBXContainerItemProxy */;
-		};
 		8F63E4B816DE9077A797FA36 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = StickiesDomain;
@@ -1601,6 +1319,12 @@
 			name = StickiesDomain;
 			target = 1D7207DA875EC8F29DE8E134 /* StickiesDomain */;
 			targetProxy = 9B02C819735313FAA3833E2F /* PBXContainerItemProxy */;
+		};
+		9B2B4F44A7B91FAA918D38BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = StickiesCRDT;
+			target = 2615B067348380C398C20B93 /* StickiesCRDT */;
+			targetProxy = E815AD173644683A98EF6FA9 /* PBXContainerItemProxy */;
 		};
 		A29FCD66F659EC86CC6777B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1620,12 +1344,6 @@
 			target = 3A801AB05E1A69C42D3D2CE7 /* StickiesFeatures */;
 			targetProxy = B8814B9B13FAED019E998665 /* PBXContainerItemProxy */;
 		};
-		CE96B3EE1A70FADD1F123E5B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = StickiesDomain;
-			target = 1D7207DA875EC8F29DE8E134 /* StickiesDomain */;
-			targetProxy = 3B82A2A6D9AE5D534F370823 /* PBXContainerItemProxy */;
-		};
 		D075DD1E17334892CDA537C3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = StickiesApplication;
@@ -1643,12 +1361,6 @@
 			name = StickiesCRDT;
 			target = 2615B067348380C398C20B93 /* StickiesCRDT */;
 			targetProxy = D1E9232A794E5100F4101873 /* PBXContainerItemProxy */;
-		};
-		FA153F4DD10BF0F41ABF2DEE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = StickiesCRDT;
-			target = 2615B067348380C398C20B93 /* StickiesCRDT */;
-			targetProxy = 40D16CB80322D0C77D09C27A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1760,37 +1472,6 @@
 			};
 			name = Debug;
 		};
-		2AE83AD1061D19D47DC4FF24 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Tuist/.build/artifacts/automerge-swift/automergeFFI",
-				);
-				INFOPLIST_FILE = "Derived/InfoPlists/StickiesCRDTTests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "io.goodkind.stickies-improved.stickiescrdttests";
-				PRODUCT_NAME = StickiesCRDTTests;
-				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-					"$(inherited)",
-					DEBUG,
-				);
-				SWIFT_COMPILATION_MODE = singlefile;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
 		397BDDB08FD419AAA29FA5BF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1870,33 +1551,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		425F80D5AF94168F7433D85A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				INFOPLIST_FILE = "Derived/InfoPlists/StickiesPersistenceTests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "io.goodkind.stickies-improved.stickiespersistencetests";
-				PRODUCT_NAME = StickiesPersistenceTests;
-				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-					"$(inherited)",
-					DEBUG,
-				);
-				SWIFT_COMPILATION_MODE = singlefile;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -2026,6 +1680,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Tuist/.build/artifacts/automerge-swift/automergeFFI",
+				);
 				INFOPLIST_FILE = "Derived/InfoPlists/StickiesApplicationTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2053,6 +1711,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Tuist/.build/artifacts/automerge-swift/automergeFFI",
+				);
 				INFOPLIST_FILE = "Derived/InfoPlists/StickiesApplicationTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2107,33 +1769,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
-		};
-		6AAF4F9B035E6D97EB9EB47B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				INFOPLIST_FILE = "Derived/InfoPlists/StickiesDomainTests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "io.goodkind.stickies-improved.stickiesdomaintests";
-				PRODUCT_NAME = StickiesDomainTests;
-				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-					"$(inherited)",
-					DEBUG,
-				);
-				SWIFT_COMPILATION_MODE = singlefile;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
 		};
 		73413D91A2674404EE37C49D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -2337,33 +1972,6 @@
 			};
 			name = Debug;
 		};
-		B0DD74CD91BF123EA8DA59F8 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Tuist/.build/artifacts/automerge-swift/automergeFFI",
-				);
-				INFOPLIST_FILE = "Derived/InfoPlists/StickiesCRDTTests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "io.goodkind.stickies-improved.stickiescrdttests";
-				PRODUCT_NAME = StickiesCRDTTests;
-				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-			};
-			name = Release;
-		};
 		B1CCE6A2B25FBD563F059254 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2452,29 +2060,6 @@
 			};
 			name = Debug;
 		};
-		C05A081AD70D31F393FF47B6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				INFOPLIST_FILE = "Derived/InfoPlists/StickiesDomainTests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "io.goodkind.stickies-improved.stickiesdomaintests";
-				PRODUCT_NAME = StickiesDomainTests;
-				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-			};
-			name = Release;
-		};
 		CCEF1FE17D197856522E9C3E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 69BC1D2E2231FDC66F9CA59C /* release.xcconfig */;
@@ -2531,29 +2116,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 6.0;
 				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		E8454634F6B8230464EA68CA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				INFOPLIST_FILE = "Derived/InfoPlists/StickiesPersistenceTests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "io.goodkind.stickies-improved.stickiespersistencetests";
-				PRODUCT_NAME = StickiesPersistenceTests;
-				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};
@@ -2658,15 +2220,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		45F1C50ADC89B4C14A4FB9CF /* Build configuration list for PBXNativeTarget "StickiesCRDTTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2AE83AD1061D19D47DC4FF24 /* Debug */,
-				B0DD74CD91BF123EA8DA59F8 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		716C915E8277C193D618DFEB /* Build configuration list for PBXNativeTarget "StickiesImproved" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2676,29 +2229,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		78FAD32BC5AB1393C7EDC731 /* Build configuration list for PBXNativeTarget "StickiesPersistenceTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				425F80D5AF94168F7433D85A /* Debug */,
-				E8454634F6B8230464EA68CA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		8833D3A256EC5EEAA3387203 /* Build configuration list for PBXNativeTarget "StickiesFeatures" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B1CCE6A2B25FBD563F059254 /* Debug */,
 				7CD69A2A7B1DD6E8E4C6B3E3 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		89FCAF5B1C827AC644D04398 /* Build configuration list for PBXNativeTarget "StickiesDomainTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6AAF4F9B035E6D97EB9EB47B /* Debug */,
-				C05A081AD70D31F393FF47B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

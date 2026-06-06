@@ -8,6 +8,7 @@
 
 import Foundation
 import Observation
+import StickiesCRDT
 import StickiesDomain
 import SwiftUI
 import os
@@ -36,6 +37,12 @@ public final class NoteWorkspaceModel {
     public private(set) var didFinishBootstrap = false
 
     private var autosaveTasks: [NoteID: Task<Void, Never>] = [:]
+
+    // The merge-aware source of truth for every note, active or trashed, keyed by id. The
+    // `notes`/`trashedNotesByID` documents are the materialized view derived from these; all
+    // edits mutate the CRDT and then re-materialize. A note is in exactly one of the two
+    // collections at a time, so a single id-keyed map serves both.
+    private var crdts: [NoteID: NoteCRDT] = [:]
 
     public init(
         noteStore: any NoteStore,
@@ -99,14 +106,21 @@ public final class NoteWorkspaceModel {
     public func refreshFromDisk() async {
         do {
             let loaded = try await noteStore.loadAllDocuments()
-            let merged = loaded.map(mergedWithMemory)
-            let active = merged.filter { !$0.metadata.isTrashed }
-            let trashed = merged.filter(\.metadata.isTrashed)
+            let loadedIDs = Set(loaded.map(\.id))
 
-            notes = Dictionary(uniqueKeysWithValues: active.map { ($0.id, $0) })
-            orderedNoteIDs = Self.orderedByUpdatedDescending(active)
-            trashedNotesByID = Dictionary(uniqueKeysWithValues: trashed.map { ($0.id, $0) })
-            orderedTrashedNoteIDs = Self.orderedByUpdatedDescending(trashed)
+            // Drop notes whose packages disappeared (deleted on another device).
+            for id in Set(crdts.keys).subtracting(loadedIDs) {
+                crdts[id] = nil
+                notes[id] = nil
+                trashedNotesByID[id] = nil
+            }
+
+            for document in loaded {
+                await reconcile(loaded: document)
+            }
+
+            reorderNotes()
+            reorderTrashedNotes()
         } catch {
             logger.error(
                 "Refresh from disk failed: \(error.localizedDescription, privacy: .public)")
@@ -114,23 +128,45 @@ public final class NoteWorkspaceModel {
         }
     }
 
-    /// Picks the authoritative copy of a freshly loaded note. Our own debounced autosave
-    /// writes the file, and the library monitor surfaces that write back as a reload, so a
-    /// naive replace can drop the file over text the user is still typing. Every in-memory
-    /// edit stamps `updatedAt = .now` through `NoteDocument.updatePlainText`, so memory's
-    /// timestamp always reflects its latest edit: keep memory whenever it is at least as
-    /// recent as the file (our own write-back ties, and an unwritten edit leads), and take
-    /// the loaded copy only when it is strictly newer, which is the real external-edit case.
-    /// This is single-device last-writer-wins; a sequence CRDT is the planned successor that
-    /// merges concurrent multi-device edits instead of dropping the older side.
-    private func mergedWithMemory(_ loaded: NoteDocument) -> NoteDocument {
-        guard let inMemory = notes[loaded.id] ?? trashedNotesByID[loaded.id] else {
-            return loaded
+    /// Folds one freshly loaded package into memory. When a live CRDT already exists for the
+    /// note, the loaded document is merged into it: our own debounced autosave reloads here
+    /// too, and merging the same history is idempotent, so in-flight keystrokes are never
+    /// clobbered, while a genuinely concurrent edit from another device merges
+    /// character-by-character instead of overwriting. A package without an Automerge
+    /// document is a legacy note, seeded into a CRDT and persisted so it becomes merge-aware.
+    private func reconcile(loaded document: NoteDocument) async {
+        let id = document.id
+        if let existing = crdts[id] {
+            if let data = document.crdtData, let incoming = try? NoteCRDT.load(from: data) {
+                try? existing.merge(incoming)
+            }
+            materialize(existing, id: id)
+        } else if let data = document.crdtData, let crdt = try? NoteCRDT.load(from: data) {
+            crdts[id] = crdt
+            materialize(crdt, id: id)
+        } else {
+            let crdt = NoteCRDT.seeded(from: document)
+            crdts[id] = crdt
+            let materialized = materialize(crdt, id: id)
+            await persistImmediately(materialized)
         }
-        if inMemory.metadata.updatedAt >= loaded.metadata.updatedAt {
-            return inMemory
+    }
+
+    /// Rebuilds the materialized document for `id` from its CRDT and files it into the active
+    /// or trashed collection by its trashed flag. The stored document carries the serialized
+    /// bytes, so a subsequent save writes `note.automerge` alongside the readable mirror.
+    @discardableResult
+    private func materialize(_ crdt: NoteCRDT, id: NoteID) -> NoteDocument {
+        var document = crdt.materialized(fallbackID: id)
+        document.crdtData = crdt.serialized()
+        if document.metadata.isTrashed {
+            notes[id] = nil
+            trashedNotesByID[id] = document
+        } else {
+            trashedNotesByID[id] = nil
+            notes[id] = document
         }
-        return loaded
+        return document
     }
 
     /// Active notes in display order (newest first), for the manager's Notes section.
@@ -147,11 +183,9 @@ public final class NoteWorkspaceModel {
     /// active collections so its window no longer counts as open and it drops from
     /// the normal note set while staying on disk for the manager to list.
     public func trashNote(_ noteID: NoteID) {
-        guard var document = notes[noteID] else { return }
-        document.metadata.isTrashed = true
-        document.metadata.updatedAt = .now
-        notes[noteID] = nil
-        trashedNotesByID[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setTrashed(true, updatedAt: .now)
+        let document = materialize(crdt, id: noteID)
         reorderNotes()
         reorderTrashedNotes()
         Task { await persistImmediately(document) }
@@ -160,11 +194,9 @@ public final class NoteWorkspaceModel {
     /// Reverses a soft delete: clears the trashed flag, persists, and moves the note
     /// back into the active collections so it appears in the normal note set again.
     public func restoreNote(_ noteID: NoteID) {
-        guard var document = trashedNotesByID[noteID] else { return }
-        document.metadata.isTrashed = false
-        document.metadata.updatedAt = .now
-        trashedNotesByID[noteID] = nil
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setTrashed(false, updatedAt: .now)
+        let document = materialize(crdt, id: noteID)
         reorderTrashedNotes()
         reorderNotes()
         Task { await persistImmediately(document) }
@@ -183,6 +215,7 @@ public final class NoteWorkspaceModel {
         }
         autosaveTasks[noteID]?.cancel()
         autosaveTasks[noteID] = nil
+        crdts[noteID] = nil
         notes[noteID] = nil
         trashedNotesByID[noteID] = nil
         reorderNotes()
@@ -192,7 +225,11 @@ public final class NoteWorkspaceModel {
     public func createNote(color: NoteColor = .default) async -> NoteID {
         var note = NoteDocument()
         note.metadata.colorName = color
-        await upsert(note)
+        let crdt = NoteCRDT.seeded(from: note)
+        crdts[note.id] = crdt
+        let document = materialize(crdt, id: note.id)
+        reorderNotes()
+        await persistImmediately(document)
         return note.id
     }
 
@@ -219,18 +256,18 @@ public final class NoteWorkspaceModel {
     }
 
     public func updatePlainText(_ plainText: String, for noteID: NoteID) {
-        guard var document = notes[noteID] else { return }
-        document.updatePlainText(plainText)
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setBodyText(plainText)
+        crdt.setUpdatedAt(.now)
+        let document = materialize(crdt, id: noteID)
         reorderNotes()
         scheduleAutosave(for: document)
     }
 
     public func updateColor(_ color: NoteColor, for noteID: NoteID) {
-        guard var document = notes[noteID] else { return }
-        document.metadata.colorName = color
-        document.metadata.updatedAt = .now
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setColor(color, updatedAt: .now)
+        let document = materialize(crdt, id: noteID)
         reorderNotes()
         // Persist immediately rather than through the debounce: a color pick is a
         // discrete, deliberate change with no rapid follow-up to coalesce.
@@ -238,11 +275,9 @@ public final class NoteWorkspaceModel {
     }
 
     public func updateFont(name: String?, size: Double, for noteID: NoteID) {
-        guard var document = notes[noteID] else { return }
-        document.metadata.fontName = name
-        document.metadata.fontSize = size
-        document.metadata.updatedAt = .now
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setFont(name: name, size: size, updatedAt: .now)
+        let document = materialize(crdt, id: noteID)
         reorderNotes()
         // A font pick is a discrete change with no rapid follow-up to coalesce, so
         // persist straight away rather than through the typing debounce.
@@ -250,10 +285,9 @@ public final class NoteWorkspaceModel {
     }
 
     public func updateFontColor(hex: String?, for noteID: NoteID) {
-        guard var document = notes[noteID] else { return }
-        document.metadata.fontColorHex = hex
-        document.metadata.updatedAt = .now
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setFontColor(hex: hex, updatedAt: .now)
+        let document = materialize(crdt, id: noteID)
         reorderNotes()
         Task { await persistImmediately(document) }
     }
@@ -263,9 +297,9 @@ public final class NoteWorkspaceModel {
     /// than hitting disk on every event. The window frame is not user-visible
     /// content, so it does not touch `updatedAt` and does not reorder the list.
     public func updateFrame(_ frame: NoteFrame, for noteID: NoteID) {
-        guard var document = notes[noteID] else { return }
-        document.metadata.frame = frame
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setFrame(frame)
+        let document = materialize(crdt, id: noteID)
         scheduleAutosave(for: document)
     }
 
@@ -276,10 +310,9 @@ public final class NoteWorkspaceModel {
         expandedHeight: Double?,
         for noteID: NoteID
     ) {
-        guard var document = notes[noteID] else { return }
-        document.metadata.collapsed = collapsed
-        document.metadata.expandedHeight = expandedHeight
-        notes[noteID] = document
+        guard let crdt = crdts[noteID] else { return }
+        crdt.setCollapsed(collapsed, expandedHeight: expandedHeight)
+        let document = materialize(crdt, id: noteID)
         Task { await persistImmediately(document) }
     }
 
@@ -300,29 +333,27 @@ public final class NoteWorkspaceModel {
     }
 
     public func duplicateConflictCopy(for noteID: NoteID) async {
-        guard var conflictCopy = notes[noteID] else { return }
+        guard let original = notes[noteID] else { return }
+        var conflictCopy = original
         conflictCopy.metadata.id = NoteID()
         conflictCopy.metadata.title = "\(conflictCopy.metadata.title) Conflict Copy"
         conflictCopy.metadata.updatedAt = .now
         conflictCopy.metadata.createdAt = .now
-        await upsert(conflictCopy)
+        conflictCopy.crdtData = nil
+        let crdt = NoteCRDT.seeded(from: conflictCopy)
+        crdts[conflictCopy.id] = crdt
+        let document = materialize(crdt, id: conflictCopy.id)
+        reorderNotes()
+        await persistImmediately(document)
     }
 
     private func ensureSeedNoteIfNeeded() async throws {
         if try await noteStore.loadAllDocuments().isEmpty {
             let note = NoteDocument()
-            try await noteStore.save(note)
-        }
-    }
-
-    private func upsert(_ document: NoteDocument) async {
-        notes[document.id] = document
-        reorderNotes()
-        do {
+            let crdt = NoteCRDT.seeded(from: note)
+            var document = crdt.materialized(fallbackID: note.id)
+            document.crdtData = crdt.serialized()
             try await noteStore.save(document)
-        } catch {
-            logger.error("Upsert save failed: \(error.localizedDescription, privacy: .public)")
-            lastErrorMessage = error.localizedDescription
         }
     }
 

@@ -202,6 +202,7 @@ let applicationTests = unitTestTarget(
     "StickiesApplicationTests",
     dependencies: [
         .target(name: "StickiesApplication"),
+        .target(name: "StickiesCRDT"),
         .target(name: "StickiesTestSupport"),
     ]
 )
