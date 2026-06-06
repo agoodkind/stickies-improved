@@ -1,5 +1,10 @@
 -include Config/local.xcconfig
 
+# Expose the signing identity under the name swift-mk reads, so swift-mk owns
+# build-time signing through its XCODE_XCCONFIG_FILE override. Locally the value
+# comes from SIGNING_CERTIFICATE in local.xcconfig; CI sets CODE_SIGN_IDENTITY.
+CODE_SIGN_IDENTITY ?= $(SIGNING_CERTIFICATE)
+
 TUIST := $(shell command -v tuist 2>/dev/null || printf '%s' "mise x tuist@4.111.1 -- tuist")
 CONFIGURATION ?= Release
 BUILD_DIR ?= build

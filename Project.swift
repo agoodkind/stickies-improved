@@ -23,12 +23,11 @@ let release = Configuration.release(
     xcconfig: "Config/release.xcconfig"
 )
 
+// Signing identity, team, and style are owned by swift-mk's XCODE_XCCONFIG_FILE
+// override, which wins over these target settings, so they are not set here.
 let settings = Settings.settings(
     base: [
         "SWIFT_VERSION": "6.0",
-        "CODE_SIGN_STYLE": "Manual",
-        "DEVELOPMENT_TEAM": "$(DEVELOPMENT_TEAM)",
-        "CODE_SIGN_IDENTITY": "$(SIGNING_CERTIFICATE)",
         "MARKETING_VERSION": "$(MARKETING_VERSION)",
         "CURRENT_PROJECT_VERSION": "$(CURRENT_PROJECT_VERSION)",
         "ENABLE_HARDENED_RUNTIME": "YES",
@@ -39,9 +38,6 @@ let settings = Settings.settings(
 )
 
 let targetSigningSettings: SettingsDictionary = [
-    "CODE_SIGN_STYLE": "Manual",
-    "DEVELOPMENT_TEAM": "$(DEVELOPMENT_TEAM)",
-    "CODE_SIGN_IDENTITY": "$(SIGNING_CERTIFICATE)",
     "CODE_SIGN_INJECT_BASE_ENTITLEMENTS": "NO",
     "ENABLE_HARDENED_RUNTIME": "YES",
     "OTHER_CODE_SIGN_FLAGS": "--timestamp",
