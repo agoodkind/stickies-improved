@@ -26,4 +26,28 @@ extension NoteColor {
     private static func swiftUIColor(from rgb: RGBComponents) -> Color {
         Color(.sRGB, red: rgb.red, green: rgb.green, blue: rgb.blue)
     }
+
+    /// A filled color circle rendered as an image for use as a menu item icon. A plain
+    /// `Image(systemName:).foregroundStyle(...)` renders monochrome in an `NSMenu`, which
+    /// strips the color; rasterizing the circle and forcing the original rendering mode
+    /// keeps the real color in menus.
+    @preconcurrency
+    @MainActor
+    public func swatchImage() -> Image {
+        let renderer = ImageRenderer(
+            content: Circle()
+                .fill(swatchColor)
+                .frame(width: Swatch.side, height: Swatch.side)
+        )
+        renderer.scale = Swatch.scale
+        guard let cgImage = renderer.cgImage else {
+            return Image(systemName: "circle.fill")
+        }
+        return Image(decorative: cgImage, scale: Swatch.scale).renderingMode(.original)
+    }
+
+    private enum Swatch {
+        static let side: CGFloat = 11
+        static let scale: CGFloat = 2
+    }
 }

@@ -15,8 +15,6 @@ import SwiftUI
 // command menu and the in-window right-click context menu so both lists stay
 // in sync with `NoteColor.allCases`.
 struct ColorPickerMenuItems: View {
-    private static let swatchSymbol = "circle.fill"
-
     @Environment(\.noteWorkspaceModel) private var workspace
 
     let noteID: NoteID
@@ -29,8 +27,7 @@ struct ColorPickerMenuItems: View {
                 Label {
                     Text(color.rawValue.capitalized)
                 } icon: {
-                    Image(systemName: Self.swatchSymbol)
-                        .foregroundStyle(color.swatchColor)
+                    color.swatchImage()
                 }
             }
         }

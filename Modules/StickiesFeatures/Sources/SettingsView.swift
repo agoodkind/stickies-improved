@@ -23,8 +23,6 @@ public struct SettingsView: View {
         static let maximumLabel = "100%"
     }
 
-    private static let colorSwatchSymbol = "circle.fill"
-
     @Environment(\.noteWorkspaceModel) private var workspace
     @Environment(\.updaterModel) private var updaterModel
     @Environment(\.preferencesModel) private var preferences
@@ -84,8 +82,7 @@ public struct SettingsView: View {
                     Label {
                         Text(color.rawValue.capitalized)
                     } icon: {
-                        Image(systemName: Self.colorSwatchSymbol)
-                            .foregroundStyle(color.swatchColor)
+                        color.swatchImage()
                     }
                     .tag(color)
                 }

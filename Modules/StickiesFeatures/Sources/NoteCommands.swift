@@ -13,7 +13,6 @@ import StickiesDomain
 import SwiftUI
 
 public struct NoteCommands: Commands {
-    private static let colorSwatchSymbol = "circle.fill"
     private static let managerWindowID = "manager"
     private static let systemFontLabel = "System Font"
 
@@ -105,8 +104,7 @@ public struct NoteCommands: Commands {
                     Label {
                         Text(color.rawValue.capitalized)
                     } icon: {
-                        Image(systemName: Self.colorSwatchSymbol)
-                            .foregroundStyle(color.swatchColor)
+                        color.swatchImage()
                     }
                 }
                 .disabled(focusedNoteID == nil)
