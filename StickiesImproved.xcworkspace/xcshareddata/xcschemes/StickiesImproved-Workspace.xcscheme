@@ -14,6 +14,48 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3D953430EFB5D6BC738A928F"
+               BuildableName = "Automerge.framework"
+               BlueprintName = "Automerge"
+               ReferencedContainer = "container:Tuist/.build/tuist-derived/Projects/Automerge/Automerge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1BF997294A12C95E4C1ED230"
+               BuildableName = "AutomergeUniffi.framework"
+               BlueprintName = "AutomergeUniffi"
+               ReferencedContainer = "container:Tuist/.build/tuist-derived/Projects/Automerge/Automerge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5C4A23D906471EA1EB7EE064"
+               BuildableName = "AutomergeUtilities.framework"
+               BlueprintName = "AutomergeUtilities"
+               ReferencedContainer = "container:Tuist/.build/tuist-derived/Projects/Automerge/Automerge.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "F45620C80428825F40C057B7"
                BuildableName = "StickiesApplication.framework"
                BlueprintName = "StickiesApplication"
@@ -31,6 +73,34 @@
                BlueprintIdentifier = "939C66B6E0761F66FC6D4C7B"
                BuildableName = "StickiesApplicationTests.xctest"
                BlueprintName = "StickiesApplicationTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2615B067348380C398C20B93"
+               BuildableName = "StickiesCRDT.framework"
+               BlueprintName = "StickiesCRDT"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5668076CB48B4690DCA2857F"
+               BuildableName = "StickiesCRDTTests.xctest"
+               BlueprintName = "StickiesCRDTTests"
                ReferencedContainer = "container:StickiesImproved.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -170,6 +240,17 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5668076CB48B4690DCA2857F"
+               BuildableName = "StickiesCRDTTests.xctest"
+               BlueprintName = "StickiesCRDTTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF8A35CC228FF347D356B824"
                BuildableName = "StickiesDomainTests.xctest"
                BlueprintName = "StickiesDomainTests"
@@ -202,10 +283,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F45620C80428825F40C057B7"
-            BuildableName = "StickiesApplication.framework"
-            BlueprintName = "StickiesApplication"
-            ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            BlueprintIdentifier = "3D953430EFB5D6BC738A928F"
+            BuildableName = "Automerge.framework"
+            BlueprintName = "Automerge"
+            ReferencedContainer = "container:Tuist/.build/tuist-derived/Projects/Automerge/Automerge.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </LaunchAction>
@@ -218,10 +299,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F45620C80428825F40C057B7"
-            BuildableName = "StickiesApplication.framework"
-            BlueprintName = "StickiesApplication"
-            ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            BlueprintIdentifier = "3D953430EFB5D6BC738A928F"
+            BuildableName = "Automerge.framework"
+            BlueprintName = "Automerge"
+            ReferencedContainer = "container:Tuist/.build/tuist-derived/Projects/Automerge/Automerge.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

@@ -126,9 +126,19 @@ let designSystem = frameworkTarget(
     "StickiesDesignSystem",
     dependencies: [.target(name: "StickiesDomain")]
 )
+let crdt = frameworkTarget(
+    "StickiesCRDT",
+    dependencies: [
+        .target(name: "StickiesDomain"),
+        .external(name: "Automerge"),
+    ]
+)
 let application = frameworkTarget(
     "StickiesApplication",
-    dependencies: [.target(name: "StickiesDomain")]
+    dependencies: [
+        .target(name: "StickiesDomain"),
+        .target(name: "StickiesCRDT"),
+    ]
 )
 let features = frameworkTarget(
     "StickiesFeatures",
@@ -158,6 +168,7 @@ let app: Target = .target(
         .target(name: "StickiesApplication"),
         .target(name: "StickiesDesignSystem"),
         .target(name: "StickiesPersistence"),
+        .target(name: "StickiesCRDT"),
         .target(name: "StickiesDomain"),
         .external(name: "Sparkle"),
     ],
@@ -180,6 +191,13 @@ let persistenceTests = unitTestTarget(
         .target(name: "StickiesTestSupport"),
     ]
 )
+let crdtTests = unitTestTarget(
+    "StickiesCRDTTests",
+    dependencies: [
+        .target(name: "StickiesCRDT"),
+        .target(name: "StickiesDomain"),
+    ]
+)
 let applicationTests = unitTestTarget(
     "StickiesApplicationTests",
     dependencies: [
@@ -196,12 +214,14 @@ let project = Project(
         domain,
         persistence,
         designSystem,
+        crdt,
         application,
         features,
         testSupport,
         app,
         domainTests,
         persistenceTests,
+        crdtTests,
         applicationTests,
     ],
     schemes: [
@@ -213,6 +233,7 @@ let project = Project(
                 [
                     "StickiesDomainTests",
                     "StickiesPersistenceTests",
+                    "StickiesCRDTTests",
                     "StickiesApplicationTests",
                 ],
                 configuration: "Debug"
