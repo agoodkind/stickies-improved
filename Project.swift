@@ -44,6 +44,10 @@ let targetSigningSettings: SettingsDictionary = [
     "PROVISIONING_PROFILE_SPECIFIER": "",
 ]
 
+// swift-mk's XCODE_XCCONFIG_FILE override supplies the identity, team, and style
+// (the same method macos-fan-curve uses). Unlike macos-fan-curve, the app declares
+// an iCloud capability, which Developer ID distribution requires a provisioning
+// profile to authorize, so the app target keeps the profile specifier.
 let appSigningSettings = targetSigningSettings.merging([
     "PROVISIONING_PROFILE_SPECIFIER": "$(PROVISIONING_PROFILE_SPECIFIER)"
 ]) { _, new in new }
