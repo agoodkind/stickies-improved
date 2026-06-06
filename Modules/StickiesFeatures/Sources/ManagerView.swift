@@ -40,6 +40,9 @@ public struct ManagerView: View {
     @State private var query = ""
     @State private var selection: NoteID?
     @State private var isPreviewVisible = false
+    @State private var searchResults: [NoteSearchResult] = []
+    @State private var isSearchRunning = false
+    @State private var searchRunner = NoteSearchRunner()
 
     public init() {
         // Reads the workspace model from the environment.
@@ -53,6 +56,7 @@ public struct ManagerView: View {
                 newNoteButton
                 previewToggle
             }
+            .task(id: query) { await runSearch() }
             .onChange(of: selection) { _, newValue in
                 // Selecting a note opens the preview; the toggle and dismissals only
                 // flip visibility, so the selection survives a manual close.
@@ -102,13 +106,15 @@ public struct ManagerView: View {
         !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private var searchResults: [NoteSearchResult] {
-        workspace?.searchResults(for: query) ?? []
-    }
-
     @ViewBuilder private var searchSection: some View {
         Section("Results") {
-            if searchResults.isEmpty {
+            if isSearchRunning {
+                HStack(spacing: Layout.rowSpacing) {
+                    ProgressView().controlSize(.small)
+                    Text("Searching\u{2026}").foregroundStyle(.secondary)
+                }
+                .padding(.vertical, Layout.emptySectionVerticalPadding)
+            } else if searchResults.isEmpty {
                 emptyRow("No matches")
             } else {
                 ForEach(searchResults) { result in
@@ -116,6 +122,29 @@ public struct ManagerView: View {
                 }
             }
         }
+    }
+
+    /// Runs the full-text search off the render path: a short debounce coalesces
+    /// keystrokes, then the matching runs on a background task over a Sendable snapshot
+    /// so a large library never blocks the main thread. `.task(id: query)` cancels and
+    /// restarts this whenever the query changes.
+    private func runSearch() async {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            isSearchRunning = false
+            searchResults = []
+            return
+        }
+        isSearchRunning = true
+        let active = workspace?.activeNotes ?? []
+        let trashed = workspace?.trashedNotes ?? []
+        let currentQuery = query
+        let results = await searchRunner.search(
+            active: active, trashed: trashed, query: currentQuery
+        )
+        guard !Task.isCancelled else { return }
+        searchResults = results
+        isSearchRunning = false
     }
 
     @ViewBuilder private var notesSection: some View {

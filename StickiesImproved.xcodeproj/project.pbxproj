@@ -48,6 +48,7 @@
 		550E52C18A44614369E31C44 /* NoteWorkspaceModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */; };
 		58C7C7A79C00B0736B0CC239 /* ManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156326902334544B4188AA8E /* ManagerView.swift */; };
 		5922436EC59347B66A31F91B /* NoteDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */; };
+		5B190A7339D5B894D13E3783 /* NoteSearchRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62E5A0830F0E71E85A2610EF /* NoteSearchRunner.swift */; };
 		5B426A59C149A6F3899C6BD5 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9537534E1BEF6C31639A05 /* NoteStore.swift */; };
 		5E8F04572FF5EF76E6E90D26 /* StickyTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */; };
 		6068AB214EC1CB1DA81527B0 /* NoteFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF26DEF61BA7D4519F03BAD /* NoteFrame.swift */; };
@@ -376,6 +377,7 @@
 		597DD18E01FF144A14B40467 /* NoteID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteID.swift; sourceTree = "<group>"; };
 		5ADE3117E2244F239D47CB2A /* LibraryMonitoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryMonitoring.swift; sourceTree = "<group>"; };
 		5DF3A11E2EE1F6A23D5FE6CE /* StickiesImproved-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesImproved-Info.plist"; sourceTree = "<group>"; };
+		62E5A0830F0E71E85A2610EF /* NoteSearchRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearchRunner.swift; sourceTree = "<group>"; };
 		6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteWorkspaceModelTests.swift; sourceTree = "<group>"; };
 		659A91AC546107451821918C /* HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexColor.swift; sourceTree = "<group>"; };
 		68EB2BCAFD0D46C6EBF385EA /* StickyWindowChromeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowChromeBridge.swift; sourceTree = "<group>"; };
@@ -811,6 +813,7 @@
 			isa = PBXGroup;
 			children = (
 				B2A72D5DE6E3209DC726E1DC /* EnvironmentValues+Models.swift */,
+				62E5A0830F0E71E85A2610EF /* NoteSearchRunner.swift */,
 				EAF652C2A241A46CC41AB44E /* NoteWindowStateModel.swift */,
 				560BF0A7A9A07FFC0D6426DB /* NoteWorkspaceModel.swift */,
 				923E16CDC59783F81F70AB87 /* NoteWorkspaceModel+Search.swift */,
@@ -1259,6 +1262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3CA2A1086B756580C0C8131 /* EnvironmentValues+Models.swift in Sources */,
+				5B190A7339D5B894D13E3783 /* NoteSearchRunner.swift in Sources */,
 				AAAB885D2AAD8A41043B4070 /* NoteWindowStateModel.swift in Sources */,
 				B356F96D37B7AFDA98EBA04D /* NoteWorkspaceModel+Search.swift in Sources */,
 				9005BD2FCEFF0AA77F2473B6 /* NoteWorkspaceModel.swift in Sources */,

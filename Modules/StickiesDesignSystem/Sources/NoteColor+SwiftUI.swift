@@ -34,17 +34,29 @@ extension NoteColor {
     @preconcurrency
     @MainActor
     public func swatchImage() -> Image {
+        // Rasterize each color once and cache it: menus and pickers ask for these on
+        // every render, and `ImageRenderer` is a synchronous main-thread rasterization
+        // that would otherwise run per color per render.
+        if let cached = Self.swatchImageCache[self] {
+            return cached
+        }
         let renderer = ImageRenderer(
             content: Circle()
                 .fill(swatchColor)
                 .frame(width: Swatch.side, height: Swatch.side)
         )
         renderer.scale = Swatch.scale
-        guard let cgImage = renderer.cgImage else {
-            return Image(systemName: "circle.fill")
+        let image: Image
+        if let cgImage = renderer.cgImage {
+            image = Image(decorative: cgImage, scale: Swatch.scale).renderingMode(.original)
+        } else {
+            image = Image(systemName: "circle.fill")
         }
-        return Image(decorative: cgImage, scale: Swatch.scale).renderingMode(.original)
+        Self.swatchImageCache[self] = image
+        return image
     }
+
+    @MainActor private static var swatchImageCache: [NoteColor: Image] = [:]
 
     private enum Swatch {
         static let side: CGFloat = 11
