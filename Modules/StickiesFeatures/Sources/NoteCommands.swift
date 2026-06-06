@@ -6,7 +6,7 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import AppKit
+import CoreText
 import StickiesApplication
 import StickiesDesignSystem
 import StickiesDomain
@@ -15,6 +15,12 @@ import SwiftUI
 public struct NoteCommands: Commands {
     private static let colorSwatchSymbol = "circle.fill"
     private static let managerWindowID = "manager"
+    private static let systemFontLabel = "System Font"
+
+    // The installed font families, read once with CoreText so the family Picker can pin a
+    // font face without opening a system Fonts panel.
+    private static let fontFamilies: [String] =
+        (CTFontManagerCopyAvailableFontFamilyNames() as? [String] ?? []).sorted()
 
     // Size bounds for the Bigger/Smaller commands, matching a sane editing range; the
     // original defaults to the system font at size 12.
@@ -108,33 +114,76 @@ public struct NoteCommands: Commands {
         }
 
         CommandMenu("Format") {
-            // The panels act on the first responder (the NSTextView), whose overridden
-            // changeFont/changeColor persist the result through the workspace.
-            Button("Show Fonts") {
-                NSFontManager.shared.orderFrontFontPanel(nil)
-            }
-            .keyboardShortcut("t")
-            .disabled(focusedNoteID == nil)
+            if let focusedNoteID, let note = workspace.note(for: focusedNoteID) {
+                ColorPicker(
+                    "Text Color",
+                    selection: textColorBinding(for: focusedNoteID, metadata: note.metadata),
+                    supportsOpacity: false
+                )
 
-            Button("Show Colors") {
-                NSColorPanel.shared.orderFront(nil)
-            }
-            .disabled(focusedNoteID == nil)
+                Picker(
+                    "Font",
+                    selection: fontFamilyBinding(for: focusedNoteID, metadata: note.metadata)
+                ) {
+                    Text(Self.systemFontLabel).tag(String?.none)
+                    Divider()
+                    ForEach(Self.fontFamilies, id: \.self) { family in
+                        Text(family).tag(String?.some(family))
+                    }
+                }
 
-            Divider()
+                Divider()
 
-            Button("Bigger") {
-                adjustFocusedFontSize(by: FontSize.step)
-            }
-            .keyboardShortcut("+")
-            .disabled(focusedNoteID == nil)
+                Button("Bigger") {
+                    adjustFocusedFontSize(by: FontSize.step)
+                }
+                .keyboardShortcut("+")
 
-            Button("Smaller") {
-                adjustFocusedFontSize(by: -FontSize.step)
+                Button("Smaller") {
+                    adjustFocusedFontSize(by: -FontSize.step)
+                }
+                .keyboardShortcut("-")
             }
-            .keyboardShortcut("-")
-            .disabled(focusedNoteID == nil)
         }
+    }
+
+    /// Binds the focused note's text color to a native `ColorPicker`. The getter shows the
+    /// stored color or the default label color, while the setter persists only the color
+    /// the user actually picks. The default stays `nil` rather than being written as an
+    /// explicit color, which is what avoids the prior white-default persistence bug.
+    private func textColorBinding(
+        for noteID: NoteID,
+        metadata: NoteMetadata
+    ) -> Binding<Color> {
+        Binding(
+            get: {
+                guard
+                    let hex = metadata.fontColorHex,
+                    let color = HexColor.color(from: hex)
+                else {
+                    return .primary
+                }
+                return color
+            },
+            set: { newColor in
+                workspace.updateFontColor(hex: HexColor.string(from: newColor), for: noteID)
+            }
+        )
+    }
+
+    /// Binds the focused note's font family to a native `Picker`. A `nil` selection is the
+    /// system font, so the note keeps tracking the system face rather than pinning a
+    /// concrete name. The size is carried through unchanged.
+    private func fontFamilyBinding(
+        for noteID: NoteID,
+        metadata: NoteMetadata
+    ) -> Binding<String?> {
+        Binding(
+            get: { metadata.fontName },
+            set: { newName in
+                workspace.updateFont(name: newName, size: metadata.fontSize, for: noteID)
+            }
+        )
     }
 
     private func adjustFocusedFontSize(by delta: Double) {
