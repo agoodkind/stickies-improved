@@ -103,6 +103,9 @@ struct NotePreviewView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .padding(Layout.paperPadding)
         } else {
+            // No extra padding: the editor carries its own text-container insets, the same as
+            // the note window, so the preview's margins match the real note instead of being
+            // doubled up by an outer pad.
             StickyTextEditor(
                 text: .constant(note.plainText),
                 fontName: note.metadata.fontName,
@@ -110,7 +113,6 @@ struct NotePreviewView: View {
                 fontColorHex: note.metadata.fontColorHex,
                 isEditable: false
             )
-            .padding(Layout.paperPadding)
         }
     }
 
