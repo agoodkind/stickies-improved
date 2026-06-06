@@ -60,7 +60,7 @@ public struct NoteCommands: Commands {
             .disabled(exportTrigger == nil)
         }
 
-        CommandMenu("Notes") {
+        CommandGroup(replacing: .newItem) {
             Button("New Note") {
                 let color = preferences.defaultColor
                 Task {
@@ -70,7 +70,7 @@ public struct NoteCommands: Commands {
             }
             .keyboardShortcut("n")
 
-            Button("Delete") {
+            Button("Delete Note") {
                 if let focusedNoteID {
                     dismissWindow(value: focusedNoteID)
                     workspace.trashNote(focusedNoteID)
@@ -78,10 +78,10 @@ public struct NoteCommands: Commands {
             }
             .keyboardShortcut(.delete, modifiers: .command)
             .disabled(focusedNoteID == nil)
+        }
 
-            Divider()
-
-            Button("Check for Updates") {
+        CommandGroup(after: .appInfo) {
+            Button("Check for Updates...") {
                 updaterModel.checkForUpdates()
             }
         }
