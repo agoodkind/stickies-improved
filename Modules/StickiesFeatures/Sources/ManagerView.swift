@@ -32,6 +32,7 @@ public struct ManagerView: View {
         .year().month().day().hour().minute()
 
     @Environment(\.noteWorkspaceModel) private var workspace
+    @Environment(\.preferencesModel) private var preferences
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 
@@ -48,7 +49,10 @@ public struct ManagerView: View {
         sidebar
             .navigationTitle("All Notes")
             .searchable(text: $query, prompt: "Search notes")
-            .toolbar { previewToggle }
+            .toolbar {
+                newNoteButton
+                previewToggle
+            }
             .onChange(of: selection) { _, newValue in
                 // Selecting a note opens the preview; the toggle and dismissals only
                 // flip visibility, so the selection survives a manual close.
@@ -228,6 +232,17 @@ public struct ManagerView: View {
         )
     }
 
+    /// Creates a note in the configured default color, mirroring the ⌘N command, then
+    /// opens its window and selects its row so the manager and the new note stay in sync.
+    @ToolbarContentBuilder private var newNoteButton: some ToolbarContent {
+        ToolbarItem(placement: .primaryAction) {
+            Button(action: createNote) {
+                Label("New Note", systemImage: "square.and.pencil")
+            }
+            .disabled(workspace == nil)
+        }
+    }
+
     /// The standard trailing-inspector toggle, enabled only when a note is selected so
     /// there is always something to preview when it opens.
     @ToolbarContentBuilder private var previewToggle: some ToolbarContent {
@@ -259,6 +274,16 @@ public struct ManagerView: View {
     }
 
     // MARK: - Actions
+
+    private func createNote() {
+        guard let workspace else { return }
+        let color = preferences?.defaultColor ?? .default
+        Task {
+            let noteID = await workspace.createNote(color: color)
+            openWindow(value: noteID)
+            selection = noteID
+        }
+    }
 
     /// Opens the currently selected note in its own window, restoring it first when the
     /// selection is a trashed note. Invoked by the list's double-click recognizer, which
