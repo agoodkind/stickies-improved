@@ -12,7 +12,17 @@ import StickiesDomain
 import SwiftUI
 
 struct PlainTextEditorView: View {
+    private enum Layout {
+        /// Height of the top glass frost. Tall enough to read under the floating traffic
+        /// lights; the bottom of the band fades out so it blends into the note.
+        static let frostHeight: CGFloat = 60
+        /// Opacity of the frost at its top edge. Starts partial (never fully opaque) so the
+        /// band reads as a soft frosted edge, then the gradient fades it to clear.
+        static let frostTopOpacity: Double = 0.6
+    }
+
     @Environment(\.noteWorkspaceModel) private var workspace
+    @Environment(\.colorScheme) private var colorScheme
 
     let noteID: NoteID
 
@@ -26,12 +36,36 @@ struct PlainTextEditorView: View {
         // Fill the window past the safe area so the editor's own top and left insets
         // place the first glyph at the measured 32pt/5pt, independent of the titlebar.
         .ignoresSafeArea()
-        // Native Liquid Glass tinted with the note's color, so the note reads as a
-        // frosted glass panel in the system material rather than a flat fill.
-        .background(noteGlass)
+        .background(noteColor.backgroundColor(for: colorScheme).ignoresSafeArea())
+        .overlay(alignment: .top) {
+            frostBand
+        }
         .contextMenu {
             ColorPickerMenuItems(noteID: noteID)
         }
+    }
+
+    /// A Liquid Glass frost pinned to the top of the note. It uses the plain `.regular` system
+    /// material with no bright tint, so in dark mode it is a dark, translucent glass that shows
+    /// the material's refraction as text scrolls up behind it, rather than a solid colored bar.
+    /// The mask starts already partial at the top (never fully opaque) and fades to clear, so
+    /// the band reads as a soft frosted edge with no solid upper half. `glassEffect` is the
+    /// system material, so the frost itself is not hand-drawn.
+    private var frostBand: some View {
+        Rectangle()
+            .fill(.clear)
+            .glassEffect(.regular, in: Rectangle())
+            .frame(maxWidth: .infinity)
+            .frame(height: Layout.frostHeight)
+            .mask(
+                LinearGradient(
+                    colors: [.black.opacity(Layout.frostTopOpacity), .clear],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .allowsHitTesting(false)
+            .ignoresSafeArea(edges: .top)
     }
 
     private var metadata: NoteMetadata? {
@@ -40,15 +74,6 @@ struct PlainTextEditorView: View {
 
     private var noteColor: NoteColor {
         metadata?.colorName ?? .default
-    }
-
-    /// Full-bleed Liquid Glass tinted with the note's color. The note window is already
-    /// a clear container, so the system samples what is behind it for the frosted look.
-    private var noteGlass: some View {
-        Rectangle()
-            .fill(.clear)
-            .glassEffect(.regular.tint(noteColor.swatchColor), in: Rectangle())
-            .ignoresSafeArea()
     }
 
     private var textBinding: Binding<String> {

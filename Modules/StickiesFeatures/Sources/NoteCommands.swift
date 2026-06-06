@@ -102,7 +102,7 @@ public struct NoteCommands: Commands {
             .keyboardShortcut("m", modifiers: [.command, .shift])
         }
 
-        CommandMenu("Colour") {
+        CommandMenu("Color") {
             ForEach(NoteColor.allCases, id: \.self) { color in
                 Button {
                     if let focusedNoteID {

@@ -33,6 +33,7 @@
 		30A53CFC907098713B092564 /* ContentCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD714A4DE507A94C4750AA0 /* ContentCodec.swift */; };
 		31BEB3AB67A283A0607AC5DF /* NoteCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */; };
 		32120AA86113364291087D40 /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
+		364483AE4148E1CAC4FD023F /* StickiesAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39250B9AD49B5D29AFA7038 /* StickiesAppDelegate.swift */; };
 		3B91B3E8DBD05FB9BF177D77 /* StickiesCRDT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F85D5468BD6CC4C06FFFEB7 /* StickiesCRDT.framework */; };
 		3BC8A312E2FE28671F7C50B6 /* StickiesFeatures.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E786A5A23BE7C8B3F80ACE9C /* StickiesFeatures.framework */; };
 		3BCDC2C138CCC4280A0DBD69 /* PlainTextDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F0ECB36CEA7F1FBBF5155D /* PlainTextDocument.swift */; };
@@ -496,6 +497,7 @@
 		B5C4BE171428D7B4D9193913 /* ExportFilename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportFilename.swift; sourceTree = "<group>"; };
 		BA03C0576697EC65B665E910 /* PreferencesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesModel.swift; sourceTree = "<group>"; };
 		C1A8E5FAAC737D48082DCA6F /* StorageModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageModeTests.swift; sourceTree = "<group>"; };
+		C39250B9AD49B5D29AFA7038 /* StickiesAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickiesAppDelegate.swift; sourceTree = "<group>"; };
 		C73EA88169B8AE57FAD96E9B /* NoteMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadataTests.swift; sourceTree = "<group>"; };
 		C7F0ECB36CEA7F1FBBF5155D /* PlainTextDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainTextDocument.swift; sourceTree = "<group>"; };
 		CADA61EAF35BEF8A9DB322E6 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
@@ -768,6 +770,7 @@
 			children = (
 				0ED7D5D68519BC5B35899277 /* BundleRuntimeInfo.swift */,
 				856F5EA10159A7379D340D05 /* SparkleUpdaterController.swift */,
+				C39250B9AD49B5D29AFA7038 /* StickiesAppDelegate.swift */,
 				787BE047946F04F040B8E7CC /* StickiesImprovedApp.swift */,
 			);
 			path = App;
@@ -1466,6 +1469,7 @@
 			files = (
 				03FD9F2912336B3F9CAE67D1 /* BundleRuntimeInfo.swift in Sources */,
 				89C9A23D62F8CC85C0923D66 /* SparkleUpdaterController.swift in Sources */,
+				364483AE4148E1CAC4FD023F /* StickiesAppDelegate.swift in Sources */,
 				C437E5CC1F5E856EC586532A /* StickiesImprovedApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -113,9 +113,9 @@ public struct StickyTextEditor: NSViewRepresentable {
         let font = resolvedFont
         textView.font = font
         textView.textColor = resolvedColor
-        // The note is a light frosted glass panel, so pin a light appearance to keep the
-        // default label color dark and readable on the tint.
-        textView.appearance = NSAppearance(named: .aqua)
+        // The note background adapts to the system appearance (vivid pastel in light, muted
+        // dark in dark), so the text must adapt too: leave the appearance unpinned so the
+        // default `labelColor` is dark on the light note and light on the dark note.
         textView.typingAttributes = [
             .font: font,
             .foregroundColor: resolvedColor,

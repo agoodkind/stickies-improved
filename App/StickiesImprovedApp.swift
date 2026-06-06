@@ -26,6 +26,8 @@ struct StickiesImprovedApp: App {
 
     private static let managerWindowID = "manager"
 
+    @NSApplicationDelegateAdaptor(StickiesAppDelegate.self) private var appDelegate
+
     private let runtimeInfo = BundleRuntimeInfo()
 
     @State private var workspace: NoteWorkspaceModel
@@ -73,6 +75,7 @@ struct StickiesImprovedApp: App {
     var body: some Scene {
         WindowGroup(id: "launcher") {
             injectModels(into: BootstrapView())
+                .background(ReopenBridge(managerWindowID: Self.managerWindowID))
         }
         .defaultSize(width: 1, height: 1)
         .windowResizability(.contentSize)
@@ -114,6 +117,24 @@ struct StickiesImprovedApp: App {
             injectModels(into: AboutView())
         }
         .windowResizability(.contentSize)
+    }
+
+    // Captures the scene's `openWindow` action into the app delegate so a dock-icon reopen
+    // can restore the manager window after every note has closed. The launcher scene that
+    // hosts this lives for the app's lifetime, so the captured action stays valid.
+    private struct ReopenBridge: View {
+        @Environment(\.openWindow) private var openWindow
+        let managerWindowID: String
+
+        var body: some View {
+            Color.clear
+                .frame(width: 0, height: 0)
+                .onAppear {
+                    StickiesAppDelegate.openManager = {
+                        openWindow(id: managerWindowID)
+                    }
+                }
+        }
     }
 
     // Inject every model and service the feature layer reads. Keeping the keys
