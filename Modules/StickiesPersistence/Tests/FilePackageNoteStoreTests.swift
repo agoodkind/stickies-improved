@@ -39,6 +39,23 @@ struct FilePackageNoteStoreTests {
         #expect(loaded.metadata.mode == .plainText)
     }
 
+    @Test func crdtDataRoundTripsAndIsAbsentForLegacyNotes() async throws {
+        let store = try makeStore()
+        let withCRDT = NoteID()
+        let crdtBytes = Data([0x01, 0x02, 0x03, 0x04])
+        try await store.save(
+            NoteDocument(id: withCRDT, plainText: "has crdt", crdtData: crdtBytes)
+        )
+        let legacy = NoteID()
+        try await store.save(NoteDocument(id: legacy, plainText: "no crdt"))
+
+        let loadedWithCRDT = try await store.loadDocument(id: withCRDT)
+        let loadedLegacy = try await store.loadDocument(id: legacy)
+
+        #expect(loadedWithCRDT.crdtData == crdtBytes)
+        #expect(loadedLegacy.crdtData == nil)
+    }
+
     @Test func deleteRemovesDocument() async throws {
         let store = try makeStore()
         let noteID = NoteID()

@@ -32,6 +32,7 @@ public actor FilePackageNoteStore: NoteStore {
     private let packageExtension = "stickynote"
     private let locationResolver: any StorageLocationResolving
     private let contentCodec: any ContentCodec
+    private let crdtFileName = "note.automerge"
 
     public init(
         locationResolver: any StorageLocationResolving,
@@ -71,6 +72,7 @@ public actor FilePackageNoteStore: NoteStore {
         let metadataURL = packageURL.appendingPathComponent("meta.json")
         let textURL = packageURL.appendingPathComponent(document.metadata.mode.contentFileName)
         let markdownURL = packageURL.appendingPathComponent("content.md")
+        let crdtURL = packageURL.appendingPathComponent(crdtFileName)
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -92,6 +94,13 @@ public actor FilePackageNoteStore: NoteStore {
             }
         case .markdown:
             throw FilePackageNoteStoreError.unsupportedMode(.markdown)
+        }
+
+        // The Automerge document is the merge-aware source of truth; meta.json and
+        // content.txt above are its human-readable mirror. Write it when present so a note
+        // promoted to a CRDT keeps its full edit history across saves.
+        if let crdtData = document.crdtData {
+            try coordinatedWrite(data: crdtData, to: crdtURL)
         }
     }
 
@@ -117,14 +126,23 @@ public actor FilePackageNoteStore: NoteStore {
         let contentData = try coordinatedRead(from: contentURL)
         let decodedText = try contentCodec.decode(contentData)
 
+        // Read the Automerge document if the package carries one. A legacy note without it
+        // loads with `crdtData == nil`, which the model treats as "seed a CRDT on first use".
+        let crdtURL = packageURL.appendingPathComponent(crdtFileName)
+        let crdtData = fileManager.fileExists(atPath: crdtURL.path)
+            ? try coordinatedRead(from: crdtURL)
+            : nil
+
         switch metadata.mode {
         case .plainText:
-            var document = NoteDocument(metadata: metadata, plainText: decodedText)
+            var document = NoteDocument(
+                metadata: metadata, plainText: decodedText, crdtData: crdtData
+            )
             document.refreshDerivedFields()
             return document
         case .markdown:
             metadata.mode = .plainText
-            return NoteDocument(metadata: metadata, plainText: decodedText)
+            return NoteDocument(metadata: metadata, plainText: decodedText, crdtData: crdtData)
         }
     }
 

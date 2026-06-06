@@ -15,15 +15,28 @@ public struct NoteDocument: Equatable, Identifiable, Sendable {
     public var metadata: NoteMetadata
     public var plainText: String
 
-    public init(metadata: NoteMetadata, plainText: String) {
+    /// The serialized Automerge document for this note, when one exists on disk. The
+    /// persistence layer treats it as opaque bytes; only the CRDT layer interprets it. It is
+    /// the merge-aware source of truth for the body and metadata, while `plainText` and
+    /// `metadata` are the materialized view the rest of the app reads.
+    public var crdtData: Data?
+
+    public init(metadata: NoteMetadata, plainText: String, crdtData: Data? = nil) {
         self.metadata = metadata
         self.plainText = plainText
+        self.crdtData = crdtData
         refreshDerivedFields()
     }
 
-    public init(id: NoteID = NoteID(), mode: NoteMode = .plainText, plainText: String = "") {
+    public init(
+        id: NoteID = NoteID(),
+        mode: NoteMode = .plainText,
+        plainText: String = "",
+        crdtData: Data? = nil
+    ) {
         metadata = NoteMetadata(id: id, mode: mode)
         self.plainText = plainText
+        self.crdtData = crdtData
         refreshDerivedFields()
     }
 
