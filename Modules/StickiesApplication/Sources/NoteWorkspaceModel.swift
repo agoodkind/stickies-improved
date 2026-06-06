@@ -180,6 +180,13 @@ public final class NoteWorkspaceModel {
         notes[noteID]
     }
 
+    /// Looks a note up across both the active and trashed collections. The manager's
+    /// preview pane is driven by a selected id that can land on either kind, so it
+    /// needs a lookup that does not assume the note is still active.
+    public func anyDocument(for noteID: NoteID) -> NoteDocument? {
+        notes[noteID] ?? trashedNotesByID[noteID]
+    }
+
     public func binding(for noteID: NoteID) -> Binding<String> {
         Binding(
             get: { [weak self] in
