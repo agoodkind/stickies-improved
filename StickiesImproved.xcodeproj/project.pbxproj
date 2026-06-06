@@ -13,6 +13,7 @@
 		024F4D146BD95C3C8EAE7472 /* NoteColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A515214A1E1F1753D076FBCD /* NoteColor.swift */; };
 		03FD9F2912336B3F9CAE67D1 /* BundleRuntimeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED7D5D68519BC5B35899277 /* BundleRuntimeInfo.swift */; };
 		04C32F97CC643833691C5068 /* NoteDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D23C9DE000492703C89361 /* NoteDocument.swift */; };
+		098A58349ABE0DFB0F7E6C5C /* NoteSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462FC5583A4983A4ED21130B /* NoteSearchTests.swift */; };
 		0D6BA3C5226796E259661F71 /* PlainTextEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18A64A72E6D8F4902BF9AF9 /* PlainTextEditorView.swift */; };
 		0F60AB9EE2EC51CDF7ED0B12 /* StickiesApplication.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2238F1C4827EE23B5992678C /* StickiesApplication.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		11F6430CD110347B4688EE2F /* StickiesDesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02A565CB8C21EFD11150B827 /* StickiesDesignSystem.framework */; };
@@ -22,6 +23,7 @@
 		1DA5A0027734708DD72610F4 /* StickiesApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2238F1C4827EE23B5992678C /* StickiesApplication.framework */; };
 		2446DEC50B5B7B3FA0FFB57D /* ManualAutosaveScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AEB67943D3DC46F79931B0 /* ManualAutosaveScheduler.swift */; };
 		2582DE8C1D3F8CD3E8908BE2 /* NoteMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A7F9CF86F327F13FDAA56C /* NoteMetadata.swift */; };
+		27B61F5789027580460F45AA /* NoteSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85523623DFE754253F046C96 /* NoteSearch.swift */; };
 		2AD0C047592A7CF118DB5A6C /* FocusedValues+NoteID.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7991C1729DE13C6CE1EAAED /* FocusedValues+NoteID.swift */; };
 		2C82919FAC9CAFD7D10A89CE /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
 		30A53CFC907098713B092564 /* ContentCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD714A4DE507A94C4750AA0 /* ContentCodec.swift */; };
@@ -30,6 +32,7 @@
 		3BC8A312E2FE28671F7C50B6 /* StickiesFeatures.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E786A5A23BE7C8B3F80ACE9C /* StickiesFeatures.framework */; };
 		3DFF6D01BA834A6D98BC7B9F /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4726632A0D5573444187C2F /* Sparkle.xcframework */; };
 		3E187DC5A4E900CBC31A6794 /* RuntimeEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E17C68EEB541241814A1FE /* RuntimeEnvironment.swift */; };
+		410956E5AC2A8D8074E8A89C /* NoteSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE6200AA29EFA5A6B8A172C /* NoteSearchResult.swift */; };
 		41B58AFEE871E293C1A38329 /* StickiesTestSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DF97BF4DBDD8179830F3B9 /* StickiesTestSupport.framework */; };
 		42667D3D275CBCF85B671895 /* IdentityContentCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB840944D6F5498A37869C10 /* IdentityContentCodec.swift */; };
 		4A5CF79694372164D09BB2C1 /* PlaceholderRuntimeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07977EC40C90897DA9844530 /* PlaceholderRuntimeInfo.swift */; };
@@ -43,6 +46,7 @@
 		5E8F04572FF5EF76E6E90D26 /* StickyTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF2D7BB3615AF737871C370 /* StickyTextEditor.swift */; };
 		6068AB214EC1CB1DA81527B0 /* NoteFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF26DEF61BA7D4519F03BAD /* NoteFrame.swift */; };
 		6CEA0743313AF8B10BB6A512 /* NoteMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41981312008A36B9D9D5E3C0 /* NoteMode.swift */; };
+		755FB9C6AF51035DFCC30357 /* NoteSearchResultsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC29C463638DF294F6DAD27 /* NoteSearchResultsTests.swift */; };
 		77CC72B5DC1C0E6B0A549746 /* StickiesDomain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2109CCDF87241042DFE1B84 /* StickiesDomain.framework */; };
 		78719B0970DE24A90386E1BB /* HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659A91AC546107451821918C /* HexColor.swift */; };
 		80AB7353A3C828F9059DC1DD /* RuntimeInfoProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3140EEF62EF85EDBFDC74EB1 /* RuntimeInfoProviding.swift */; };
@@ -334,11 +338,13 @@
 		252923D4AAFF2248C4FC5DA5 /* StickiesPersistenceTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesPersistenceTests-Info.plist"; sourceTree = "<group>"; };
 		2569C9F8AA6916541AAAEB83 /* StickiesDomain-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesDomain-Info.plist"; sourceTree = "<group>"; };
 		272E2AAAC657E4657956FB21 /* StickiesDomainTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesDomainTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FC29C463638DF294F6DAD27 /* NoteSearchResultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearchResultsTests.swift; sourceTree = "<group>"; };
 		3140EEF62EF85EDBFDC74EB1 /* RuntimeInfoProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeInfoProviding.swift; sourceTree = "<group>"; };
 		34FEEA7B78A9D3A49A5EE34A /* FilePackageNoteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePackageNoteStoreTests.swift; sourceTree = "<group>"; };
 		38FCAC3DE8EC5D263358DA9C /* NoteCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCommands.swift; sourceTree = "<group>"; };
 		3D9537534E1BEF6C31639A05 /* NoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStore.swift; sourceTree = "<group>"; };
 		41981312008A36B9D9D5E3C0 /* NoteMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMode.swift; sourceTree = "<group>"; };
+		462FC5583A4983A4ED21130B /* NoteSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearchTests.swift; sourceTree = "<group>"; };
 		4940B27E6A9A14000B5CE9B9 /* StickiesFeatures-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesFeatures-Info.plist"; sourceTree = "<group>"; };
 		4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDocumentTests.swift; sourceTree = "<group>"; };
 		5005B0C83F9D5C5C4F2C1A99 /* StickiesApplicationTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesApplicationTests-Info.plist"; sourceTree = "<group>"; };
@@ -354,6 +360,7 @@
 		787BE047946F04F040B8E7CC /* StickiesImprovedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickiesImprovedApp.swift; sourceTree = "<group>"; };
 		7948DE55F238EEE16F8F94C5 /* StickiesApplicationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StickiesApplicationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C54C7BD28D073293D7D0F2A /* ColorPickerMenuItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerMenuItems.swift; sourceTree = "<group>"; };
+		85523623DFE754253F046C96 /* NoteSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearch.swift; sourceTree = "<group>"; };
 		856F5EA10159A7379D340D05 /* SparkleUpdaterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkleUpdaterController.swift; sourceTree = "<group>"; };
 		89A7F9CF86F327F13FDAA56C /* NoteMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadata.swift; sourceTree = "<group>"; };
 		8B0CEAB6A989EDC4065CE2D9 /* NoteSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSceneView.swift; sourceTree = "<group>"; };
@@ -373,6 +380,7 @@
 		C73EA88169B8AE57FAD96E9B /* NoteMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMetadataTests.swift; sourceTree = "<group>"; };
 		CADA61EAF35BEF8A9DB322E6 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
 		CDF015EEECF188B8EF19B87C /* StickiesApplication-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesApplication-Info.plist"; sourceTree = "<group>"; };
+		CFE6200AA29EFA5A6B8A172C /* NoteSearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteSearchResult.swift; sourceTree = "<group>"; };
 		D35014F50D02A8F83380F8F3 /* ActivityPublishing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPublishing.swift; sourceTree = "<group>"; };
 		D7144BB1EFFD90F3D41175D1 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		D896A7B481BF21050377FE05 /* StickiesPersistence-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "StickiesPersistence-Info.plist"; sourceTree = "<group>"; };
@@ -506,6 +514,8 @@
 				597DD18E01FF144A14B40467 /* NoteID.swift */,
 				89A7F9CF86F327F13FDAA56C /* NoteMetadata.swift */,
 				41981312008A36B9D9D5E3C0 /* NoteMode.swift */,
+				85523623DFE754253F046C96 /* NoteSearch.swift */,
+				CFE6200AA29EFA5A6B8A172C /* NoteSearchResult.swift */,
 				3D9537534E1BEF6C31639A05 /* NoteStore.swift */,
 				F3E17C68EEB541241814A1FE /* RuntimeEnvironment.swift */,
 				3140EEF62EF85EDBFDC74EB1 /* RuntimeInfoProviding.swift */,
@@ -537,6 +547,7 @@
 			children = (
 				4CDB0A1971904C1D0E33390C /* NoteDocumentTests.swift */,
 				C73EA88169B8AE57FAD96E9B /* NoteMetadataTests.swift */,
+				462FC5583A4983A4ED21130B /* NoteSearchTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -650,6 +661,7 @@
 		A3FF1EF23117E3929BB9F29A /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				2FC29C463638DF294F6DAD27 /* NoteSearchResultsTests.swift */,
 				6374EE95A746B8A68B89C479 /* NoteWorkspaceModelTests.swift */,
 			);
 			path = Tests;
@@ -1093,6 +1105,7 @@
 			files = (
 				5922436EC59347B66A31F91B /* NoteDocumentTests.swift in Sources */,
 				DDCFADB96A0D0E31641A07F0 /* NoteMetadataTests.swift in Sources */,
+				098A58349ABE0DFB0F7E6C5C /* NoteSearchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1100,6 +1113,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				755FB9C6AF51035DFCC30357 /* NoteSearchResultsTests.swift in Sources */,
 				550E52C18A44614369E31C44 /* NoteWorkspaceModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1199,6 +1213,8 @@
 				00E88FAE27DEA39A07D1D2CB /* NoteID.swift in Sources */,
 				2582DE8C1D3F8CD3E8908BE2 /* NoteMetadata.swift in Sources */,
 				6CEA0743313AF8B10BB6A512 /* NoteMode.swift in Sources */,
+				27B61F5789027580460F45AA /* NoteSearch.swift in Sources */,
+				410956E5AC2A8D8074E8A89C /* NoteSearchResult.swift in Sources */,
 				5B426A59C149A6F3899C6BD5 /* NoteStore.swift in Sources */,
 				3E187DC5A4E900CBC31A6794 /* RuntimeEnvironment.swift in Sources */,
 				80AB7353A3C828F9059DC1DD /* RuntimeInfoProviding.swift in Sources */,
