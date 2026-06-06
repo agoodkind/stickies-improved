@@ -6,34 +6,30 @@
 //  Copyright © 2026, all rights reserved.
 //
 
+import AppKit
 import SwiftUI
 
-/// A native SwiftUI plain-text editor that reproduces the original Plain Text Stickies
-/// note body: one uniform font, size, and text color across the whole note, not rich
-/// text. The editor draws no background so the per-note color shows through, and its
-/// font and color come from the environment rather than per-range attributes, which is
-/// what keeps the whole note uniform.
-public struct StickyTextEditor: View {
-    /// Insets tuned against a real Plain Text Stickies note, where the first text line
-    /// sits about 32pt below the window top, clearing the floating traffic lights, with a
-    /// 5pt left margin. SwiftUI insets the note content below the hidden titlebar by the
-    /// window safe area, and `TextEditor` adds its own text-container inset, which together
-    /// overshoot the target; these negative nudges pull the first glyph back to the
-    /// measured 32pt top and 5pt left.
+/// The plain-text note body. It bridges an `NSTextView` configured with
+/// `isRichText = false`, which Apple documents converts pasted or dropped rich text to
+/// plain text, so ⌘V, the Edit menu, and drag-and-drop all land as plain characters in
+/// one uniform font, size, and color across the whole note. The view draws no
+/// background so the per-note color shows through.
+public struct StickyTextEditor: NSViewRepresentable {
+    /// Insets tuned against a real Plain Text Stickies note: the first text line sits
+    /// about 32pt below the window top, clearing the floating traffic lights, with a 5pt
+    /// left margin. The editor fills the window (the caller pins it past the safe area),
+    /// so the top split between the scroll view's content inset and the text container
+    /// inset is absolute rather than relative to a SwiftUI safe area.
     private enum Layout {
-        static let topInset: CGFloat = -3
-        static let leadingInset: CGFloat = -1
+        static let scrollTopInset: CGFloat = 24
+        static let containerTopInset: CGFloat = 8
+        static let containerLeftInset: CGFloat = 5
     }
 
     @Binding private var text: String
     private let fontName: String?
     private let fontSize: Double
     private let fontColorHex: String?
-
-    /// The editor's own source of truth. `TextEditor` needs an `AttributedString`, while
-    /// the model stores a plain `String`, so this state bridges the two and is kept in
-    /// sync with the binding through the two `onChange` handlers below.
-    @State private var attributed: AttributedString
 
     public init(
         text: Binding<String>,
@@ -45,52 +41,114 @@ public struct StickyTextEditor: View {
         self.fontName = fontName
         self.fontSize = fontSize
         self.fontColorHex = fontColorHex
-        _attributed = State(initialValue: AttributedString(text.wrappedValue))
     }
 
-    public var body: some View {
-        TextEditor(text: $attributed)
-            .font(noteFont)
-            .foregroundStyle(noteColor)
-            // Hide the editor's own background so the per-note color painted behind it
-            // shows through, matching the full-bleed pastel note.
-            .scrollContentBackground(.hidden)
-            .padding(.top, Layout.topInset)
-            .padding(.leading, Layout.leadingInset)
-            .onChange(of: attributed) {
-                // Push edits back to the model as plain text. The guard stops the empty
-                // round-trip that an external rebuild would otherwise cause.
-                let plain = String(attributed.characters)
-                if plain != text {
-                    text = plain
-                }
-            }
-            .onChange(of: text) {
-                // Rebuild only when the model text genuinely diverges from the editor.
-                // Skipping the no-op rebuild while the user types keeps the caret in
-                // place, since reassigning `attributed` would collapse the selection.
-                if String(attributed.characters) != text {
-                    attributed = AttributedString(text)
-                }
-            }
+    public func makeNSView(context: Context) -> NSScrollView {
+        let textView = NSTextView()
+        textView.isRichText = false
+        textView.importsGraphics = false
+        textView.allowsImageEditing = false
+        textView.isEditable = true
+        textView.isSelectable = true
+        textView.allowsUndo = true
+        textView.isAutomaticQuoteSubstitutionEnabled = false
+        textView.isAutomaticDashSubstitutionEnabled = false
+        textView.drawsBackground = false
+        textView.backgroundColor = .clear
+        textView.textContainerInset = NSSize(
+            width: Layout.containerLeftInset,
+            height: Layout.containerTopInset
+        )
+        textView.delegate = context.coordinator
+        textView.string = text
+        textView.textContainer?.widthTracksTextView = true
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
+        textView.autoresizingMask = [.width]
+
+        let scrollView = NSScrollView()
+        scrollView.documentView = textView
+        scrollView.drawsBackground = false
+        scrollView.backgroundColor = .clear
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
+        scrollView.automaticallyAdjustsContentInsets = false
+        scrollView.contentInsets = NSEdgeInsets(
+            top: Layout.scrollTopInset, left: 0, bottom: 0, right: 0
+        )
+
+        applyStyle(to: textView)
+        return scrollView
     }
 
-    /// Uniform note font: the system font when no family is pinned, otherwise the named
-    /// family. `TextEditor` applies this to any run that carries no font of its own,
-    /// which an `AttributedString` built from a plain string never does.
-    private var noteFont: Font {
-        guard let fontName else {
-            return .system(size: fontSize)
+    public func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        context.coordinator.text = $text
+        guard let textView = scrollView.documentView as? NSTextView else { return }
+        // Rebuild from the model only when it genuinely diverges, so typing does not
+        // reset the caret. Reassigning `string` collapses the selection otherwise.
+        if textView.string != text {
+            textView.string = text
         }
-        return .custom(fontName, size: fontSize)
+        applyStyle(to: textView)
+        // Focus the editor once the window exists so a freshly opened note takes the
+        // caret immediately. Retries across updates until the window is attached.
+        if !context.coordinator.didFocus, let window = textView.window {
+            if window.makeFirstResponder(textView) {
+                context.coordinator.didFocus = true
+            }
+        }
     }
 
-    /// Uniform note text color: the user-picked hex when present, otherwise the primary
-    /// label color, which resolves dark under the light color scheme the note pins.
-    private var noteColor: Color {
-        guard let fontColorHex, let resolved = HexColor.color(from: fontColorHex) else {
-            return .primary
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(text: $text)
+    }
+
+    /// Applies the uniform note font and color. With `isRichText = false` the font and
+    /// color cover the whole note, so a pasted run can never carry its own.
+    private func applyStyle(to textView: NSTextView) {
+        let font = resolvedFont
+        textView.font = font
+        textView.textColor = resolvedColor
+        // The note is a light frosted glass panel, so pin a light appearance to keep the
+        // default label color dark and readable on the tint.
+        textView.appearance = NSAppearance(named: .aqua)
+        textView.typingAttributes = [
+            .font: font,
+            .foregroundColor: resolvedColor,
+        ]
+    }
+
+    private var resolvedFont: NSFont {
+        guard let fontName, let named = NSFont(name: fontName, size: fontSize) else {
+            return .systemFont(ofSize: fontSize)
         }
-        return resolved
+        return named
+    }
+
+    private var resolvedColor: NSColor {
+        guard let fontColorHex, let color = HexColor.color(from: fontColorHex) else {
+            return .labelColor
+        }
+        return NSColor(color)
+    }
+
+    @preconcurrency
+    @MainActor
+    public final class Coordinator: NSObject, NSTextViewDelegate {
+        var text: Binding<String>
+        var didFocus = false
+
+        init(text: Binding<String>) {
+            self.text = text
+        }
+
+        public func textDidChange(_ notification: Notification) {
+            guard let changedView = notification.object as? NSTextView else { return }
+            // Persist the plain string only; with `isRichText = false` there are no
+            // attributes to carry, so the saved note matches what is on screen.
+            if text.wrappedValue != changedView.string {
+                text.wrappedValue = changedView.string
+            }
+        }
     }
 }

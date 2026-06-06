@@ -13,7 +13,6 @@ import SwiftUI
 
 struct PlainTextEditorView: View {
     @Environment(\.noteWorkspaceModel) private var workspace
-    @Environment(\.colorScheme) private var colorScheme
 
     let noteID: NoteID
 
@@ -24,10 +23,12 @@ struct PlainTextEditorView: View {
             fontSize: metadata?.fontSize ?? NoteMetadata.Default.fontSize,
             fontColorHex: metadata?.fontColorHex
         )
-        // The note's own color fills full-bleed behind the transparent editor, vivid in
-        // light mode and a muted dark variant in dark mode. The text uses the primary
-        // label color, which resolves dark on the light note and light on the dark note.
-        .background(noteColor.backgroundColor(for: colorScheme).ignoresSafeArea())
+        // Fill the window past the safe area so the editor's own top and left insets
+        // place the first glyph at the measured 32pt/5pt, independent of the titlebar.
+        .ignoresSafeArea()
+        // Native Liquid Glass tinted with the note's color, so the note reads as a
+        // frosted glass panel in the system material rather than a flat fill.
+        .background(noteGlass)
         .contextMenu {
             ColorPickerMenuItems(noteID: noteID)
         }
@@ -39,6 +40,15 @@ struct PlainTextEditorView: View {
 
     private var noteColor: NoteColor {
         metadata?.colorName ?? .default
+    }
+
+    /// Full-bleed Liquid Glass tinted with the note's color. The note window is already
+    /// a clear container, so the system samples what is behind it for the frosted look.
+    private var noteGlass: some View {
+        Rectangle()
+            .fill(.clear)
+            .glassEffect(.regular.tint(noteColor.swatchColor), in: Rectangle())
+            .ignoresSafeArea()
     }
 
     private var textBinding: Binding<String> {
