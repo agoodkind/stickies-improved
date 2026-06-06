@@ -7,5 +7,7 @@ enum BuildConfig {
     static let sparklePublicKey = "@@SPARKLE_PUBLIC_ED_KEY@@"
     static let buildVersion = "@@CURRENT_PROJECT_VERSION@@"
     static let marketingVersion = "@@MARKETING_VERSION@@"
+    static let gitBranch = "@@GIT_BRANCH@@"
+    static let buildDate = "@@BUILD_DATE@@"
 }
 

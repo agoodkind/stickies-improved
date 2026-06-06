@@ -107,7 +107,7 @@ struct StickiesImprovedApp: App {
         .windowResizability(.contentMinSize)
 
         Settings {
-            injectModels(into: SettingsView())
+            injectModels(into: SettingsRootView())
         }
 
         Window("About", id: "about") {

@@ -17,4 +17,8 @@ public protocol RuntimeInfoProviding: Sendable {
     var sparkleFeedURL: String { get }
     var marketingVersion: String { get }
     var buildVersion: String { get }
+    /// The git branch the binary was built from, for the About build details.
+    var gitBranch: String { get }
+    /// The build timestamp, for the About build details.
+    var buildDate: String { get }
 }

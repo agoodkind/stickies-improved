@@ -14,6 +14,7 @@ import SwiftUI
 
 public struct NoteCommands: Commands {
     private static let managerWindowID = "manager"
+    private static let aboutWindowID = "about"
     private static let systemFontLabel = "System Font"
 
     // The installed font families, read once with CoreText so the family Picker can pin a
@@ -79,10 +80,17 @@ public struct NoteCommands: Commands {
             .disabled(focusedNoteID == nil)
         }
 
+        CommandGroup(replacing: .appInfo) {
+            Button("About Stickies Improved") {
+                openWindow(id: Self.aboutWindowID)
+            }
+        }
+
         CommandGroup(after: .appInfo) {
             Button("Check for Updates...") {
                 updaterModel.checkForUpdates()
             }
+            .disabled(!updaterModel.isConfigured)
         }
 
         // Add to the system Window menu so "Show All Notes" sits next to the

@@ -24,4 +24,13 @@ struct BundleRuntimeInfo: RuntimeInfoProviding {
         ?? "0.1.0"
     let buildVersion =
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
+    // Git branch and build timestamp are baked into custom Info.plist keys by the build
+    // (`$(GIT_BRANCH)` / `$(BUILD_DATE)`), so reads stay in the composition root.
+    let gitBranch = Self.infoString("GitBranch")
+    let buildDate = Self.infoString("BuildDate")
+
+    private static func infoString(_ key: String) -> String {
+        let value = Bundle.main.object(forInfoDictionaryKey: key) as? String ?? ""
+        return value.isEmpty ? "unknown" : value
+    }
 }

@@ -16,6 +16,8 @@ public struct PlaceholderRuntimeInfo: RuntimeInfoProviding {
     public let sparkleFeedURL = ""
     public let marketingVersion = "0.0.0"
     public let buildVersion = "0"
+    public let gitBranch = "unknown"
+    public let buildDate = "unknown"
 
     public init() {
         // Stored constants only; no setup needed.

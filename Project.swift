@@ -69,6 +69,8 @@ let infoPlist: [String: Plist.Value] = [
     // comment, which truncates the URL to `https:` in the built Info.plist.
     "SUFeedURL": .string("https://goodkind.io/stickies-improved/appcast.xml"),
     "SUPublicEDKey": .string("$(SPARKLE_PUBLIC_ED_KEY)"),
+    "GitBranch": .string("$(GIT_BRANCH)"),
+    "BuildDate": .string("$(BUILD_DATE)"),
 ]
 
 // MARK: - Module helpers

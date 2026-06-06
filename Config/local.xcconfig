@@ -8,7 +8,4 @@ CURRENT_PROJECT_VERSION = 1
 SPARKLE_FEED_URL = https:/$()/goodkind.io/stickies-improved/appcast.xml
 SPARKLE_PUBLIC_ED_KEY =
 DMG_SIGN_IDENTITY = D5C4379AC19518586D56277260BBA0F80E0169E6
-
-// Developer-local, gitignored overrides (e.g. SPARKLE_PUBLIC_ED_KEY for local
-// release builds). Kept out of git so the high-entropy key is not committed.
 #include? "local.override.xcconfig"
