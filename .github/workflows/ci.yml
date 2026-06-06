@@ -2,38 +2,45 @@ name: CI
 
 on:
   pull_request:
+    branches:
+      - main
   push:
-    branches: [main]
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODE_VERSION: "latest-stable"
+  # The swift-makefile bootstrap fetches swift.mk via `gh api` on every make
+  # invocation; without a token gh fails and the fetch silently writes an empty
+  # swift.mk, so the build target never loads. Authenticate the public fetch.
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
-  build-and-test:
-    runs-on: macos-15
+  verify:
+    runs-on: macos-latest
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: jdx/mise-action@v2
+      - uses: ./.github/actions/setup-build-env
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          github-token: ${{ github.token }}
 
       - name: Install Tuist dependencies
-        run: tuist install
+        run: make install-dependencies
 
-      - name: Generate project
-        run: tuist generate --no-open
+      - name: Check project
+        run: make check
 
-      - name: Build app
-        run: |
-          tuist xcodebuild build \
-            -scheme StickiesImproved \
-            -configuration Debug \
-            -derivedDataPath build
+      - name: Build project
+        run: make build
 
-      - name: Run tests
-        run: |
-          tuist xcodebuild test \
-            -scheme StickiesImproved \
-            -configuration Debug \
-            -derivedDataPath build
-
-      - name: Check formatting
-        run: swiftformat --lint .
-
+      - name: Test project
+        run: make test

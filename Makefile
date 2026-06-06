@@ -4,6 +4,8 @@ TUIST := $(shell command -v tuist 2>/dev/null || printf '%s' "mise x tuist@4.111
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
+GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
+BUILD_DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 SWIFT_SOURCE_TARGETS := Modules App Project.swift Tuist.swift Tuist/Package.swift
 
 SWIFT_MK_MODULES := swift-build.mk swift-app.mk
@@ -19,12 +21,12 @@ SWIFT_APP_SPARKLE_APPCAST_TOOL_CMD := Scripts/find-sparkle-tool.sh "$(BUILD_DIR)
 
 # Recursive (=) so $(SWIFT_MK_XCODEBUILD_ARGS) from swift.mk binds at recipe time.
 SWIFT_GENERATE_CMD := $(TUIST) generate --no-open
-SWIFT_BUILD_CMD = $(TUIST) xcodebuild build -scheme $(SWIFT_APP_NAME) -configuration $(CONFIGURATION) -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)"
+SWIFT_BUILD_CMD = $(TUIST) xcodebuild build -scheme $(SWIFT_APP_NAME) -configuration $(CONFIGURATION) -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)" GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)"
 SWIFT_TEST_CMD = $(TUIST) xcodebuild test -scheme $(SWIFT_APP_NAME) -configuration Debug -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS)
 SWIFT_DEADCODE_BUILD_CMD := $(MAKE) app-coverage-build
 # Build-for-testing so the test targets and StickiesTestSupport compile too,
 # giving the dead-code gate an index unit for every source under Modules/.
-SWIFT_APP_COVERAGE_BUILD_CMD = $(TUIST) xcodebuild build-for-testing -scheme $(SWIFT_APP_NAME) -configuration Debug -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) COMPILER_INDEX_STORE_ENABLE=YES
+SWIFT_APP_COVERAGE_BUILD_CMD = $(TUIST) xcodebuild build-for-testing -scheme $(SWIFT_APP_NAME) -configuration Debug -derivedDataPath $(BUILD_DIR) $(SWIFT_MK_XCODEBUILD_ARGS) COMPILER_INDEX_STORE_ENABLE=YES GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)"
 SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace StickiesImproved.xcodeproj
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
@@ -32,6 +34,10 @@ SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
 
 include bootstrap.mk
 .DEFAULT_GOAL := check
+
+.PHONY: install-dependencies
+install-dependencies:
+	$(TUIST) install
 
 .PHONY: run
 run: app
