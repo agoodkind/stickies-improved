@@ -15,11 +15,15 @@ import Testing
 
 @MainActor
 struct NoteWorkspaceModelTests {
-    private func makeModel(store: InMemoryNoteStore) -> NoteWorkspaceModel {
+    private func makeModel(
+        store: InMemoryNoteStore,
+        migrator: any LibraryMigrating = FakeLibraryMigrator()
+    ) -> NoteWorkspaceModel {
         NoteWorkspaceModel(
             noteStore: store,
             libraryMonitor: NoopLibraryMonitor(),
             autosaveScheduler: ManualAutosaveScheduler(),
+            libraryMigrator: migrator,
             loggerSubsystem: "io.goodkind.stickies-improved.tests"
         )
     }
@@ -204,6 +208,40 @@ struct NoteWorkspaceModelTests {
         #expect(model.trashedNotes.contains { $0.id == noteID } == false)
         let saved = await store.document(for: noteID)
         #expect(saved == nil)
+    }
+
+    @Test func createNoteAppliesRequestedColor() async {
+        let store = InMemoryNoteStore()
+        let model = makeModel(store: store)
+
+        let noteID = await model.createNote(color: .pink)
+
+        #expect(model.note(for: noteID)?.metadata.colorName == .pink)
+    }
+
+    @Test func switchStorageModeMigratesThenRefreshes() async {
+        let store = InMemoryNoteStore()
+        let migrator = FakeLibraryMigrator()
+        let model = makeModel(store: store, migrator: migrator)
+        let noteID = await model.createNote()
+
+        await model.switchStorageMode(from: .local, to: .iCloud)
+
+        let recorded = await migrator.recordedMigrations
+        #expect(recorded == [FakeLibraryMigrator.Migration(from: .local, to: .iCloud)])
+        // refreshFromDisk reloaded from the same store, so the note survives.
+        #expect(model.note(for: noteID) != nil)
+    }
+
+    @Test func switchStorageModeToSameModeDoesNothing() async {
+        let store = InMemoryNoteStore()
+        let migrator = FakeLibraryMigrator()
+        let model = makeModel(store: store, migrator: migrator)
+
+        await model.switchStorageMode(from: .iCloud, to: .iCloud)
+
+        let recorded = await migrator.recordedMigrations
+        #expect(recorded.isEmpty)
     }
 
     private func pollUntilTrashedSaved(

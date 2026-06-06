@@ -27,20 +27,38 @@ public struct NoteCommands: Commands {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
     @FocusedValue(\.focusedNoteID) private var focusedNoteID
+    @FocusedValue(\.noteExportTrigger) private var exportTrigger
 
     private let workspace: NoteWorkspaceModel
     private let updaterModel: UpdaterModel
+    private let preferences: PreferencesModel
 
-    public init(workspace: NoteWorkspaceModel, updaterModel: UpdaterModel) {
+    public init(
+        workspace: NoteWorkspaceModel,
+        updaterModel: UpdaterModel,
+        preferences: PreferencesModel
+    ) {
         self.workspace = workspace
         self.updaterModel = updaterModel
+        self.preferences = preferences
     }
 
     public var body: some Commands {
+        // Replace the standard Save item so "Export..." sits in the File menu
+        // where a save command would, exporting the focused note's plain text.
+        CommandGroup(replacing: .saveItem) {
+            Button("Export...") {
+                exportTrigger?.wrappedValue = true
+            }
+            .keyboardShortcut("e", modifiers: [.command, .shift])
+            .disabled(exportTrigger == nil)
+        }
+
         CommandMenu("Notes") {
             Button("New Note") {
+                let color = preferences.defaultColor
                 Task {
-                    let noteID = await workspace.createNote()
+                    let noteID = await workspace.createNote(color: color)
                     openWindow(value: noteID)
                 }
             }

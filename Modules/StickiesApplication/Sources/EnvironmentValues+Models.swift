@@ -18,6 +18,7 @@ extension EnvironmentValues {
     @Entry public var noteWorkspaceModel: NoteWorkspaceModel?
     @Entry public var noteWindowStateModel: NoteWindowStateModel?
     @Entry public var updaterModel: UpdaterModel?
+    @Entry public var preferencesModel: PreferencesModel?
     @Entry public var runtimeInfo: any RuntimeInfoProviding = Self.placeholderRuntimeInfo()
 
     // The default flows through this helper so the extension carries mixed

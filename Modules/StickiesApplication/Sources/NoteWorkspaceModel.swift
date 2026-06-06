@@ -22,6 +22,7 @@ public final class NoteWorkspaceModel {
     private let noteStore: any NoteStore
     private let libraryMonitor: any LibraryMonitoring
     private let autosaveScheduler: any AutosaveScheduling
+    private let libraryMigrator: any LibraryMigrating
 
     // `notes` and `orderedNoteIDs` hold only the ACTIVE (non-trashed) notes, so the
     // existing window, ordering, and bootstrap paths never see a trashed note.
@@ -40,12 +41,34 @@ public final class NoteWorkspaceModel {
         noteStore: any NoteStore,
         libraryMonitor: any LibraryMonitoring,
         autosaveScheduler: any AutosaveScheduling,
+        libraryMigrator: any LibraryMigrating,
         loggerSubsystem: String
     ) {
         self.noteStore = noteStore
         self.libraryMonitor = libraryMonitor
         self.autosaveScheduler = autosaveScheduler
+        self.libraryMigrator = libraryMigrator
         logger = Logger(subsystem: loggerSubsystem, category: "NoteWorkspaceModel")
+    }
+
+    /// Moves the library between roots when the storage mode changes, then reloads
+    /// from disk so the active collections reflect the new root. The caller must
+    /// persist the new mode first so `refreshFromDisk` resolves the destination.
+    public func switchStorageMode(
+        from oldMode: StorageMode,
+        to newMode: StorageMode
+    ) async {
+        guard oldMode != newMode else {
+            return
+        }
+        do {
+            try await libraryMigrator.migrate(from: oldMode, to: newMode)
+        } catch {
+            logger.error(
+                "Storage mode migration failed: \(error.localizedDescription, privacy: .public)")
+            lastErrorMessage = error.localizedDescription
+        }
+        await refreshFromDisk()
     }
 
     public func bootstrap(openNoteIDs preferredIDs: [NoteID]) async -> [NoteID] {
@@ -100,53 +123,6 @@ public final class NoteWorkspaceModel {
         orderedTrashedNoteIDs.compactMap { trashedNotesByID[$0] }
     }
 
-    /// Full-text search across every note, active and trashed, matching the title
-    /// and the body case-insensitively. An empty or whitespace-only query returns
-    /// no results so the manager keeps showing its normal sectioned list. Results
-    /// keep the display order (active notes first, then trashed, each newest
-    /// first) and carry a context snippet around the first body match, falling
-    /// back to the title when only the title matched.
-    public func searchResults(for query: String) -> [NoteSearchResult] {
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            return []
-        }
-
-        var results: [NoteSearchResult] = []
-        for document in activeNotes {
-            if let result = Self.searchResult(for: document, query: trimmed) {
-                results.append(result)
-            }
-        }
-        for document in trashedNotes {
-            if let result = Self.searchResult(for: document, query: trimmed) {
-                results.append(result)
-            }
-        }
-        return results
-    }
-
-    private static func searchResult(
-        for document: NoteDocument,
-        query: String
-    ) -> NoteSearchResult? {
-        let bodyMatches = NoteSearch.matches(query: query, in: document.plainText)
-        let titleMatches = NoteSearch.matches(query: query, in: document.metadata.title)
-        guard bodyMatches || titleMatches else {
-            return nil
-        }
-
-        let bodySnippet = NoteSearch.snippet(query: query, in: document.plainText)
-        let snippet = bodySnippet ?? document.metadata.title
-        return NoteSearchResult(
-            noteID: document.id,
-            title: document.metadata.title,
-            color: document.metadata.colorName,
-            isTrashed: document.metadata.isTrashed,
-            snippet: snippet
-        )
-    }
-
     /// Soft delete: flags the note trashed and persists it, then moves it out of the
     /// active collections so its window no longer counts as open and it drops from
     /// the normal note set while staying on disk for the manager to list.
@@ -193,8 +169,9 @@ public final class NoteWorkspaceModel {
         reorderTrashedNotes()
     }
 
-    public func createNote() async -> NoteID {
-        let note = NoteDocument()
+    public func createNote(color: NoteColor = .default) async -> NoteID {
+        var note = NoteDocument()
+        note.metadata.colorName = color
         await upsert(note)
         return note.id
     }

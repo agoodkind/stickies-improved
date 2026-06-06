@@ -31,6 +31,7 @@ struct StickiesImprovedApp: App {
     @State private var workspace: NoteWorkspaceModel
     @State private var windowStateModel = NoteWindowStateModel()
     @State private var updaterModel: UpdaterModel
+    @State private var preferencesModel = PreferencesModel()
 
     init() {
         let info = BundleRuntimeInfo()
@@ -45,6 +46,10 @@ struct StickiesImprovedApp: App {
         )
         let libraryMonitor = UbiquityLibraryMonitor()
         let scheduler = ContinuousClockAutosaveScheduler()
+        let migrator = FileLibraryMigrator(
+            resolver: resolver,
+            loggerSubsystem: info.bundleIdentifier
+        )
         _ = NoopActivityPublisher()
 
         _workspace = State(
@@ -52,6 +57,7 @@ struct StickiesImprovedApp: App {
                 noteStore: noteStore,
                 libraryMonitor: libraryMonitor,
                 autosaveScheduler: scheduler,
+                libraryMigrator: migrator,
                 loggerSubsystem: info.bundleIdentifier
             )
         )
@@ -83,7 +89,11 @@ struct StickiesImprovedApp: App {
         // titlebar + fullSizeContentView chrome.
         .windowStyle(.hiddenTitleBar)
         .commands {
-            NoteCommands(workspace: workspace, updaterModel: updaterModel)
+            NoteCommands(
+                workspace: workspace,
+                updaterModel: updaterModel,
+                preferences: preferencesModel
+            )
         }
 
         Window("All Notes", id: Self.managerWindowID) {
@@ -112,6 +122,7 @@ struct StickiesImprovedApp: App {
             .environment(\.noteWorkspaceModel, workspace)
             .environment(\.noteWindowStateModel, windowStateModel)
             .environment(\.updaterModel, updaterModel)
+            .environment(\.preferencesModel, preferencesModel)
             .environment(\.runtimeInfo, runtimeInfo)
     }
 }

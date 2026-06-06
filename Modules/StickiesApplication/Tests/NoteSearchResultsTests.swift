@@ -20,6 +20,7 @@ struct NoteSearchResultsTests {
             noteStore: store,
             libraryMonitor: NoopLibraryMonitor(),
             autosaveScheduler: ManualAutosaveScheduler(),
+            libraryMigrator: FakeLibraryMigrator(),
             loggerSubsystem: "io.goodkind.stickies-improved.tests"
         )
     }
