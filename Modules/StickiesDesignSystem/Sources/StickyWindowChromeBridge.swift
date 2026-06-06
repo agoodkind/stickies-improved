@@ -27,15 +27,6 @@ import SwiftUI
 /// shrinks the window to the titlebar height and shows the note title, toggling back
 /// to the stored expanded height). Both are additive and never touch the chrome above.
 public struct StickyWindowChromeBridge: NSViewRepresentable {
-    /// Recovered from `-[StickieWindowController windowDidResignKey:]`, which reads the
-    /// `nonFocusTransparency` user default whose registered fallback is 0.97. A focused
-    /// window is fully opaque; an unfocused one drops to this alpha.
-    private enum Focus {
-        static let unfocusedAlphaDefaultsKey = "nonFocusTransparency"
-        static let unfocusedAlphaFallback: CGFloat = 0.97
-        static let focusedAlpha: CGFloat = 1.0
-    }
-
     private enum Fold {
         /// Fallback expanded height when no height was ever stored, matching the
         /// SwiftUI default 400x400 note size.
@@ -178,7 +169,6 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
         ])
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
-        window.isMovableByWindowBackground = true
         window.isOpaque = false
         window.backgroundColor = .clear
         window.hasShadow = true
@@ -188,10 +178,7 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
         // on its pastel notes rather than following the system appearance.
         window.appearance = NSAppearance(named: .aqua)
 
-        applyFocusAlpha(to: window)
-        observeFocus(of: window, coordinator: coordinator)
-
-        // Behaviors below are additive and only run for note windows (noteID set).
+        // Frame persistence and fold only apply to real note windows.
         guard noteID != nil else { return }
         // This bridge owns each note's frame through the note metadata, so turn off the
         // system's automatic window-state restoration. Otherwise macOS restores the
@@ -202,43 +189,6 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
         bindZoomButton(on: window, coordinator: coordinator)
         observeFrameChanges(of: window, coordinator: coordinator)
         applyInitialCollapseIfNeeded(coordinator: coordinator)
-    }
-
-    @MainActor
-    private func observeFocus(of window: NSWindow, coordinator: Coordinator) {
-        let center = NotificationCenter.default
-        let onKey = center.addObserver(
-            forName: NSWindow.didBecomeKeyNotification,
-            object: window,
-            queue: .main
-        ) { _ in
-            MainActor.assumeIsolated {
-                window.alphaValue = Focus.focusedAlpha
-            }
-        }
-        let onResign = center.addObserver(
-            forName: NSWindow.didResignKeyNotification,
-            object: window,
-            queue: .main
-        ) { _ in
-            MainActor.assumeIsolated {
-                window.alphaValue = unfocusedAlpha()
-            }
-        }
-        coordinator.observers.append(contentsOf: [onKey, onResign])
-    }
-
-    @MainActor
-    private func applyFocusAlpha(to window: NSWindow) {
-        window.alphaValue = window.isKeyWindow ? Focus.focusedAlpha : unfocusedAlpha()
-    }
-
-    private func unfocusedAlpha() -> CGFloat {
-        let defaults = UserDefaults.standard
-        guard defaults.object(forKey: Focus.unfocusedAlphaDefaultsKey) != nil else {
-            return Focus.unfocusedAlphaFallback
-        }
-        return CGFloat(defaults.float(forKey: Focus.unfocusedAlphaDefaultsKey))
     }
 
     @MainActor

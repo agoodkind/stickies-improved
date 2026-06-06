@@ -88,6 +88,7 @@ struct StickiesImprovedApp: App {
         // floating standard traffic lights, matching the original's transparent
         // titlebar + fullSizeContentView chrome.
         .windowStyle(.hiddenTitleBar)
+        .windowBackgroundDragBehavior(.enabled)
         .commands {
             NoteCommands(
                 workspace: workspace,

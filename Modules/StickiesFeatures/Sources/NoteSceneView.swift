@@ -23,8 +23,16 @@ public struct NoteSceneView: View {
         static let idealHeight: CGFloat = 400
     }
 
+    private enum Focus {
+        /// Recovered `nonFocusTransparency` default: a focused note is fully opaque, an
+        /// unfocused one drops to this alpha.
+        static let unfocusedAlphaDefaultsKey = "nonFocusTransparency"
+        static let unfocusedAlphaFallback: Double = 0.97
+    }
+
     @Environment(\.noteWorkspaceModel) private var workspace
     @Environment(\.noteWindowStateModel) private var windowStateModel
+    @Environment(\.appearsActive) private var appearsActive
 
     @Binding var noteID: NoteID?
 
@@ -48,6 +56,7 @@ public struct NoteSceneView: View {
         )
         .navigationTitle(navigationTitle)
         .containerBackground(.clear, for: .window)
+        .opacity(appearsActive ? 1.0 : unfocusedAlpha)
         .background(chromeBridge)
         .focusedValue(\.focusedNoteID, noteID)
         .onAppear {
@@ -65,6 +74,14 @@ public struct NoteSceneView: View {
     private var navigationTitle: String {
         guard let noteID, let workspace else { return "Note" }
         return workspace.displayTitle(for: noteID)
+    }
+
+    private var unfocusedAlpha: Double {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: Focus.unfocusedAlphaDefaultsKey) != nil else {
+            return Focus.unfocusedAlphaFallback
+        }
+        return Double(defaults.float(forKey: Focus.unfocusedAlphaDefaultsKey))
     }
 
     /// Builds the chrome bridge for the active note, wiring fold and frame
