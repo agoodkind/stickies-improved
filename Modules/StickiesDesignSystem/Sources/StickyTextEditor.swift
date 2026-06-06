@@ -84,9 +84,13 @@ public struct StickyTextEditor: NSViewRepresentable {
     public func updateNSView(_ scrollView: NSScrollView, context: Context) {
         context.coordinator.text = $text
         guard let textView = scrollView.documentView as? NSTextView else { return }
-        // Rebuild from the model only when it genuinely diverges, so typing does not
-        // reset the caret. Reassigning `string` collapses the selection otherwise.
-        if textView.string != text {
+        // While the editor is first responder the user is typing, so the text view is the
+        // source of truth: never overwrite it from the model here. The model briefly lags
+        // (debounced autosave, then an iCloud-monitor reload of the just-written file), and
+        // overwriting mid-keystroke is exactly what made typed characters vanish. Only sync
+        // from the model when the editor is not being actively edited.
+        let isEditing = textView.window?.firstResponder === textView
+        if !isEditing, textView.string != text {
             textView.string = text
         }
         applyStyle(to: textView)
