@@ -33,6 +33,28 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EF42FB4CC436E91CC1F0FB91"
+               BuildableName = "StickiesPersistenceTests.xctest"
+               BlueprintName = "StickiesPersistenceTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5668076CB48B4690DCA2857F"
+               BuildableName = "StickiesCRDTTests.xctest"
+               BlueprintName = "StickiesCRDTTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "939C66B6E0761F66FC6D4C7B"
                BuildableName = "StickiesApplicationTests.xctest"
                BlueprintName = "StickiesApplicationTests"

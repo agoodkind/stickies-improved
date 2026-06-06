@@ -43,7 +43,7 @@ struct NoteWorkspaceModelRefreshTests {
         #expect(model.note(for: noteID)?.plainText == "stable text")
     }
 
-    @Test func concurrentExternalEditMergesInsteadOfOverwriting() async {
+    @Test func concurrentExternalEditMergesInsteadOfOverwriting() async throws {
         // Another device edits the same note from a shared base; both edits must survive the
         // reload instead of one clobbering the other.
         let store = InMemoryNoteStore()
@@ -53,12 +53,11 @@ struct NoteWorkspaceModelRefreshTests {
         await pollUntilSaved(store: store, id: noteID, expected: "Hello")
 
         // Fork the persisted document on a simulated second device and edit it there.
-        guard let baseData = await store.document(for: noteID)?.crdtData,
-            let remote = try? NoteCRDT.load(from: baseData)
-        else {
+        guard let baseData = await store.document(for: noteID)?.crdtData else {
             Issue.record("missing persisted crdt data")
             return
         }
+        let remote = try NoteCRDT.load(from: baseData)
         remote.setBodyText("Hello remote")
         guard var remoteDocument = await store.document(for: noteID) else {
             Issue.record("missing stored document")

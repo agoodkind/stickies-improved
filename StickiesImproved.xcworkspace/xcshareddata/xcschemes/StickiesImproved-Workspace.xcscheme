@@ -98,6 +98,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5668076CB48B4690DCA2857F"
+               BuildableName = "StickiesCRDTTests.xctest"
+               BlueprintName = "StickiesCRDTTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "DF1B4E9B511CD1AD6C5E828E"
                BuildableName = "StickiesDesignSystem.framework"
                BlueprintName = "StickiesDesignSystem"
@@ -168,6 +182,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EF42FB4CC436E91CC1F0FB91"
+               BuildableName = "StickiesPersistenceTests.xctest"
+               BlueprintName = "StickiesPersistenceTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "34E0922B1F92B887FCBA0170"
                BuildableName = "StickiesTestSupport.framework"
                BlueprintName = "StickiesTestSupport"
@@ -190,6 +218,28 @@
                BlueprintIdentifier = "939C66B6E0761F66FC6D4C7B"
                BuildableName = "StickiesApplicationTests.xctest"
                BlueprintName = "StickiesApplicationTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5668076CB48B4690DCA2857F"
+               BuildableName = "StickiesCRDTTests.xctest"
+               BlueprintName = "StickiesCRDTTests"
+               ReferencedContainer = "container:StickiesImproved.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EF42FB4CC436E91CC1F0FB91"
+               BuildableName = "StickiesPersistenceTests.xctest"
+               BlueprintName = "StickiesPersistenceTests"
                ReferencedContainer = "container:StickiesImproved.xcodeproj">
             </BuildableReference>
          </TestableReference>

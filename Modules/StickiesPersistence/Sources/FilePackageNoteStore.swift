@@ -129,7 +129,8 @@ public actor FilePackageNoteStore: NoteStore {
         // Read the Automerge document if the package carries one. A legacy note without it
         // loads with `crdtData == nil`, which the model treats as "seed a CRDT on first use".
         let crdtURL = packageURL.appendingPathComponent(crdtFileName)
-        let crdtData = fileManager.fileExists(atPath: crdtURL.path)
+        let crdtData =
+            fileManager.fileExists(atPath: crdtURL.path)
             ? try coordinatedRead(from: crdtURL)
             : nil
 

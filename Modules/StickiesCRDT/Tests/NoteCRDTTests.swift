@@ -17,8 +17,8 @@ struct NoteCRDTTests {
         let metadata = NoteMetadata(
             id: NoteID(),
             mode: .plainText,
-            createdAt: Date(timeIntervalSince1970: 1000),
-            updatedAt: Date(timeIntervalSince1970: 2000),
+            createdAt: Date(timeIntervalSince1970: 1_000),
+            updatedAt: Date(timeIntervalSince1970: 2_000),
             colorName: .blue,
             fontName: "Menlo-Regular",
             fontSize: 18,
@@ -106,7 +106,7 @@ struct NoteCRDTTests {
 
     @Test func concurrentMetadataEditsToDifferentFieldsBothSurvive() throws {
         let data = NoteCRDT.seeded(from: sampleNote()).serialized()
-        let editTime = Date(timeIntervalSince1970: 5000)
+        let editTime = Date(timeIntervalSince1970: 5_000)
 
         let deviceA = try NoteCRDT.load(from: data)
         let deviceB = try NoteCRDT.load(from: data)
