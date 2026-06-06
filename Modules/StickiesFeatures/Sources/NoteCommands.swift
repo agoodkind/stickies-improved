@@ -106,7 +106,7 @@ public struct NoteCommands: Commands {
                         Text(color.rawValue.capitalized)
                     } icon: {
                         Image(systemName: Self.colorSwatchSymbol)
-                            .foregroundStyle(color.color)
+                            .foregroundStyle(color.swatchColor)
                     }
                 }
                 .disabled(focusedNoteID == nil)

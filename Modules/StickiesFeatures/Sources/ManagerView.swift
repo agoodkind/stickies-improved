@@ -146,7 +146,7 @@ public struct ManagerView: View {
     private func rowContent(for note: NoteDocument) -> some View {
         HStack(spacing: Layout.rowSpacing) {
             RoundedRectangle(cornerRadius: Layout.swatchCornerRadius)
-                .fill(note.metadata.colorName.color)
+                .fill(note.metadata.colorName.swatchColor)
                 .frame(width: Layout.swatchSize, height: Layout.swatchSize)
                 .overlay(
                     RoundedRectangle(cornerRadius: Layout.swatchCornerRadius)
@@ -169,7 +169,7 @@ public struct ManagerView: View {
     @ViewBuilder private func resultRow(for result: NoteSearchResult) -> some View {
         HStack(spacing: Layout.rowSpacing) {
             RoundedRectangle(cornerRadius: Layout.swatchCornerRadius)
-                .fill(result.color.color)
+                .fill(result.color.swatchColor)
                 .frame(width: Layout.swatchSize, height: Layout.swatchSize)
                 .overlay(
                     RoundedRectangle(cornerRadius: Layout.swatchCornerRadius)

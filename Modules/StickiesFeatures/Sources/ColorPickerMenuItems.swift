@@ -30,7 +30,7 @@ struct ColorPickerMenuItems: View {
                     Text(color.rawValue.capitalized)
                 } icon: {
                     Image(systemName: Self.swatchSymbol)
-                        .foregroundStyle(color.color)
+                        .foregroundStyle(color.swatchColor)
                 }
             }
         }

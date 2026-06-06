@@ -13,6 +13,7 @@ import SwiftUI
 
 struct PlainTextEditorView: View {
     @Environment(\.noteWorkspaceModel) private var workspace
+    @Environment(\.colorScheme) private var colorScheme
 
     let noteID: NoteID
 
@@ -23,13 +24,10 @@ struct PlainTextEditorView: View {
             fontSize: metadata?.fontSize ?? NoteMetadata.Default.fontSize,
             fontColorHex: metadata?.fontColorHex
         )
-        // The note's own color fills full-bleed behind the transparent editor; the
-        // yellow default is the original `-[StickieBackgroundView getYellowColour]`.
-        .background(noteColor.color.ignoresSafeArea())
-        // Pin the note content to the light scheme so the default text color resolves
-        // dark on the pastel background regardless of system dark mode, matching Plain
-        // Text Stickies, which always renders dark text on its pastel notes.
-        .preferredColorScheme(.light)
+        // The note's own color fills full-bleed behind the transparent editor, vivid in
+        // light mode and a muted dark variant in dark mode. The text uses the primary
+        // label color, which resolves dark on the light note and light on the dark note.
+        .background(noteColor.backgroundColor(for: colorScheme).ignoresSafeArea())
         .contextMenu {
             ColorPickerMenuItems(noteID: noteID)
         }

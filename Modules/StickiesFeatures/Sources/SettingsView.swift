@@ -85,7 +85,7 @@ public struct SettingsView: View {
                         Text(color.rawValue.capitalized)
                     } icon: {
                         Image(systemName: Self.colorSwatchSymbol)
-                            .foregroundStyle(color.color)
+                            .foregroundStyle(color.swatchColor)
                     }
                     .tag(color)
                 }
