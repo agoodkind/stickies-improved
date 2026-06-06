@@ -16,9 +16,9 @@ struct PlainTextEditorView: View {
         /// Height of the top glass frost. Tall enough to read under the floating traffic
         /// lights; the bottom of the band fades out so it blends into the note.
         static let frostHeight: CGFloat = 60
-        /// Opacity of the frost at its top edge. Starts partial (never fully opaque) so the
+        /// Opacity of the frost at the window edge. Starts partial (never fully opaque) so the
         /// band reads as a soft frosted edge, then the gradient fades it to clear.
-        static let frostTopOpacity: Double = 0.6
+        static let frostEdgeOpacity: Double = 0.7
     }
 
     @Environment(\.noteWorkspaceModel) private var workspace
@@ -45,11 +45,12 @@ struct PlainTextEditorView: View {
         }
     }
 
-    /// A Liquid Glass frost pinned to the top of the note. It uses the plain `.regular` system
-    /// material with no bright tint, so in dark mode it is a dark, translucent glass that shows
-    /// the material's refraction as text scrolls up behind it, rather than a solid colored bar.
-    /// The mask starts already partial at the top (never fully opaque) and fades to clear, so
-    /// the band reads as a soft frosted edge with no solid upper half. `glassEffect` is the
+    /// A Liquid Glass frost pinned to the top of the note, under the floating traffic lights.
+    /// It uses the plain `.regular` system material with no bright tint, so in dark mode it is a
+    /// dark, translucent glass that shows the material's refraction as text scrolls up past it,
+    /// rather than a solid colored bar. The gradient is densest at the top edge and fades to
+    /// clear toward the body, so it reads as a soft frosted edge. The bottom edge is left clean:
+    /// a matching bottom frost dimmed the last lines and hurt readability. `glassEffect` is the
     /// system material, so the frost itself is not hand-drawn.
     private var frostBand: some View {
         Rectangle()
@@ -59,7 +60,7 @@ struct PlainTextEditorView: View {
             .frame(height: Layout.frostHeight)
             .mask(
                 LinearGradient(
-                    colors: [.black.opacity(Layout.frostTopOpacity), .clear],
+                    colors: [.black.opacity(Layout.frostEdgeOpacity), .clear],
                     startPoint: .top,
                     endPoint: .bottom
                 )

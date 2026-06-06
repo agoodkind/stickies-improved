@@ -75,7 +75,6 @@ struct StickiesImprovedApp: App {
     var body: some Scene {
         WindowGroup(id: "launcher") {
             injectModels(into: BootstrapView())
-                .background(ReopenBridge(managerWindowID: Self.managerWindowID))
         }
         .defaultSize(width: 1, height: 1)
         .windowResizability(.contentSize)
@@ -119,16 +118,16 @@ struct StickiesImprovedApp: App {
         .windowResizability(.contentSize)
     }
 
-    // Captures the scene's `openWindow` action into the app delegate so a dock-icon reopen
-    // can restore the manager window after every note has closed. The launcher scene that
-    // hosts this lives for the app's lifetime, so the captured action stays valid.
+    // Captures the scene's `openWindow` action into the app delegate so a dock-icon reopen can
+    // restore the manager window after every note has closed. It is attached to every injected
+    // scene (not just the hidden launcher) so whichever window has appeared keeps the captured
+    // action fresh, and a zero-size helper view never has to fire `onAppear`.
     private struct ReopenBridge: View {
         @Environment(\.openWindow) private var openWindow
         let managerWindowID: String
 
         var body: some View {
             Color.clear
-                .frame(width: 0, height: 0)
                 .onAppear {
                     StickiesAppDelegate.openManager = {
                         openWindow(id: managerWindowID)
@@ -146,5 +145,6 @@ struct StickiesImprovedApp: App {
             .environment(\.updaterModel, updaterModel)
             .environment(\.preferencesModel, preferencesModel)
             .environment(\.runtimeInfo, runtimeInfo)
+            .background(ReopenBridge(managerWindowID: Self.managerWindowID))
     }
 }
