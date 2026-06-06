@@ -66,11 +66,6 @@ let infoPlist: [String: Plist.Value] = [
     "SUEnableAutomaticChecks": .boolean(true),
     "SUAllowsAutomaticUpdates": .boolean(true),
     "SUFeedURL": .string("$(SPARKLE_FEED_URL)"),
-    // Opt out of the macOS 26 (Tahoe) Liquid Glass redesign so the standard
-    // window traffic lights render at the legacy 12pt/20pt metrics, matching the
-    // SDK-11-built Plain Text Stickies exactly. Without this, linking against the
-    // macOS 26 SDK enlarges the system buttons and breaks pixel parity.
-    "UIDesignRequiresCompatibility": .boolean(true),
 ]
 
 // MARK: - Module helpers
