@@ -172,6 +172,9 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
         window.isOpaque = false
         window.backgroundColor = .clear
         window.hasShadow = true
+        // The editor's transparent top strip (mouseDownCanMoveWindow) relies on this to move
+        // the window like a title bar; the text view returns false, so the body never drags.
+        window.isMovableByWindowBackground = true
 
         // Frame persistence and fold only apply to real note windows.
         guard noteID != nil else { return }

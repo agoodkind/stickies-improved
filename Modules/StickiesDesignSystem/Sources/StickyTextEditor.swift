@@ -46,7 +46,7 @@ public struct StickyTextEditor: NSViewRepresentable {
         self.isEditable = isEditable
     }
 
-    public func makeNSView(context: Context) -> NSScrollView {
+    public func makeNSView(context: Context) -> NSView {
         let textView = NSTextView()
         textView.isRichText = false
         textView.importsGraphics = false
@@ -83,12 +83,43 @@ public struct StickyTextEditor: NSViewRepresentable {
         )
 
         applyStyle(to: textView)
-        return scrollView
+
+        // Wrap the scroll view so a transparent strip can sit above its top inset. The strip
+        // drags the window like a title bar: the editable note hides the system title bar for
+        // the full-bleed look, so without it the text view receives the click as a caret
+        // placement instead of a window move. The scroll view fills the container, so the
+        // editor's frame, insets, and rendered pixels are unchanged.
+        let container = NSView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(scrollView)
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: container.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+        ])
+
+        // Only the editable note window is draggable; the read-only preview lives inside the
+        // manager window and has no top inset to grab.
+        if isEditable {
+            let dragStrip = WindowDragView()
+            dragStrip.scrollView = scrollView
+            dragStrip.translatesAutoresizingMaskIntoConstraints = false
+            container.addSubview(dragStrip)
+            NSLayoutConstraint.activate([
+                dragStrip.topAnchor.constraint(equalTo: container.topAnchor),
+                dragStrip.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                dragStrip.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                dragStrip.heightAnchor.constraint(equalToConstant: Layout.scrollTopInset),
+            ])
+        }
+        return container
     }
 
-    public func updateNSView(_ scrollView: NSScrollView, context: Context) {
+    public func updateNSView(_ nsView: NSView, context: Context) {
         context.coordinator.text = $text
-        guard let textView = scrollView.documentView as? NSTextView else { return }
+        guard let scrollView = nsView.subviews.compactMap({ $0 as? NSScrollView }).first,
+              let textView = scrollView.documentView as? NSTextView else { return }
         // While the editor is first responder the user is typing, so the text view is the
         // source of truth: never overwrite it from the model here. The model briefly lags
         // (debounced autosave, then an iCloud-monitor reload of the just-written file), and
@@ -158,6 +189,29 @@ public struct StickyTextEditor: NSViewRepresentable {
             if text.wrappedValue != changedView.string {
                 text.wrappedValue = changedView.string
             }
+        }
+    }
+}
+
+/// A transparent strip pinned over the note's top inset. The editable note hides the system
+/// title bar for the full-bleed look, so this restores title-bar-style dragging: a press
+/// starts a window move, while wheel events fall through to the note body so scrolling over
+/// the strip still scrolls the text. It draws nothing, so it changes no pixels, and it sits
+/// only over the inset above the first line, so it never covers text or the traffic lights
+/// (which the system draws above the content).
+private final class WindowDragView: NSView {
+    weak var scrollView: NSScrollView?
+
+    // Let AppKit move the window when this strip is dragged. The window is
+    // movableByWindowBackground, and the text view below returns false here, so only this
+    // top strip drags the window, the way a title bar does.
+    override var mouseDownCanMoveWindow: Bool { true }
+
+    override func scrollWheel(with event: NSEvent) {
+        if let scrollView {
+            scrollView.scrollWheel(with: event)
+        } else {
+            super.scrollWheel(with: event)
         }
     }
 }
