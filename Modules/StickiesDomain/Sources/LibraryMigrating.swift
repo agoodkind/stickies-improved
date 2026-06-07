@@ -12,5 +12,5 @@ import Foundation
 /// backing another, so switching between local and iCloud carries the existing
 /// library across rather than stranding it under the old root.
 public protocol LibraryMigrating: Sendable {
-    func migrate(from sourceMode: StorageMode, to destinationMode: StorageMode) async throws
+  func migrate(from sourceMode: StorageMode, to destinationMode: StorageMode) async throws
 }

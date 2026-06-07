@@ -11,14 +11,14 @@ import Testing
 @testable import StickiesDomain
 
 struct NoteDocumentTests {
-    @Test func titleFallsBackToUntitled() {
-        let document = NoteDocument(plainText: "")
-        #expect(document.metadata.title == "Untitled")
-    }
+  @Test func titleFallsBackToUntitled() {
+    let document = NoteDocument(plainText: "")
+    #expect(document.metadata.title == "Untitled")
+  }
 
-    @Test func titleUsesFirstNonEmptyLine() {
-        let document = NoteDocument(plainText: "\n\n Grocery list\nMilk")
-        #expect(document.metadata.title == "Grocery list")
-        #expect(document.metadata.excerpt == "Grocery list Milk")
-    }
+  @Test func titleUsesFirstNonEmptyLine() {
+    let document = NoteDocument(plainText: "\n\n Grocery list\nMilk")
+    #expect(document.metadata.title == "Grocery list")
+    #expect(document.metadata.excerpt == "Grocery list Milk")
+  }
 }

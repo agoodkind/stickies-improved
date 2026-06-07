@@ -9,6 +9,6 @@
 import Foundation
 
 public enum NoteMode: String, Codable, CaseIterable, Sendable {
-    case markdown
-    case plainText = "plain_text"
+  case markdown
+  case plainText = "plain_text"
 }

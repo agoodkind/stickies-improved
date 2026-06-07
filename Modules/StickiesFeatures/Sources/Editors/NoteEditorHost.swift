@@ -12,43 +12,43 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct NoteEditorHost: View {
-    @Environment(\.noteWorkspaceModel) private var workspace
+  @Environment(\.noteWorkspaceModel) private var workspace
 
-    let noteID: NoteID
+  let noteID: NoteID
 
-    // Drives the `.fileExporter` for this note window. The File-menu command flips
-    // it through the published `noteExportTrigger` focused value.
-    @State private var isExporting = false
+  // Drives the `.fileExporter` for this note window. The File-menu command flips
+  // it through the published `noteExportTrigger` focused value.
+  @State private var isExporting = false
 
-    var body: some View {
-        editor
-            .focusedValue(\.noteExportTrigger, $isExporting)
-            .fileExporter(
-                isPresented: $isExporting,
-                document: PlainTextDocument(text: exportText),
-                contentType: .plainText,
-                defaultFilename: exportFilename
-            ) { _ in
-                // The exporter reports success or a user cancellation; the note
-                // stays on disk either way, so there is nothing to persist here.
-            }
+  var body: some View {
+    editor
+      .focusedValue(\.noteExportTrigger, $isExporting)
+      .fileExporter(
+        isPresented: $isExporting,
+        document: PlainTextDocument(text: exportText),
+        contentType: .plainText,
+        defaultFilename: exportFilename
+      ) { _ in
+        // The exporter reports success or a user cancellation; the note
+        // stays on disk either way, so there is nothing to persist here.
+      }
+  }
+
+  @ViewBuilder private var editor: some View {
+    switch workspace?.note(for: noteID)?.metadata.mode ?? .plainText {
+    case .plainText:
+      PlainTextEditorView(noteID: noteID)
+    case .markdown:
+      MarkdownEditorView()
     }
+  }
 
-    @ViewBuilder private var editor: some View {
-        switch workspace?.note(for: noteID)?.metadata.mode ?? .plainText {
-        case .plainText:
-            PlainTextEditorView(noteID: noteID)
-        case .markdown:
-            MarkdownEditorView()
-        }
-    }
+  private var exportText: String {
+    workspace?.note(for: noteID)?.plainText ?? ""
+  }
 
-    private var exportText: String {
-        workspace?.note(for: noteID)?.plainText ?? ""
-    }
-
-    private var exportFilename: String {
-        let title = workspace?.displayTitle(for: noteID) ?? ExportFilename.fallback
-        return ExportFilename.sanitized(title)
-    }
+  private var exportFilename: String {
+    let title = workspace?.displayTitle(for: noteID) ?? ExportFilename.fallback
+    return ExportFilename.sanitized(title)
+  }
 }

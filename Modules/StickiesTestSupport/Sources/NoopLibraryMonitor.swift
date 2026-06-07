@@ -14,13 +14,13 @@ import StickiesDomain
 @preconcurrency
 @MainActor
 public final class NoopLibraryMonitor: LibraryMonitoring {
-    public private(set) var didStart = false
+  public private(set) var didStart = false
 
-    public init() {
-        // No state to configure.
-    }
+  public init() {
+    // No state to configure.
+  }
 
-    public func startMonitoring(rootURL _: URL, onChange _: () -> Void) {
-        didStart = true
-    }
+  public func startMonitoring(rootURL _: URL, onChange _: () -> Void) {
+    didStart = true
+  }
 }

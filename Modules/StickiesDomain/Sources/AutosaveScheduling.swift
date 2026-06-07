@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol AutosaveScheduling: Sendable {
-    func sleep(for duration: Duration) async throws
+  func sleep(for duration: Duration) async throws
 }

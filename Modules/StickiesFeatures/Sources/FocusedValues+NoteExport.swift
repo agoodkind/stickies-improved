@@ -13,22 +13,22 @@ import SwiftUI
 // trigger the exporter on whichever note window is focused. The binding is nil
 // when no note is focused, which also drives the command's disabled state.
 public struct NoteExportTriggerKey: FocusedValueKey {
-    public typealias Value = Binding<Bool>
+  public typealias Value = Binding<Bool>
 }
 
 // MARK: - FocusedValues
 
 extension FocusedValues {
-    public var noteExportTrigger: Binding<Bool>? {
-        get { storedNoteExportTrigger }
-        set { storedNoteExportTrigger = newValue }
-    }
+  public var noteExportTrigger: Binding<Bool>? {
+    get { storedNoteExportTrigger }
+    set { storedNoteExportTrigger = newValue }
+  }
 
-    // The private accessor backing the public property gives this extension mixed
-    // access levels, which stops SwiftLint asking us to hoist `public` onto the
-    // extension keyword (the same trick as FocusedValues+NoteID).
-    private var storedNoteExportTrigger: Binding<Bool>? {
-        get { self[NoteExportTriggerKey.self] }
-        set { self[NoteExportTriggerKey.self] = newValue }
-    }
+  // The private accessor backing the public property gives this extension mixed
+  // access levels, which stops SwiftLint asking us to hoist `public` onto the
+  // extension keyword (the same trick as FocusedValues+NoteID).
+  private var storedNoteExportTrigger: Binding<Bool>? {
+    get { self[NoteExportTriggerKey.self] }
+    set { self[NoteExportTriggerKey.self] = newValue }
+  }
 }

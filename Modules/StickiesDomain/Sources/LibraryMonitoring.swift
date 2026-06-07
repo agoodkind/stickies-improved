@@ -11,5 +11,5 @@ import Foundation
 @preconcurrency
 @MainActor
 public protocol LibraryMonitoring {
-    func startMonitoring(rootURL: URL, onChange: @escaping () -> Void)
+  func startMonitoring(rootURL: URL, onChange: @escaping () -> Void)
 }

@@ -9,9 +9,9 @@
 import Foundation
 
 public protocol NoteStore: Sendable {
-    func ensureLibraryDirectory() async throws -> URL
-    func loadAllDocuments() async throws -> [NoteDocument]
-    func loadDocument(id: NoteID) async throws -> NoteDocument
-    func save(_ document: NoteDocument) async throws
-    func delete(id: NoteID) async throws
+  func ensureLibraryDirectory() async throws -> URL
+  func loadAllDocuments() async throws -> [NoteDocument]
+  func loadDocument(id: NoteID) async throws -> NoteDocument
+  func save(_ document: NoteDocument) async throws
+  func delete(id: NoteID) async throws
 }

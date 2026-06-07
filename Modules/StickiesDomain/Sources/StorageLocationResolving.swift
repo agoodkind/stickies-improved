@@ -15,7 +15,7 @@ import Foundation
 /// mode, while `localLibraryURL()` and `iCloudLibraryURL()` expose both candidate
 /// roots so a migration can move packages between them.
 public protocol StorageLocationResolving: Sendable {
-    func resolveLibraryURL() throws -> URL
-    func localLibraryURL() throws -> URL
-    func iCloudLibraryURL() -> URL?
+  func resolveLibraryURL() throws -> URL
+  func localLibraryURL() throws -> URL
+  func iCloudLibraryURL() -> URL?
 }

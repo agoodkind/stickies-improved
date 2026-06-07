@@ -12,15 +12,15 @@ import StickiesDomain
 /// Passes note content through as UTF-8 with no transformation. This keeps the
 /// `ContentCodec` seam wired while leaving real encryption for later.
 public struct IdentityContentCodec: ContentCodec {
-    public init() {
-        // No state to configure.
-    }
+  public init() {
+    // No state to configure.
+  }
 
-    public func encode(_ text: String) -> Data {
-        Data(text.utf8)
-    }
+  public func encode(_ text: String) -> Data {
+    Data(text.utf8)
+  }
 
-    public func decode(_ data: Data) -> String {
-        String(bytes: data, encoding: .utf8) ?? ""
-    }
+  public func decode(_ data: Data) -> String {
+    String(bytes: data, encoding: .utf8) ?? ""
+  }
 }

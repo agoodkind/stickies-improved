@@ -13,27 +13,27 @@ import Foundation
 /// the note id, its title, its color for the swatch, whether it lives in the
 /// trash, and a short context snippet around the first match.
 public struct NoteSearchResult: Equatable, Identifiable, Sendable {
-    public var noteID: NoteID
-    public var title: String
-    public var color: NoteColor
-    public var isTrashed: Bool
-    public var snippet: String
+  public var noteID: NoteID
+  public var title: String
+  public var color: NoteColor
+  public var isTrashed: Bool
+  public var snippet: String
 
-    public init(
-        noteID: NoteID,
-        title: String,
-        color: NoteColor,
-        isTrashed: Bool,
-        snippet: String
-    ) {
-        self.noteID = noteID
-        self.title = title
-        self.color = color
-        self.isTrashed = isTrashed
-        self.snippet = snippet
-    }
+  public init(
+    noteID: NoteID,
+    title: String,
+    color: NoteColor,
+    isTrashed: Bool,
+    snippet: String
+  ) {
+    self.noteID = noteID
+    self.title = title
+    self.color = color
+    self.isTrashed = isTrashed
+    self.snippet = snippet
+  }
 
-    public var id: NoteID {
-        noteID
-    }
+  public var id: NoteID {
+    noteID
+  }
 }

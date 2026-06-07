@@ -12,6 +12,6 @@ import Foundation
 /// in Persistence passes UTF-8 through unchanged, leaving room for real
 /// encryption to drop in here later.
 public protocol ContentCodec: Sendable {
-    func encode(_ text: String) throws -> Data
-    func decode(_ data: Data) throws -> String
+  func encode(_ text: String) throws -> Data
+  func decode(_ data: Data) throws -> String
 }

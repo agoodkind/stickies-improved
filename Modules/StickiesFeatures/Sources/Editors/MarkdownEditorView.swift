@@ -9,14 +9,14 @@
 import SwiftUI
 
 struct MarkdownEditorView: View {
-    var body: some View {
-        ContentUnavailableView(
-            "Markdown Is Not Enabled",
-            systemImage: "text.document",
-            description: Text(
-                "The storage and windowing model already reserves a markdown mode, "
-                    + "but the editor is intentionally deferred."
-            )
-        )
-    }
+  var body: some View {
+    ContentUnavailableView(
+      "Markdown Is Not Enabled",
+      systemImage: "text.document",
+      description: Text(
+        "The storage and windowing model already reserves a markdown mode, "
+          + "but the editor is intentionally deferred."
+      )
+    )
+  }
 }

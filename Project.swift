@@ -14,34 +14,34 @@ let bundleId = "io.goodkind.stickies-improved"
 let deploymentTargets: DeploymentTargets = .macOS("26.0")
 
 let debug = Configuration.debug(
-    name: "Debug",
-    xcconfig: "Config/debug.xcconfig"
+  name: "Debug",
+  xcconfig: "Config/debug.xcconfig"
 )
 
 let release = Configuration.release(
-    name: "Release",
-    xcconfig: "Config/release.xcconfig"
+  name: "Release",
+  xcconfig: "Config/release.xcconfig"
 )
 
 // Signing identity, team, and style are owned by swift-mk's XCODE_XCCONFIG_FILE
 // override, which wins over these target settings, so they are not set here.
 let settings = Settings.settings(
-    base: [
-        "SWIFT_VERSION": "6.0",
-        "MARKETING_VERSION": "$(MARKETING_VERSION)",
-        "CURRENT_PROJECT_VERSION": "$(CURRENT_PROJECT_VERSION)",
-        "ENABLE_HARDENED_RUNTIME": "YES",
-        "OTHER_CODE_SIGN_FLAGS": "--timestamp",
-    ],
-    configurations: [debug, release],
-    defaultSettings: .recommended
+  base: [
+    "SWIFT_VERSION": "6.0",
+    "MARKETING_VERSION": "$(MARKETING_VERSION)",
+    "CURRENT_PROJECT_VERSION": "$(CURRENT_PROJECT_VERSION)",
+    "ENABLE_HARDENED_RUNTIME": "YES",
+    "OTHER_CODE_SIGN_FLAGS": "--timestamp",
+  ],
+  configurations: [debug, release],
+  defaultSettings: .recommended
 )
 
 let targetSigningSettings: SettingsDictionary = [
-    "CODE_SIGN_INJECT_BASE_ENTITLEMENTS": "NO",
-    "ENABLE_HARDENED_RUNTIME": "YES",
-    "OTHER_CODE_SIGN_FLAGS": "--timestamp",
-    "PROVISIONING_PROFILE_SPECIFIER": "",
+  "CODE_SIGN_INJECT_BASE_ENTITLEMENTS": "NO",
+  "ENABLE_HARDENED_RUNTIME": "YES",
+  "OTHER_CODE_SIGN_FLAGS": "--timestamp",
+  "PROVISIONING_PROFILE_SPECIFIER": "",
 ]
 
 // swift-mk's XCODE_XCCONFIG_FILE override supplies the identity, team, and style
@@ -49,200 +49,200 @@ let targetSigningSettings: SettingsDictionary = [
 // an iCloud capability, which Developer ID distribution requires a provisioning
 // profile to authorize, so the app target keeps the profile specifier.
 let appSigningSettings = targetSigningSettings.merging([
-    "PROVISIONING_PROFILE_SPECIFIER": "$(PROVISIONING_PROFILE_SPECIFIER)"
+  "PROVISIONING_PROFILE_SPECIFIER": "$(PROVISIONING_PROFILE_SPECIFIER)"
 ]) { _, new in new }
 
 let infoPlist: [String: Plist.Value] = [
-    "CFBundleDisplayName": .string(appName),
-    "CFBundleShortVersionString": .string("$(MARKETING_VERSION)"),
-    "CFBundleVersion": .string("$(CURRENT_PROJECT_VERSION)"),
-    "LSApplicationCategoryType": .string("public.app-category.productivity"),
-    "NSUbiquitousContainers": .dictionary([
-        "$(ICLOUD_CONTAINER_IDENTIFIER)": .dictionary([
-            "NSUbiquitousContainerName": .string(appName),
-            "NSUbiquitousContainerSupportedFolderLevels": .string("Any"),
-        ])
-    ]),
-    "SUEnableAutomaticChecks": .boolean(true),
-    "SUAllowsAutomaticUpdates": .boolean(true),
-    // Hardcoded rather than `$(SPARKLE_FEED_URL)`: an xcconfig value treats `//` as a
-    // comment, which truncates the URL to `https:` in the built Info.plist.
-    "SUFeedURL": .string("https://goodkind.io/stickies-improved/appcast.xml"),
-    "SUPublicEDKey": .string("$(SPARKLE_PUBLIC_ED_KEY)"),
-    "GitBranch": .string("$(GIT_BRANCH)"),
-    "BuildDate": .string("$(BUILD_DATE)"),
+  "CFBundleDisplayName": .string(appName),
+  "CFBundleShortVersionString": .string("$(MARKETING_VERSION)"),
+  "CFBundleVersion": .string("$(CURRENT_PROJECT_VERSION)"),
+  "LSApplicationCategoryType": .string("public.app-category.productivity"),
+  "NSUbiquitousContainers": .dictionary([
+    "$(ICLOUD_CONTAINER_IDENTIFIER)": .dictionary([
+      "NSUbiquitousContainerName": .string(appName),
+      "NSUbiquitousContainerSupportedFolderLevels": .string("Any"),
+    ])
+  ]),
+  "SUEnableAutomaticChecks": .boolean(true),
+  "SUAllowsAutomaticUpdates": .boolean(true),
+  // Hardcoded rather than `$(SPARKLE_FEED_URL)`: an xcconfig value treats `//` as a
+  // comment, which truncates the URL to `https:` in the built Info.plist.
+  "SUFeedURL": .string("https://goodkind.io/stickies-improved/appcast.xml"),
+  "SUPublicEDKey": .string("$(SPARKLE_PUBLIC_ED_KEY)"),
+  "GitBranch": .string("$(GIT_BRANCH)"),
+  "BuildDate": .string("$(BUILD_DATE)"),
 ]
 
 // MARK: - Module helpers
 
 func frameworkTarget(
-    _ name: String,
-    dependencies: [TargetDependency]
+  _ name: String,
+  dependencies: [TargetDependency]
 ) -> Target {
-    .target(
-        name: name,
-        destinations: [.mac],
-        product: .framework,
-        bundleId: "\(bundleId).\(name.lowercased())",
-        deploymentTargets: deploymentTargets,
-        infoPlist: .default,
-        sources: ["Modules/\(name)/Sources/**"],
-        dependencies: dependencies,
-        settings: .settings(base: targetSigningSettings)
-    )
+  .target(
+    name: name,
+    destinations: [.mac],
+    product: .framework,
+    bundleId: "\(bundleId).\(name.lowercased())",
+    deploymentTargets: deploymentTargets,
+    infoPlist: .default,
+    sources: ["Modules/\(name)/Sources/**"],
+    dependencies: dependencies,
+    settings: .settings(base: targetSigningSettings)
+  )
 }
 
 func unitTestTarget(
-    _ name: String,
-    dependencies: [TargetDependency]
+  _ name: String,
+  dependencies: [TargetDependency]
 ) -> Target {
-    .target(
-        name: name,
-        destinations: [.mac],
-        product: .unitTests,
-        bundleId: "\(bundleId).\(name.lowercased())",
-        deploymentTargets: deploymentTargets,
-        infoPlist: .default,
-        sources: ["Modules/\(moduleName(forTests: name))/Tests/**"],
-        dependencies: dependencies
-    )
+  .target(
+    name: name,
+    destinations: [.mac],
+    product: .unitTests,
+    bundleId: "\(bundleId).\(name.lowercased())",
+    deploymentTargets: deploymentTargets,
+    infoPlist: .default,
+    sources: ["Modules/\(moduleName(forTests: name))/Tests/**"],
+    dependencies: dependencies
+  )
 }
 
 func moduleName(forTests target: String) -> String {
-    if target.hasSuffix("Tests") {
-        return String(target.dropLast("Tests".count))
-    }
-    return target
+  if target.hasSuffix("Tests") {
+    return String(target.dropLast("Tests".count))
+  }
+  return target
 }
 
 // MARK: - Targets
 
 let domain = frameworkTarget("StickiesDomain", dependencies: [])
 let persistence = frameworkTarget(
-    "StickiesPersistence",
-    dependencies: [.target(name: "StickiesDomain")]
+  "StickiesPersistence",
+  dependencies: [.target(name: "StickiesDomain")]
 )
 let designSystem = frameworkTarget(
-    "StickiesDesignSystem",
-    dependencies: [.target(name: "StickiesDomain")]
+  "StickiesDesignSystem",
+  dependencies: [.target(name: "StickiesDomain")]
 )
 let crdt = frameworkTarget(
-    "StickiesCRDT",
-    dependencies: [
-        .target(name: "StickiesDomain"),
-        .external(name: "Automerge"),
-    ]
+  "StickiesCRDT",
+  dependencies: [
+    .target(name: "StickiesDomain"),
+    .external(name: "Automerge"),
+  ]
 )
 let application = frameworkTarget(
-    "StickiesApplication",
-    dependencies: [
-        .target(name: "StickiesDomain"),
-        .target(name: "StickiesCRDT"),
-    ]
+  "StickiesApplication",
+  dependencies: [
+    .target(name: "StickiesDomain"),
+    .target(name: "StickiesCRDT"),
+  ]
 )
 let features = frameworkTarget(
-    "StickiesFeatures",
-    dependencies: [
-        .target(name: "StickiesApplication"),
-        .target(name: "StickiesDesignSystem"),
-        .target(name: "StickiesDomain"),
-    ]
+  "StickiesFeatures",
+  dependencies: [
+    .target(name: "StickiesApplication"),
+    .target(name: "StickiesDesignSystem"),
+    .target(name: "StickiesDomain"),
+  ]
 )
 let testSupport = frameworkTarget(
-    "StickiesTestSupport",
-    dependencies: [.target(name: "StickiesDomain")]
+  "StickiesTestSupport",
+  dependencies: [.target(name: "StickiesDomain")]
 )
 
 let app: Target = .target(
-    name: appName,
-    destinations: [.mac],
-    product: .app,
-    bundleId: bundleId,
-    deploymentTargets: deploymentTargets,
-    infoPlist: .extendingDefault(with: infoPlist),
-    sources: ["App/**"],
-    resources: [],
-    entitlements: "Config/StickiesImproved.entitlements",
-    dependencies: [
-        .target(name: "StickiesFeatures"),
-        .target(name: "StickiesApplication"),
-        .target(name: "StickiesDesignSystem"),
-        .target(name: "StickiesPersistence"),
-        .target(name: "StickiesCRDT"),
-        .target(name: "StickiesDomain"),
-        .external(name: "Sparkle"),
-    ],
-    settings: .settings(
-        base: appSigningSettings.merging([
-            "PRODUCT_NAME": .string(appName),
-            "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
-        ]) { _, new in new }
-    )
+  name: appName,
+  destinations: [.mac],
+  product: .app,
+  bundleId: bundleId,
+  deploymentTargets: deploymentTargets,
+  infoPlist: .extendingDefault(with: infoPlist),
+  sources: ["App/**"],
+  resources: [],
+  entitlements: "Config/StickiesImproved.entitlements",
+  dependencies: [
+    .target(name: "StickiesFeatures"),
+    .target(name: "StickiesApplication"),
+    .target(name: "StickiesDesignSystem"),
+    .target(name: "StickiesPersistence"),
+    .target(name: "StickiesCRDT"),
+    .target(name: "StickiesDomain"),
+    .external(name: "Sparkle"),
+  ],
+  settings: .settings(
+    base: appSigningSettings.merging([
+      "PRODUCT_NAME": .string(appName),
+      "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
+    ]) { _, new in new }
+  )
 )
 
 let domainTests = unitTestTarget(
-    "StickiesDomainTests",
-    dependencies: [.target(name: "StickiesDomain")]
+  "StickiesDomainTests",
+  dependencies: [.target(name: "StickiesDomain")]
 )
 let persistenceTests = unitTestTarget(
-    "StickiesPersistenceTests",
-    dependencies: [
-        .target(name: "StickiesPersistence"),
-        .target(name: "StickiesTestSupport"),
-    ]
+  "StickiesPersistenceTests",
+  dependencies: [
+    .target(name: "StickiesPersistence"),
+    .target(name: "StickiesTestSupport"),
+  ]
 )
 let crdtTests = unitTestTarget(
-    "StickiesCRDTTests",
-    dependencies: [
-        .target(name: "StickiesCRDT"),
-        .target(name: "StickiesDomain"),
-    ]
+  "StickiesCRDTTests",
+  dependencies: [
+    .target(name: "StickiesCRDT"),
+    .target(name: "StickiesDomain"),
+  ]
 )
 let applicationTests = unitTestTarget(
-    "StickiesApplicationTests",
-    dependencies: [
-        .target(name: "StickiesApplication"),
-        .target(name: "StickiesCRDT"),
-        .target(name: "StickiesTestSupport"),
-    ]
+  "StickiesApplicationTests",
+  dependencies: [
+    .target(name: "StickiesApplication"),
+    .target(name: "StickiesCRDT"),
+    .target(name: "StickiesTestSupport"),
+  ]
 )
 
 let project = Project(
-    name: appName,
-    organizationName: organizationName,
-    settings: settings,
-    targets: [
-        domain,
-        persistence,
-        designSystem,
-        crdt,
-        application,
-        features,
-        testSupport,
-        app,
-        domainTests,
-        persistenceTests,
-        crdtTests,
-        applicationTests,
-    ],
-    schemes: [
-        .scheme(
-            name: appName,
-            shared: true,
-            buildAction: .buildAction(targets: ["\(appName)"]),
-            testAction: .targets(
-                [
-                    "StickiesDomainTests",
-                    "StickiesPersistenceTests",
-                    "StickiesCRDTTests",
-                    "StickiesApplicationTests",
-                ],
-                configuration: "Debug"
-            ),
-            runAction: .runAction(configuration: "Debug"),
-            archiveAction: .archiveAction(configuration: "Release"),
-            profileAction: .profileAction(configuration: "Release"),
-            analyzeAction: .analyzeAction(configuration: "Debug")
-        )
-    ]
+  name: appName,
+  organizationName: organizationName,
+  settings: settings,
+  targets: [
+    domain,
+    persistence,
+    designSystem,
+    crdt,
+    application,
+    features,
+    testSupport,
+    app,
+    domainTests,
+    persistenceTests,
+    crdtTests,
+    applicationTests,
+  ],
+  schemes: [
+    .scheme(
+      name: appName,
+      shared: true,
+      buildAction: .buildAction(targets: ["\(appName)"]),
+      testAction: .targets(
+        [
+          "StickiesDomainTests",
+          "StickiesPersistenceTests",
+          "StickiesCRDTTests",
+          "StickiesApplicationTests",
+        ],
+        configuration: "Debug"
+      ),
+      runAction: .runAction(configuration: "Debug"),
+      archiveAction: .archiveAction(configuration: "Release"),
+      profileAction: .profileAction(configuration: "Release"),
+      analyzeAction: .analyzeAction(configuration: "Debug")
+    )
+  ]
 )

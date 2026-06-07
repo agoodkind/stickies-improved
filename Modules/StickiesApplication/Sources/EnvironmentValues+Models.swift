@@ -15,16 +15,16 @@ import SwiftUI
 // dependency-free initializer; a view that reads one runs only after the App
 // has populated it.
 extension EnvironmentValues {
-    @Entry public var noteWorkspaceModel: NoteWorkspaceModel?
-    @Entry public var noteWindowStateModel: NoteWindowStateModel?
-    @Entry public var updaterModel: UpdaterModel?
-    @Entry public var preferencesModel: PreferencesModel?
-    @Entry public var runtimeInfo: any RuntimeInfoProviding = Self.placeholderRuntimeInfo()
+  @Entry public var noteWorkspaceModel: NoteWorkspaceModel?
+  @Entry public var noteWindowStateModel: NoteWindowStateModel?
+  @Entry public var updaterModel: UpdaterModel?
+  @Entry public var preferencesModel: PreferencesModel?
+  @Entry public var runtimeInfo: any RuntimeInfoProviding = Self.placeholderRuntimeInfo()
 
-    // The default flows through this helper so the extension carries mixed
-    // access levels, which keeps SwiftLint from asking us to hoist `public`
-    // onto the extension keyword.
-    private static func placeholderRuntimeInfo() -> any RuntimeInfoProviding {
-        PlaceholderRuntimeInfo()
-    }
+  // The default flows through this helper so the extension carries mixed
+  // access levels, which keeps SwiftLint from asking us to hoist `public`
+  // onto the extension keyword.
+  private static func placeholderRuntimeInfo() -> any RuntimeInfoProviding {
+    PlaceholderRuntimeInfo()
+  }
 }

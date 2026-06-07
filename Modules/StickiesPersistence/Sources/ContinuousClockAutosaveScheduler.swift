@@ -10,13 +10,13 @@ import Foundation
 import StickiesDomain
 
 public struct ContinuousClockAutosaveScheduler: AutosaveScheduling {
-    private let clock = ContinuousClock()
+  private let clock = ContinuousClock()
 
-    public init() {
-        // No state to configure.
-    }
+  public init() {
+    // No state to configure.
+  }
 
-    public func sleep(for duration: Duration) async throws {
-        try await clock.sleep(for: duration)
-    }
+  public func sleep(for duration: Duration) async throws {
+    try await clock.sleep(for: duration)
+  }
 }
