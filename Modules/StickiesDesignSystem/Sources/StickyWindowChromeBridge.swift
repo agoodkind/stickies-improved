@@ -175,6 +175,12 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
         // The editor's transparent top strip (mouseDownCanMoveWindow) relies on this to move
         // the window like a title bar; the text view returns false, so the body never drags.
         window.isMovableByWindowBackground = true
+        // The green zoom button is rebound to fold (see bindZoomButton). A full-screen-capable
+        // window intercepts the green-button click for full screen before that rebound action
+        // runs, so disable full screen here; the button then performs the fold instead.
+        window.collectionBehavior.remove(.fullScreenPrimary)
+        window.collectionBehavior.remove(.fullScreenAuxiliary)
+        window.collectionBehavior.insert(.fullScreenNone)
 
         // Frame persistence and fold only apply to real note windows.
         guard noteID != nil else { return }
