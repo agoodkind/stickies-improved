@@ -194,6 +194,8 @@ public struct StickyTextEditor: NSViewRepresentable {
   }
 }
 
+// MARK: - WindowDragView
+
 /// A transparent strip pinned over the note's top inset. The editable note hides the system
 /// title bar for the full-bleed look, so this restores title-bar-style dragging: a press
 /// starts a window move, while wheel events fall through to the note body so scrolling over
