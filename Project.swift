@@ -180,6 +180,9 @@ let app: Target = .target(
   settings: .settings(
     base: appSigningSettings.merging([
       "PRODUCT_NAME": .string(displayName),
+      // The .app bundle is "Stickies Improved.app" (PRODUCT_NAME), but the Mach-O
+      // binary stays space-free so tooling that touches the executable path is safe.
+      "EXECUTABLE_NAME": .string(appName),
       "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
     ]) { _, new in new }
   )

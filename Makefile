@@ -22,13 +22,11 @@ SWIFT_MK_DERIVED_DATA := $(BUILD_DIR)
 SWIFT_MK_OWN_RUN := 1
 
 SWIFT_APP_NAME := StickiesImproved
-# The .app basename and dmg name carry the spaced display name while SWIFT_APP_NAME
-# stays space-free for the scheme, workspace, and project dirs. swift-app.mk quotes
-# these in every recipe, so the spaces are safe there.
+# The .app basename and mounted dmg volume title carry the spaced display name; the
+# dmg filename keeps SWIFT_APP_NAME (space-free) because the shared _release.yml
+# notarize step word-splits the artifact path. This mirrors macos-fan-curve.
 SWIFT_APP_BUNDLE_NAME := Stickies Improved
 SWIFT_APP_DMG_VOLUME_NAME := $(SWIFT_APP_BUNDLE_NAME)
-SWIFT_APP_DMG_NAME := $(SWIFT_APP_BUNDLE_NAME)-$(CONFIGURATION).dmg
-SWIFT_APP_RELEASE_DMG_NAME := $(SWIFT_APP_BUNDLE_NAME)-$(CURRENT_PROJECT_VERSION).dmg
 SWIFT_APP_CONFIGURATION := $(CONFIGURATION)
 SWIFT_APP_BUILD_DIR := $(BUILD_DIR)
 SWIFT_APP_SIGN_IDENTITY := $(DMG_SIGN_IDENTITY)
@@ -46,8 +44,8 @@ SPARKLE_PUBLIC_ED_KEY := $(shell cat Config/sparkle.pub 2>/dev/null)
 # notarize job. The bundle id, iCloud container, and profile specifier are
 # constants in local.xcconfig; signing comes from swift-mk's override.
 # swift-release.mk runs this through `eval "$(SWIFT_MK_RELEASE_BUILD_CMD)"`, whose
-# outer double quotes would cancel inner double quotes around the path; the dmg
-# name now contains a space, so single-quote the path to survive the eval.
+# outer double quotes would cancel inner double quotes around the path; single-quote
+# the path so it survives the eval regardless of spaces.
 SWIFT_MK_RELEASE_BUILD_CMD = $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp '$(SWIFT_APP_RELEASE_DMG_PATH)' dist/
 
 # Canonical Xcode-app build path: declare the generator, workspace, scheme, and
