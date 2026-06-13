@@ -92,7 +92,7 @@ jobs:
 
           mkdir -p Products
           gh release download "$RELEASE_TAG" \
-            --pattern "StickiesImproved-*.dmg" \
+            --pattern "Stickies Improved-*.dmg" \
             --dir Products \
             --clobber
 
@@ -103,14 +103,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          dmg_path="$(find Products -maxdepth 1 -name 'StickiesImproved-*.dmg' -print | sort | head -n 1)"
+          dmg_path="$(find Products -maxdepth 1 -name 'Stickies Improved-*.dmg' -print | sort | head -n 1)"
           if [[ -z "$dmg_path" ]]; then
-              echo "No StickiesImproved DMG was downloaded for ${RELEASE_TAG}" >&2
+              echo "No Stickies Improved DMG was downloaded for ${RELEASE_TAG}" >&2
               exit 1
           fi
 
           dmg_name="$(basename "$dmg_path")"
-          build_version="${dmg_name#StickiesImproved-}"
+          build_version="${dmg_name#Stickies Improved-}"
           build_version="${build_version%.dmg}"
           key_path="$RUNNER_TEMP/sparkle_private_key"
           printf '%s' "$SPARKLE_PRIVATE_KEY" > "$key_path"

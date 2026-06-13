@@ -33,5 +33,5 @@ jobs:
       apple-team-id: H3BMXM4W7H
       install-provisioning-profile: true
       notarize-pattern: "*.dmg"
-      sbom-subject-path: Products/StickiesImproved.app
+      sbom-subject-path: "Products/Stickies Improved.app"
     secrets: inherit
