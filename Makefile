@@ -39,6 +39,10 @@ SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
 include bootstrap.mk
 .DEFAULT_GOAL := check
 
+.PHONY: install-dependencies
+install-dependencies: swift-mk-bin
+	"$(SWIFT_MK_BIN)" toolchain install --generator $(SWIFT_XCODE_GENERATOR)
+
 .PHONY: run
 run: app
 	open "$(SWIFT_APP_DEST)"
