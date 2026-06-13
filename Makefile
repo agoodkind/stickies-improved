@@ -45,7 +45,10 @@ SPARKLE_PUBLIC_ED_KEY := $(shell cat Config/sparkle.pub 2>/dev/null)
 # swift-app.mk's release-assets, then place the versioned dmg in dist/ for the
 # notarize job. The bundle id, iCloud container, and profile specifier are
 # constants in local.xcconfig; signing comes from swift-mk's override.
-SWIFT_MK_RELEASE_BUILD_CMD = $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp "$(SWIFT_APP_RELEASE_DMG_PATH)" dist/
+# swift-release.mk runs this through `eval "$(SWIFT_MK_RELEASE_BUILD_CMD)"`, whose
+# outer double quotes would cancel inner double quotes around the path; the dmg
+# name now contains a space, so single-quote the path to survive the eval.
+SWIFT_MK_RELEASE_BUILD_CMD = $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp '$(SWIFT_APP_RELEASE_DMG_PATH)' dist/
 
 # Canonical Xcode-app build path: declare the generator, workspace, scheme, and
 # configuration, and swift-mk derives build/test/generate/coverage through the
