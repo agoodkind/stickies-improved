@@ -9,6 +9,10 @@
 import ProjectDescription
 
 let appName = "StickiesImproved"
+// User-facing name; differs from appName (the Xcode target/scheme identifier) so
+// the build identity stays space-free while Finder, the menu bar, and the .app
+// bundle show the spaced name.
+let displayName = "Stickies Improved"
 let organizationName = "goodkind.io"
 let bundleId = "io.goodkind.stickies-improved"
 let deploymentTargets: DeploymentTargets = .macOS("26.0")
@@ -53,13 +57,14 @@ let appSigningSettings = targetSigningSettings.merging([
 ]) { _, new in new }
 
 let infoPlist: [String: Plist.Value] = [
-  "CFBundleDisplayName": .string(appName),
+  "CFBundleDisplayName": .string(displayName),
+  "CFBundleName": .string(displayName),
   "CFBundleShortVersionString": .string("$(MARKETING_VERSION)"),
   "CFBundleVersion": .string("$(CURRENT_PROJECT_VERSION)"),
   "LSApplicationCategoryType": .string("public.app-category.productivity"),
   "NSUbiquitousContainers": .dictionary([
     "$(ICLOUD_CONTAINER_IDENTIFIER)": .dictionary([
-      "NSUbiquitousContainerName": .string(appName),
+      "NSUbiquitousContainerName": .string(displayName),
       "NSUbiquitousContainerSupportedFolderLevels": .string("Any"),
     ])
   ]),
@@ -174,7 +179,7 @@ let app: Target = .target(
   ],
   settings: .settings(
     base: appSigningSettings.merging([
-      "PRODUCT_NAME": .string(appName),
+      "PRODUCT_NAME": .string(displayName),
       "PRODUCT_BUNDLE_IDENTIFIER": .string("$(APP_BUNDLE_ID)"),
     ]) { _, new in new }
   )
