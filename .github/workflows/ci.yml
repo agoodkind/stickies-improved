@@ -12,65 +12,19 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  XCODE_VERSION: "latest-stable"
-  APPLE_TEAM_ID: H3BMXM4W7H
-  APPLE_CODE_SIGN_IDENTITY: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
-  # The swift-makefile bootstrap fetches swift.mk via `gh api` on every make
-  # invocation; without a token gh fails and the fetch silently writes an empty
-  # swift.mk, so the build target never loads. Authenticate the public fetch.
-  GH_TOKEN: ${{ github.token }}
+# The caller must grant every permission the called workflow's jobs request.
+permissions:
+  contents: read
 
 jobs:
-  verify:
-    runs-on: macos-latest
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: agoodkind/swift-makefile/.github/actions/setup-build-env@main
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          github-token: ${{ github.token }}
-
-      - name: Install Tuist dependencies
-        run: make install-dependencies
-
-      # The app target declares an iCloud entitlement, so a Developer ID build
-      # resolves the StickiesImproved Developer ID profile; install it and import
-      # the certificate so the verify build signs exactly as the release does.
-      - name: Install provisioning profile
-        env:
-          APPLE_DEVELOPER_ID_PROFILE_BASE64: ${{ secrets.APPLE_DEVELOPER_ID_PROFILE_BASE64 }}
-        run: |
-          PROFILE_PATH="$RUNNER_TEMP/Developer-ID.provisionprofile"
-          PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
-          if [[ -z "$APPLE_DEVELOPER_ID_PROFILE_BASE64" ]]; then
-              echo "APPLE_DEVELOPER_ID_PROFILE_BASE64 is required for Developer ID builds with iCloud entitlements" >&2
-              exit 1
-          fi
-          printf '%s' "$APPLE_DEVELOPER_ID_PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
-          PROFILE_UUID="$(security cms -D -i "$PROFILE_PATH" | plutil -extract UUID raw -o - -)"
-          PROFILE_NAME="$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -o - -)"
-          mkdir -p "$PROFILE_DIR"
-          cp "$PROFILE_PATH" "$PROFILE_DIR/$PROFILE_UUID.provisionprofile"
-          echo "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME" >> "$GITHUB_ENV"
-
-      - name: Import signing certificate
-        id: import-cert
-        uses: agoodkind/swift-makefile/.github/actions/import-signing-cert@main
-        with:
-          p12-base64: ${{ secrets.APPLE_DEVELOPER_ID_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
-          identity-name: ${{ env.APPLE_CODE_SIGN_IDENTITY }}
-
-      - name: Check project
-        run: make check
-
-      - name: Build project
-        run: make build CODE_SIGN_IDENTITY="${{ steps.import-cert.outputs.identity-sha1 }}" DEVELOPMENT_TEAM="${{ env.APPLE_TEAM_ID }}"
-
-      - name: Test project
-        run: make test CODE_SIGN_IDENTITY="${{ steps.import-cert.outputs.identity-sha1 }}" DEVELOPMENT_TEAM="${{ env.APPLE_TEAM_ID }}"
+  ci:
+    uses: agoodkind/swift-makefile/.github/workflows/_ci.yml@main
+    with:
+      runner: macos-26
+      setup-target: install-dependencies
+      targets: '["check","build","test"]'
+      import-signing-cert: true
+      install-provisioning-profile: true
+      signing-identity-name: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
+      apple-team-id: H3BMXM4W7H
+    secrets: inherit
