@@ -23,36 +23,17 @@ SWIFT_APP_SIGN_IDENTITY := $(DMG_SIGN_IDENTITY)
 SWIFT_APP_GITHUB_RELEASE_BASE_URL := https://github.com/agoodkind/stickies-improved/releases/download/$(RELEASE_TAG)/
 SWIFT_APP_SPARKLE_APPCAST_TOOL_CMD := Scripts/find-sparkle-tool.sh "$(BUILD_DIR)" generate_appcast
 
-# Release config the canonical `_release.yml` build feeds to write-release-xcconfig.sh.
-# The signing identity, profile specifier, team, and versions arrive from the
-# workflow; the bundle id, iCloud container, Sparkle feed, and the committed
-# public key live here so the make build is self-contained.
-APP_BUNDLE_ID := io.goodkind.stickies-improved
-ICLOUD_CONTAINER_IDENTIFIER := H3BMXM4W7H.io.goodkind.stickies-improved
-SPARKLE_FEED_URL := https://goodkind.io/stickies-improved/appcast.xml
-# `:=` not `?=`: the committed local.xcconfig is `-include`d above and defines an
-# empty SPARKLE_PUBLIC_ED_KEY, which would otherwise shadow the file read.
+# The Sparkle public key is the one release value not already constant in the
+# committed Config/local.xcconfig, so pass it as a top-precedence build setting
+# (below) to embed SUPublicEDKey. `:=` not `?=`: local.xcconfig is `-include`d
+# above with an empty value that would otherwise shadow the file read.
 SPARKLE_PUBLIC_ED_KEY := $(shell cat Config/sparkle.pub 2>/dev/null)
 
-# write-release-xcconfig.sh reads these from the environment. Exporting them (the
-# workflow-supplied identity/team/versions and the repo-side config) keeps them
-# out of the release-build command string, which swift-release.mk runs through
-# `eval "..."`; an inline value with spaces would break that double-quoted eval.
-export APP_BUNDLE_ID
-export ICLOUD_CONTAINER_IDENTIFIER
-export SPARKLE_FEED_URL
-export SPARKLE_PUBLIC_ED_KEY
-export CODE_SIGN_IDENTITY
-export DMG_SIGN_IDENTITY
-export DEVELOPMENT_TEAM
-export PROVISIONING_PROFILE_SPECIFIER
-export MARKETING_VERSION
-export CURRENT_PROJECT_VERSION
-
-# release-build (canonical `_release.yml`): write the release xcconfig from the
-# exported environment, build and sign the app and dmg through swift-app.mk's
-# release-assets, then place the versioned dmg in dist/ for the notarize job.
-SWIFT_MK_RELEASE_BUILD_CMD = Scripts/write-release-xcconfig.sh && $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp $(SWIFT_APP_RELEASE_DMG_PATH) dist/
+# release-build (canonical `_release.yml`): build and sign the app and dmg through
+# swift-app.mk's release-assets, then place the versioned dmg in dist/ for the
+# notarize job. The bundle id, iCloud container, and profile specifier are
+# constants in local.xcconfig; signing comes from swift-mk's override.
+SWIFT_MK_RELEASE_BUILD_CMD = $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp $(SWIFT_APP_RELEASE_DMG_PATH) dist/
 
 # Canonical Xcode-app build path: declare the generator, workspace, scheme, and
 # configuration, and swift-mk derives build/test/generate/coverage through the
@@ -61,7 +42,7 @@ SWIFT_XCODE_GENERATOR := tuist
 SWIFT_XCODE_WORKSPACE := $(SWIFT_APP_NAME).xcworkspace
 SWIFT_XCODE_SCHEME := $(SWIFT_APP_NAME)
 SWIFT_XCODE_CONFIGURATION := $(CONFIGURATION)
-SWIFT_XCODE_BUILD_SETTINGS := MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)" GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)"
+SWIFT_XCODE_BUILD_SETTINGS := MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)" GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)" SPARKLE_PUBLIC_ED_KEY="$(SPARKLE_PUBLIC_ED_KEY)"
 SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace StickiesImproved.xcodeproj
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
