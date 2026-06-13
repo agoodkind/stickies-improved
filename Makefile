@@ -7,6 +7,11 @@ CODE_SIGN_IDENTITY ?= $(SIGNING_CERTIFICATE)
 
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
+# Local-dev defaults; the release workflow's release-meta overrides both via the
+# environment. They are not pinned in local.xcconfig, so the env value wins (a
+# makefile assignment from `-include` would otherwise shadow it).
+MARKETING_VERSION ?= 0.1.0
+CURRENT_PROJECT_VERSION ?= 1
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
 BUILD_DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
