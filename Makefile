@@ -34,24 +34,25 @@ SPARKLE_FEED_URL := https://goodkind.io/stickies-improved/appcast.xml
 # empty SPARKLE_PUBLIC_ED_KEY, which would otherwise shadow the file read.
 SPARKLE_PUBLIC_ED_KEY := $(shell cat Config/sparkle.pub 2>/dev/null)
 
+# write-release-xcconfig.sh reads these from the environment. Exporting them (the
+# workflow-supplied identity/team/versions and the repo-side config) keeps them
+# out of the release-build command string, which swift-release.mk runs through
+# `eval "..."`; an inline value with spaces would break that double-quoted eval.
+export APP_BUNDLE_ID
+export ICLOUD_CONTAINER_IDENTIFIER
+export SPARKLE_FEED_URL
+export SPARKLE_PUBLIC_ED_KEY
+export CODE_SIGN_IDENTITY
+export DMG_SIGN_IDENTITY
+export DEVELOPMENT_TEAM
+export PROVISIONING_PROFILE_SPECIFIER
+export MARKETING_VERSION
+export CURRENT_PROJECT_VERSION
+
 # release-build (canonical `_release.yml`): write the release xcconfig from the
-# workflow + repo values, build and sign the app and dmg through swift-app.mk's
+# exported environment, build and sign the app and dmg through swift-app.mk's
 # release-assets, then place the versioned dmg in dist/ for the notarize job.
-SWIFT_MK_RELEASE_BUILD_CMD = \
-	APP_BUNDLE_ID="$(APP_BUNDLE_ID)" \
-	ICLOUD_CONTAINER_IDENTIFIER="$(ICLOUD_CONTAINER_IDENTIFIER)" \
-	DEVELOPMENT_TEAM="$(DEVELOPMENT_TEAM)" \
-	CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY)" \
-	PROVISIONING_PROFILE_SPECIFIER="$(PROVISIONING_PROFILE_SPECIFIER)" \
-	MARKETING_VERSION="$(MARKETING_VERSION)" \
-	CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)" \
-	SPARKLE_FEED_URL="$(SPARKLE_FEED_URL)" \
-	SPARKLE_PUBLIC_ED_KEY="$(SPARKLE_PUBLIC_ED_KEY)" \
-	DMG_SIGN_IDENTITY="$(DMG_SIGN_IDENTITY)" \
-	Scripts/write-release-xcconfig.sh \
-	&& $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets \
-	&& mkdir -p dist \
-	&& cp "$(SWIFT_APP_RELEASE_DMG_PATH)" dist/
+SWIFT_MK_RELEASE_BUILD_CMD = Scripts/write-release-xcconfig.sh && $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp $(SWIFT_APP_RELEASE_DMG_PATH) dist/
 
 # Canonical Xcode-app build path: declare the generator, workspace, scheme, and
 # configuration, and swift-mk derives build/test/generate/coverage through the
