@@ -22,6 +22,13 @@ SWIFT_MK_DERIVED_DATA := $(BUILD_DIR)
 SWIFT_MK_OWN_RUN := 1
 
 SWIFT_APP_NAME := StickiesImproved
+# The .app basename and dmg name carry the spaced display name while SWIFT_APP_NAME
+# stays space-free for the scheme, workspace, and project dirs. swift-app.mk quotes
+# these in every recipe, so the spaces are safe there.
+SWIFT_APP_BUNDLE_NAME := Stickies Improved
+SWIFT_APP_DMG_VOLUME_NAME := $(SWIFT_APP_BUNDLE_NAME)
+SWIFT_APP_DMG_NAME := $(SWIFT_APP_BUNDLE_NAME)-$(CONFIGURATION).dmg
+SWIFT_APP_RELEASE_DMG_NAME := $(SWIFT_APP_BUNDLE_NAME)-$(CURRENT_PROJECT_VERSION).dmg
 SWIFT_APP_CONFIGURATION := $(CONFIGURATION)
 SWIFT_APP_BUILD_DIR := $(BUILD_DIR)
 SWIFT_APP_SIGN_IDENTITY := $(DMG_SIGN_IDENTITY)
@@ -38,7 +45,7 @@ SPARKLE_PUBLIC_ED_KEY := $(shell cat Config/sparkle.pub 2>/dev/null)
 # swift-app.mk's release-assets, then place the versioned dmg in dist/ for the
 # notarize job. The bundle id, iCloud container, and profile specifier are
 # constants in local.xcconfig; signing comes from swift-mk's override.
-SWIFT_MK_RELEASE_BUILD_CMD = $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp $(SWIFT_APP_RELEASE_DMG_PATH) dist/
+SWIFT_MK_RELEASE_BUILD_CMD = $(MAKE) SWIFT_MK_SKIP_FETCH=1 release-assets && mkdir -p dist && cp "$(SWIFT_APP_RELEASE_DMG_PATH)" dist/
 
 # Canonical Xcode-app build path: declare the generator, workspace, scheme, and
 # configuration, and swift-mk derives build/test/generate/coverage through the
