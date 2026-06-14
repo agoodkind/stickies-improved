@@ -5,7 +5,7 @@ on:
     branches:
       - main
   push:
-    branches:
+    branches-ignore:
       - main
 
 concurrency:
@@ -22,7 +22,8 @@ jobs:
     with:
       runner: macos-26
       setup-target: install-dependencies
-      targets: '["check","build","test"]'
+      # gate (lint/audit/deadcode) runs in the reusable workflow's mandatory gate job.
+      targets: '["build","test"]'
       import-signing-cert: true
       install-provisioning-profile: true
       signing-identity-name: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
