@@ -24,7 +24,7 @@ jobs:
       # gate (lint/audit/deadcode) runs in the reusable workflow's mandatory gate job.
       targets: '["build","test"]'
       import-signing-cert: true
-      install-provisioning-profile: true
+      install-provisioning-profile: false
       signing-identity-name: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
       apple-team-id: H3BMXM4W7H
     secrets: inherit
