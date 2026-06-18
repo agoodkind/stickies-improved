@@ -4,7 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "cron"
-      cronjob: "0 */6 * * *"
+      cronjob: "0 6 * * *"
       timezone: "America/Los_Angeles"
     open-pull-requests-limit: 10
     reviewers:
@@ -14,7 +14,7 @@ updates:
     directory: "/Tuist"
     schedule:
       interval: "cron"
-      cronjob: "0 */6 * * *"
+      cronjob: "0 6 * * *"
       timezone: "America/Los_Angeles"
     open-pull-requests-limit: 10
     reviewers:
