@@ -23,9 +23,8 @@ jobs:
       setup-target: install-dependencies
       # gate (lint/audit/deadcode) runs in the reusable workflow's mandatory gate job.
       targets: '["build","test"]'
-      make-args: 'CONFIGURATION=Debug'
-      import-signing-cert: false
-      install-provisioning-profile: false
+      import-signing-cert: true
+      install-provisioning-profile: true
       signing-identity-name: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
       apple-team-id: H3BMXM4W7H
     secrets: inherit
