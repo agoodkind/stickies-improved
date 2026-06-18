@@ -23,7 +23,7 @@ jobs:
       setup-target: install-dependencies
       # gate (lint/audit/deadcode) runs in the reusable workflow's mandatory gate job.
       targets: '["build","test"]'
-      make-args: 'XCODE_PROVISIONING_PROFILE_SPECIFIER= XCODE_CODE_SIGNING_ALLOWED=NO XCODE_CODE_SIGNING_REQUIRED=NO'
+      make-args: 'CONFIGURATION=Debug'
       import-signing-cert: false
       install-provisioning-profile: false
       signing-identity-name: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
