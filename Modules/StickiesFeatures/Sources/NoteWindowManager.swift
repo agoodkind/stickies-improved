@@ -83,6 +83,13 @@ public final class NoteWindowManager {
     panel.titlebarAppearsTransparent = true
     panel.isOpaque = false
     panel.backgroundColor = .clear
+    // Drag by the background strip, and disable full screen so the green button
+    // folds (the bridge rebinds it) instead of going full screen. Set here too so a
+    // panel clicked in the first run-loop tick before the bridge runs behaves right.
+    panel.isMovableByWindowBackground = true
+    panel.collectionBehavior.remove(.fullScreenPrimary)
+    panel.collectionBehavior.remove(.fullScreenAuxiliary)
+    panel.collectionBehavior.insert(.fullScreenNone)
     panel.setContentSize(NSSize(width: Layout.defaultWidth, height: Layout.defaultHeight))
     // Notes are persistent desktop windows, not transient tool palettes: keep them
     // visible when the app deactivates.
