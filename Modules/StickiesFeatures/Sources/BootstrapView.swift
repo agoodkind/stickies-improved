@@ -6,7 +6,6 @@
 //  Copyright © 2026, all rights reserved.
 //
 
-import AppKit
 import StickiesApplication
 import StickiesDomain
 import SwiftUI
@@ -14,7 +13,7 @@ import SwiftUI
 public struct BootstrapView: View {
   @Environment(\.noteWorkspaceModel) private var workspace
   @Environment(\.noteWindowStateModel) private var windowStateModel
-  @Environment(\.openWindow) private var openWindow
+  @Environment(\.noteWindowManager) private var noteWindowManager
 
   @State private var didOpenWindows = false
 
@@ -28,18 +27,14 @@ public struct BootstrapView: View {
       .task {
         guard !RuntimeEnvironment.isRunningTests else { return }
         guard !didOpenWindows else { return }
-        guard let workspace, let windowStateModel else { return }
+        guard let workspace, let windowStateModel, let noteWindowManager else { return }
         didOpenWindows = true
 
         let noteIDs = await workspace.bootstrap(
           openNoteIDs: windowStateModel.openNoteIDs
         )
         for noteID in noteIDs {
-          openWindow(value: noteID)
-        }
-
-        if !noteIDs.isEmpty {
-          NSApp.activate(ignoringOtherApps: true)
+          noteWindowManager.open(noteID)
         }
       }
   }

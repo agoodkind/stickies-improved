@@ -15,9 +15,6 @@ import SwiftUI
 @main
 struct StickiesImprovedApp: App {
   private enum Layout {
-    // Recovered from the original Stickie.nib: default content size 400x400.
-    static let defaultNoteWindowWidth: CGFloat = 400
-    static let defaultNoteWindowHeight: CGFloat = 400
     // The manager is a modern list window, sized to comfortably show a handful
     // of note rows across both sections.
     static let managerWindowWidth: CGFloat = 480
@@ -31,9 +28,10 @@ struct StickiesImprovedApp: App {
   private let runtimeInfo = BundleRuntimeInfo()
 
   @State private var workspace: NoteWorkspaceModel
-  @State private var windowStateModel = NoteWindowStateModel()
+  @State private var windowStateModel: NoteWindowStateModel
   @State private var updaterModel: UpdaterModel
-  @State private var preferencesModel = PreferencesModel()
+  @State private var preferencesModel: PreferencesModel
+  @State private var noteWindowManager: NoteWindowManager
 
   init() {
     let info = BundleRuntimeInfo()
@@ -54,48 +52,60 @@ struct StickiesImprovedApp: App {
     )
     _ = NoopActivityPublisher()
 
-    _workspace = State(
-      initialValue: NoteWorkspaceModel(
-        noteStore: noteStore,
-        libraryMonitor: libraryMonitor,
-        autosaveScheduler: scheduler,
-        libraryMigrator: migrator,
-        loggerSubsystem: info.bundleIdentifier
+    let workspaceModel = NoteWorkspaceModel(
+      noteStore: noteStore,
+      libraryMonitor: libraryMonitor,
+      autosaveScheduler: scheduler,
+      libraryMigrator: migrator,
+      loggerSubsystem: info.bundleIdentifier
+    )
+    let windowState = NoteWindowStateModel()
+    let preferences = PreferencesModel()
+    let updater = UpdaterModel(
+      controller: SparkleUpdaterController(
+        enabled: !RuntimeEnvironment.isRunningTests
       )
     )
 
-    let updaterController = SparkleUpdaterController(
-      enabled: !RuntimeEnvironment.isRunningTests
-    )
-    _updaterModel = State(
-      initialValue: UpdaterModel(controller: updaterController)
+    _workspace = State(initialValue: workspaceModel)
+    _windowStateModel = State(initialValue: windowState)
+    _preferencesModel = State(initialValue: preferences)
+    _updaterModel = State(initialValue: updater)
+
+    // Note panels host `NoteSceneView` with the same model environment the App
+    // injects elsewhere, so the editor, chrome, fold, and export all behave as
+    // before. Capturing the model instances (not `self`) keeps this safe to build
+    // during the struct's init.
+    _noteWindowManager = State(
+      initialValue: NoteWindowManager { noteID in
+        AnyView(
+          NoteSceneView(noteID: .constant(noteID))
+            .environment(\.noteWorkspaceModel, workspaceModel)
+            .environment(\.noteWindowStateModel, windowState)
+            .environment(\.updaterModel, updater)
+            .environment(\.preferencesModel, preferences)
+            .environment(\.runtimeInfo, info)
+        )
+      }
     )
   }
 
   var body: some Scene {
+    // The note windows are AppKit `NSPanel`s owned by `NoteWindowManager` (a panel
+    // cannot become the app's main window, so clicking one note never raises the
+    // others). The note menu commands live here on the always-present launcher
+    // scene, since SwiftUI commands apply app-wide regardless of host scene.
     WindowGroup(id: "launcher") {
       injectModels(into: BootstrapView())
     }
     .defaultSize(width: 1, height: 1)
     .windowResizability(.contentSize)
-
-    WindowGroup("Note", for: NoteID.self) { $noteID in
-      injectModels(into: NoteSceneView(noteID: $noteID))
-    }
-    .defaultSize(
-      width: Layout.defaultNoteWindowWidth,
-      height: Layout.defaultNoteWindowHeight
-    )
-    // Hide the SwiftUI titlebar so the note color fills full-bleed under the
-    // floating standard traffic lights, matching the original's transparent
-    // titlebar + fullSizeContentView chrome.
-    .windowStyle(.hiddenTitleBar)
-    .windowBackgroundDragBehavior(.enabled)
     .commands {
       NoteCommands(
         workspace: workspace,
         updaterModel: updaterModel,
-        preferences: preferencesModel
+        preferences: preferencesModel,
+        noteWindowManager: noteWindowManager
       )
     }
 
@@ -144,6 +154,7 @@ struct StickiesImprovedApp: App {
       .environment(\.noteWindowStateModel, windowStateModel)
       .environment(\.updaterModel, updaterModel)
       .environment(\.preferencesModel, preferencesModel)
+      .environment(\.noteWindowManager, noteWindowManager)
       .environment(\.runtimeInfo, runtimeInfo)
       .background(ReopenBridge(managerWindowID: Self.managerWindowID))
   }

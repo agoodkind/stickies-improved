@@ -58,7 +58,11 @@ public struct NoteSceneView: View {
     .containerBackground(.clear, for: .window)
     .opacity(appearsActive ? 1.0 : unfocusedAlpha)
     .background(chromeBridge)
-    .focusedSceneValue(\.focusedNoteID, noteID)
+    // Non-scene focused value: these notes are AppKit panels hosted via
+    // NSHostingController, so there is no SwiftUI scene to carry a scene value;
+    // the menu bar's `@FocusedValue(\.focusedNoteID)` reads it through the
+    // responder chain of whichever note panel is key.
+    .focusedValue(\.focusedNoteID, noteID)
     .onAppear {
       if let noteID {
         windowStateModel?.noteWindowOpened(noteID)

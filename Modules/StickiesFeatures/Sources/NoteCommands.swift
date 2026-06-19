@@ -31,22 +31,24 @@ public struct NoteCommands: Commands {
   }
 
   @Environment(\.openWindow) private var openWindow
-  @Environment(\.dismissWindow) private var dismissWindow
   @FocusedValue(\.focusedNoteID) private var focusedNoteID
   @FocusedValue(\.noteExportTrigger) private var exportTrigger
 
   private let workspace: NoteWorkspaceModel
   private let updaterModel: UpdaterModel
   private let preferences: PreferencesModel
+  private let noteWindowManager: NoteWindowManager
 
   public init(
     workspace: NoteWorkspaceModel,
     updaterModel: UpdaterModel,
-    preferences: PreferencesModel
+    preferences: PreferencesModel,
+    noteWindowManager: NoteWindowManager
   ) {
     self.workspace = workspace
     self.updaterModel = updaterModel
     self.preferences = preferences
+    self.noteWindowManager = noteWindowManager
   }
 
   public var body: some Commands {
@@ -65,14 +67,14 @@ public struct NoteCommands: Commands {
         let color = preferences.defaultColor
         Task {
           let noteID = await workspace.createNote(color: color)
-          openWindow(value: noteID)
+          noteWindowManager.open(noteID)
         }
       }
       .keyboardShortcut("n")
 
       Button("Delete Note") {
         if let focusedNoteID {
-          dismissWindow(value: focusedNoteID)
+          noteWindowManager.close(focusedNoteID)
           workspace.trashNote(focusedNoteID)
         }
       }
