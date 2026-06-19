@@ -10,6 +10,7 @@ import StickiesApplication
 import StickiesDesignSystem
 import StickiesDomain
 import SwiftUI
+import os
 
 /// The "All Notes" manager window. A master-detail browser: the sidebar lists every
 /// note in two sections, active notes under "Notes" and soft-deleted notes under
@@ -32,10 +33,14 @@ public struct ManagerView: View {
   private static let updatedDateStyle = Date.FormatStyle.dateTime
     .year().month().day().hour().minute()
 
+  private static let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "StickiesImproved",
+    category: "ManagerView"
+  )
+
   @Environment(\.noteWorkspaceModel) private var workspace
   @Environment(\.preferencesModel) private var preferences
-  @Environment(\.openWindow) private var openWindow
-  @Environment(\.dismissWindow) private var dismissWindow
+  @Environment(\.noteWindowManager) private var noteWindowManager
 
   @State private var pendingPermanentDelete: NoteID?
   @State private var query = ""
@@ -176,7 +181,7 @@ public struct ManagerView: View {
     rowContent(for: note)
       .tag(note.id)
       .contextMenu {
-        Button("Open") { openWindow(value: note.id) }
+        Button("Open") { openNote(note.id) }
         Button("Move to Trash") { trash(note.id) }
       }
       .swipeActions(edge: .trailing) {
@@ -298,7 +303,7 @@ public struct ManagerView: View {
     if let document = selectedDocument {
       NotePreviewView(
         note: document,
-        onOpen: { openWindow(value: document.id) },
+        onOpen: { openNote(document.id) },
         onRestore: { restoreAndOpen(document.id) },
         onTrash: { trash(document.id) },
         onDeletePermanently: { pendingPermanentDelete = document.id }
@@ -318,9 +323,17 @@ public struct ManagerView: View {
     let color = preferences?.defaultColor ?? .default
     Task {
       let noteID = await workspace.createNote(color: color)
-      openWindow(value: noteID)
+      openNote(noteID)
       selection = noteID
     }
+  }
+
+  /// Opens the note's window, or surfaces it if already open. Centralizes the
+  /// `NoteWindowManager` boundary so the call and its structured log live in one
+  /// place rather than at each call site.
+  private func openNote(_ noteID: NoteID) {
+    Self.logger.debug("Opening note window \(noteID.description, privacy: .public)")
+    noteWindowManager?.open(noteID)
   }
 
   /// Opens the currently selected note in its own window, restoring it first when the
@@ -333,7 +346,7 @@ public struct ManagerView: View {
     if document.metadata.isTrashed {
       restoreAndOpen(id)
     } else {
-      openWindow(value: id)
+      openNote(id)
     }
   }
 
@@ -341,13 +354,13 @@ public struct ManagerView: View {
     // Restore moves the note back into the active set, then the window opens it;
     // opening only works for active notes, so the order matters.
     workspace?.restoreNote(noteID)
-    openWindow(value: noteID)
+    openNote(noteID)
   }
 
   private func trash(_ noteID: NoteID) {
     // Close the note's window if it is open so the soft delete also dismisses the
     // editor, then flip the model state so it leaves the active set.
-    dismissWindow(value: noteID)
+    noteWindowManager?.close(noteID)
     workspace?.trashNote(noteID)
   }
 
