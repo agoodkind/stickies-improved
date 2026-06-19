@@ -67,10 +67,11 @@ public final class NoteWindowManager {
   private func makePanel(for noteID: NoteID) -> NSPanel {
     let hosting = NSHostingController(rootView: makeContent(noteID))
     let panel = NSPanel(contentViewController: hosting)
-    // Set the full recovered style mask up-front so the panel never briefly shows
-    // wrong chrome before StickyWindowChromeBridge runs its async configuration.
-    // This matches the mask the bridge applies (it only adds the transparent-
-    // titlebar full-bleed appearance on top).
+    // Match the recovered chrome up-front so the panel does not flash standard
+    // window chrome before StickyWindowChromeBridge runs its async configuration.
+    // The style mask alone is not enough: the transparent full-bleed titlebar also
+    // needs these appearance properties, which are not part of the mask. The bridge
+    // remains the source of truth and re-applies the same values idempotently.
     panel.styleMask = [
       .titled,
       .closable,
@@ -78,6 +79,10 @@ public final class NoteWindowManager {
       .resizable,
       .fullSizeContentView,
     ]
+    panel.titleVisibility = .hidden
+    panel.titlebarAppearsTransparent = true
+    panel.isOpaque = false
+    panel.backgroundColor = .clear
     panel.setContentSize(NSSize(width: Layout.defaultWidth, height: Layout.defaultHeight))
     // Notes are persistent desktop windows, not transient tool palettes: keep them
     // visible when the app deactivates.
