@@ -25,7 +25,7 @@ struct StickiesImprovedApp: App {
 
   @NSApplicationDelegateAdaptor(StickiesAppDelegate.self) private var appDelegate
 
-  private let runtimeInfo = BundleRuntimeInfo()
+  private let runtimeInfo: BundleRuntimeInfo
 
   @State private var workspace: NoteWorkspaceModel
   @State private var windowStateModel: NoteWindowStateModel
@@ -34,7 +34,10 @@ struct StickiesImprovedApp: App {
   @State private var noteWindowManager: NoteWindowManager
 
   init() {
+    // One BundleRuntimeInfo for the whole app: the stored property, the model
+    // construction below, and the note-panel content closure all share `info`.
     let info = BundleRuntimeInfo()
+    runtimeInfo = info
     let resolver = StorageLocationResolver(
       iCloudContainerIdentifier: info.iCloudContainerIdentifier,
       localFolderName: info.bundleIdentifier
