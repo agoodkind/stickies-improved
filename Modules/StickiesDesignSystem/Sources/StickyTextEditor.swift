@@ -272,8 +272,6 @@ private final class FrostBandView: NSGlassEffectView {
   // Set only on the main actor in bind(to:); read in the nonisolated deinit, which for an
   // AppKit view also runs on the main thread, so unguarded access is safe here.
   nonisolated(unsafe) private var scrollObserver: NSObjectProtocol?
-  /// The minimum scroll origin seen, treated as the resting top where the frost is invisible.
-  private var restOriginY: CGFloat?
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -324,10 +322,9 @@ private final class FrostBandView: NSGlassEffectView {
 
   private func updateFrostStrength() {
     guard let observedScrollView else { return }
-    let originY = observedScrollView.contentView.bounds.origin.y
-    let rest = min(restOriginY ?? originY, originY)
-    restOriginY = rest
-    let scrolled = max(0, originY - rest)
+    let restingTopOriginY = -observedScrollView.contentInsets.top
+    let originY = max(observedScrollView.contentView.bounds.origin.y, restingTopOriginY)
+    let scrolled = max(0, originY - restingTopOriginY)
     alphaValue = min(scrolled / Self.rampDistance, 1)
   }
 
