@@ -12,15 +12,6 @@ import StickiesDomain
 import SwiftUI
 
 struct PlainTextEditorView: View {
-  private enum Layout {
-    /// Height of the top glass frost. Tall enough to read under the floating traffic
-    /// lights; the bottom of the band fades out so it blends into the note.
-    static let frostHeight: CGFloat = 60
-    /// Opacity of the frost at the window edge. Starts partial (never fully opaque) so the
-    /// band reads as a soft frosted edge, then the gradient fades it to clear.
-    static let frostEdgeOpacity: Double = 0.7
-  }
-
   @Environment(\.noteWorkspaceModel) private var workspace
   @Environment(\.colorScheme) private var colorScheme
 
@@ -37,36 +28,13 @@ struct PlainTextEditorView: View {
     // place the first glyph at the measured 32pt/5pt, independent of the titlebar.
     .ignoresSafeArea()
     .background(noteColor.backgroundColor(for: colorScheme).ignoresSafeArea())
-    .overlay(alignment: .top) {
-      frostBand
-    }
+    // The top frost is an AppKit NSVisualEffectView inside StickyTextEditor, not a SwiftUI
+    // overlay. A SwiftUI .glassEffect here only tinted, because it samples the SwiftUI
+    // backdrop rather than the AppKit text rendered in the hosted scroll view; the
+    // within-window blur view samples and blurs that text as it scrolls under the edge.
     .contextMenu {
       ColorPickerMenuItems(noteID: noteID)
     }
-  }
-
-  /// A Liquid Glass frost pinned to the top of the note, under the floating traffic lights.
-  /// It uses the plain `.regular` system material with no bright tint, so in dark mode it is a
-  /// dark, translucent glass that shows the material's refraction as text scrolls up past it,
-  /// rather than a solid colored bar. The gradient is densest at the top edge and fades to
-  /// clear toward the body, so it reads as a soft frosted edge. The bottom edge is left clean:
-  /// a matching bottom frost dimmed the last lines and hurt readability. `glassEffect` is the
-  /// system material, so the frost itself is not hand-drawn.
-  private var frostBand: some View {
-    Rectangle()
-      .fill(.clear)
-      .glassEffect(.regular, in: Rectangle())
-      .frame(maxWidth: .infinity)
-      .frame(height: Layout.frostHeight)
-      .mask(
-        LinearGradient(
-          colors: [.black.opacity(Layout.frostEdgeOpacity), .clear],
-          startPoint: .top,
-          endPoint: .bottom
-        )
-      )
-      .allowsHitTesting(false)
-      .ignoresSafeArea(edges: .top)
   }
 
   private var metadata: NoteMetadata? {

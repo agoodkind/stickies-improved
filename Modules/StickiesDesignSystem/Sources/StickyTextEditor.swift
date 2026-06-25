@@ -24,6 +24,10 @@ public struct StickyTextEditor: NSViewRepresentable {
     static let scrollTopInset: CGFloat = 24
     static let containerTopInset: CGFloat = 8
     static let containerLeftInset: CGFloat = 5
+    /// Height of the top frost band. The blur is densest at the very top, under the
+    /// floating traffic lights, and the band's gradient mask fades it to clear by this
+    /// depth so it blends into the note body. A taller band frosts more lines.
+    static let frostBandHeight: CGFloat = 64
   }
 
   @Binding private var text: String
@@ -99,21 +103,45 @@ public struct StickyTextEditor: NSViewRepresentable {
       scrollView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
     ])
 
-    // Only the editable note window is draggable; the read-only preview lives inside the
-    // manager window and has no top inset to grab.
+    // The editable note adds a top frost band that blurs text scrolling under the window's
+    // top edge, plus a transparent strip that drags the window like a title bar. The
+    // read-only preview lives inside the manager window with no titlebar, so it gets neither.
     if isEditable {
-      let dragStrip = WindowDragView()
-      dragStrip.scrollView = scrollView
-      dragStrip.translatesAutoresizingMaskIntoConstraints = false
-      container.addSubview(dragStrip)
-      NSLayoutConstraint.activate([
-        dragStrip.topAnchor.constraint(equalTo: container.topAnchor),
-        dragStrip.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-        dragStrip.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-        dragStrip.heightAnchor.constraint(equalToConstant: Layout.scrollTopInset),
-      ])
+      addFrostBand(to: container, scrollView: scrollView)
+      addDragStrip(to: container, scrollView: scrollView)
     }
     return container
+  }
+
+  /// Adds the top frost band above the scroll view so it blurs the text scrolling behind it.
+  /// It is added before the drag strip so the strip stays on top for window dragging, and it
+  /// tracks the scroll view so the frost fades in only as content scrolls under it.
+  private func addFrostBand(to container: NSView, scrollView: NSScrollView) {
+    let frost = FrostBandView()
+    frost.translatesAutoresizingMaskIntoConstraints = false
+    container.addSubview(frost)
+    NSLayoutConstraint.activate([
+      frost.topAnchor.constraint(equalTo: container.topAnchor),
+      frost.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+      frost.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+      frost.heightAnchor.constraint(equalToConstant: Layout.frostBandHeight),
+    ])
+    frost.bind(to: scrollView)
+  }
+
+  /// Adds the transparent top strip that drags the window like a title bar, scrolling the
+  /// note when the wheel passes over it.
+  private func addDragStrip(to container: NSView, scrollView: NSScrollView) {
+    let dragStrip = WindowDragView()
+    dragStrip.scrollView = scrollView
+    dragStrip.translatesAutoresizingMaskIntoConstraints = false
+    container.addSubview(dragStrip)
+    NSLayoutConstraint.activate([
+      dragStrip.topAnchor.constraint(equalTo: container.topAnchor),
+      dragStrip.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+      dragStrip.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+      dragStrip.heightAnchor.constraint(equalToConstant: Layout.scrollTopInset),
+    ])
   }
 
   public func updateNSView(_ nsView: NSView, context: Context) {
@@ -216,5 +244,96 @@ private final class WindowDragView: NSView {
     } else {
       super.scrollWheel(with: event)
     }
+  }
+}
+
+// MARK: - FrostBandView
+
+/// A top-aligned Liquid Glass band that refracts and blurs the note text scrolling behind it,
+/// the way Messages frosts content under its header. It is an `NSGlassEffectView`, which is
+/// AppKit-native, so unlike a SwiftUI `.glassEffect` it lives in the same layer tree as the
+/// sibling scroll view ordered behind it and refracts that text rather than only tinting. The
+/// glass computes its own tint and light/dark adaptation from the content behind it, so the
+/// appearance is left untouched. A vertical gradient layer mask fades it to clear toward the
+/// body so the frost is densest at the top edge. It never takes hit-testing, so clicks fall
+/// through to the drag strip and the text below.
+private final class FrostBandView: NSGlassEffectView {
+  /// Unit gradient endpoints for the fade mask: opaque at the top edge, clear at the bottom.
+  private static let maskCenterX: CGFloat = 0.5
+  private static let maskTop = CGPoint(x: maskCenterX, y: 1)
+  private static let maskBottom = CGPoint(x: maskCenterX, y: 0)
+  /// Scroll distance, in points, over which the frost ramps from invisible to full. Keeping
+  /// it about one line means the first line stays fully crisp at rest and the frost appears
+  /// as soon as content begins moving under the edge, the way native scroll edge effects do.
+  private static let rampDistance: CGFloat = 28
+
+  private let fadeMask = CAGradientLayer()
+  private weak var observedScrollView: NSScrollView?
+  // Set only on the main actor in bind(to:); read in the nonisolated deinit, which for an
+  // AppKit view also runs on the main thread, so unguarded access is safe here.
+  nonisolated(unsafe) private var scrollObserver: NSObjectProtocol?
+
+  override init(frame frameRect: NSRect) {
+    super.init(frame: frameRect)
+    configureGlass()
+  }
+
+  required init?(coder: NSCoder) {
+    super.init(coder: coder)
+    configureGlass()
+  }
+
+  deinit {
+    if let scrollObserver {
+      NotificationCenter.default.removeObserver(scrollObserver)
+    }
+  }
+
+  private func configureGlass() {
+    // An empty, clear content view makes the band a pure glass pane, so the Liquid Glass
+    // refracts the note text scrolling behind it instead of hosting a control.
+    contentView = NSView()
+    cornerRadius = 0
+    wantsLayer = true
+    // Start invisible: the frost only appears once content scrolls under the edge.
+    alphaValue = 0
+    fadeMask.colors = [NSColor.white.cgColor, NSColor.clear.cgColor]
+    fadeMask.startPoint = Self.maskTop
+    fadeMask.endPoint = Self.maskBottom
+    layer?.mask = fadeMask
+  }
+
+  /// Tracks the scroll view's clip view so the frost strength follows the scroll position:
+  /// fully transparent at the top (first line crisp) and ramping to full as content scrolls
+  /// under the edge.
+  func bind(to scrollView: NSScrollView) {
+    observedScrollView = scrollView
+    let clip = scrollView.contentView
+    clip.postsBoundsChangedNotifications = true
+    scrollObserver = NotificationCenter.default.addObserver(
+      forName: NSView.boundsDidChangeNotification,
+      object: clip,
+      queue: .main
+    ) { [weak self] _ in
+      MainActor.assumeIsolated { self?.updateFrostStrength() }
+    }
+    updateFrostStrength()
+  }
+
+  private func updateFrostStrength() {
+    guard let observedScrollView else { return }
+    let restingTopOriginY = -observedScrollView.contentInsets.top
+    let originY = max(observedScrollView.contentView.bounds.origin.y, restingTopOriginY)
+    let scrolled = max(0, originY - restingTopOriginY)
+    alphaValue = min(scrolled / Self.rampDistance, 1)
+  }
+
+  override func hitTest(_: NSPoint) -> NSView? {
+    nil
+  }
+
+  override func layout() {
+    super.layout()
+    fadeMask.frame = bounds
   }
 }
