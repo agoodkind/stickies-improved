@@ -20,6 +20,8 @@ SWIFT_SOURCE_TARGETS := Modules App Project.swift Tuist.swift Tuist/Package.swif
 SWIFT_MK_MODULES := swift-build.mk swift-app.mk swift-release.mk
 SWIFT_MK_DERIVED_DATA := $(BUILD_DIR)
 SWIFT_MK_OWN_RUN := 1
+# Throwaway CAS cross-runner probe: emit Xcode compilation-cache hit/miss remarks.
+SWIFT_MK_XCODE_CACHE_DIAGNOSTICS := 1
 
 SWIFT_APP_NAME := StickiesImproved
 # The .app basename and mounted dmg volume title carry the spaced display name; the
