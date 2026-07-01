@@ -24,6 +24,15 @@ jobs:
     with:
       runner: macos-26
       setup-target: install-dependencies
+      # Probe-only: diagnostics to see Xcode CAS replay remarks; dependencies profile
+      # so the build bucket (DerivedData products) is NOT cached, and a unique
+      # cache-version so the probe never touches stickies main's caches. The warm rerun
+      # then has cold build products but a warm Xcode CAS, so a replay is the rolling
+      # compile bucket carrying the CAS across runners.
+      make-args: "SWIFT_MK_XCODE_CACHE_DIAGNOSTICS=1"
+      cache-profile: dependencies
+      cache-version: xcas-probe-1
+      timeout-minutes: 60
       import-signing-cert: true
       install-provisioning-profile: true
       signing-identity-name: "Developer ID Application: Alex Goodkind (H3BMXM4W7H)"
