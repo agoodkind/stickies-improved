@@ -24,7 +24,7 @@ struct StickyWindowChromeBridgeTests {
     coordinator.collapse(window: window, animate: false)
 
     #expect(window.frame.height == StickyWindowChromeBridge.Fold.collapsedHeight)
-    #expect(window.title == "Collapsed Title")
+    #expect(window.title == StickyWindowChromeBridge.Fold.titlePrefix + "Collapsed Title")
     #expect(window.titleVisibility == .visible)
     #expect(coordinator.isCollapsed)
     #expect(coordinator.expandedHeight == 400)
@@ -57,7 +57,7 @@ struct StickyWindowChromeBridgeTests {
     coordinator.applyCollapsedFrame(animate: false)
 
     #expect(window.frame.height == StickyWindowChromeBridge.Fold.collapsedHeight)
-    #expect(window.title == "Saved Title")
+    #expect(window.title == StickyWindowChromeBridge.Fold.titlePrefix + "Saved Title")
     #expect(window.titleVisibility == .visible)
     #expect(coordinator.expandedHeight == 512)
   }

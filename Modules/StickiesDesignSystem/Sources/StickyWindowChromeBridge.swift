@@ -31,9 +31,10 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
     /// Fallback expanded height when no height was ever stored, matching the
     /// SwiftUI default 400x400 note size.
     static let defaultExpandedHeight: CGFloat = 400
-    /// Recovered folded strip height: enough for the title bar controls and title,
-    /// but not tall enough to show note body content underneath.
-    static let collapsedHeight: CGFloat = 28
+    /// Slim folded strip height tuned to keep the traffic lights and title readable
+    /// while feeling visibly smaller than the previous collapsed shell.
+    static let collapsedHeight: CGFloat = 18
+    static let titlePrefix = "▸ "
   }
 
   // Named no-op defaults for the chrome-only path. Empty closure literals trip the
@@ -356,7 +357,7 @@ extension StickyWindowChromeBridge.Coordinator {
   /// expand so the expanded note stays full-bleed with no title.
   @MainActor private func setTitleVisible(_ visible: Bool, on window: NSWindow) {
     if visible {
-      window.title = collapsedTitle()
+      window.title = StickyWindowChromeBridge.Fold.titlePrefix + collapsedTitle()
       window.titleVisibility = .visible
     } else {
       window.titleVisibility = .hidden
