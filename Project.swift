@@ -218,6 +218,13 @@ let applicationTests = unitTestTarget(
     .target(name: "StickiesTestSupport"),
   ]
 )
+let featuresTests = unitTestTarget(
+  "StickiesFeaturesTests",
+  dependencies: [
+    .target(name: "StickiesFeatures"),
+    .target(name: "StickiesDomain"),
+  ]
+)
 
 let project = Project(
   name: appName,
@@ -237,6 +244,7 @@ let project = Project(
     persistenceTests,
     crdtTests,
     applicationTests,
+    featuresTests,
   ],
   schemes: [
     .scheme(
@@ -250,6 +258,7 @@ let project = Project(
           "StickiesPersistenceTests",
           "StickiesCRDTTests",
           "StickiesApplicationTests",
+          "StickiesFeaturesTests",
         ],
         configuration: "Debug"
       ),
