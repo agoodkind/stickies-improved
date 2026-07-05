@@ -318,7 +318,7 @@ extension NoteWorkspaceModel {
       materialize(existing, id: id)
     } else if let incoming {
       crdts[id] = incoming
-      materialize(incoming, id: id)
+      materializeLoaded(incoming, id: id, serializedData: document.crdtData)
     } else {
       let crdt = NoteCRDT.seeded(from: document)
       crdts[id] = crdt
@@ -359,6 +359,21 @@ extension NoteWorkspaceModel {
   func materialize(_ crdt: NoteCRDT, id: NoteID) -> NoteDocument {
     var document = crdt.materialized(fallbackID: id)
     document.crdtData = crdt.serialized()
+    return storeMaterialized(document, id: id)
+  }
+
+  /// A note loaded from disk already has persisted CRDT bytes. On the first hydrate path
+  /// there is nothing to save yet, so preserve those bytes instead of eagerly compacting
+  /// the document back through `save()`.
+  @discardableResult
+  func materializeLoaded(_ crdt: NoteCRDT, id: NoteID, serializedData: Data?) -> NoteDocument {
+    var document = crdt.materialized(fallbackID: id)
+    document.crdtData = serializedData
+    return storeMaterialized(document, id: id)
+  }
+
+  @discardableResult
+  private func storeMaterialized(_ document: NoteDocument, id: NoteID) -> NoteDocument {
     if document.metadata.isTrashed {
       notes[id] = nil
       trashedNotesByID[id] = document
