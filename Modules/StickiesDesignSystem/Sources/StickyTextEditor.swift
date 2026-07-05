@@ -9,6 +9,12 @@
 import AppKit
 import SwiftUI
 
+private enum StickyCommandKey {
+  static let commandDeleteKeyCode: UInt16 = 51
+}
+
+// MARK: - StickyTextEditor
+
 /// The plain-text note body. It bridges an `NSTextView` configured with
 /// `isRichText = false`, which Apple documents converts pasted or dropped rich text to
 /// plain text, so ⌘V, the Edit menu, and drag-and-drop all land as plain characters in
@@ -35,23 +41,26 @@ public struct StickyTextEditor: NSViewRepresentable {
   private let fontSize: Double
   private let fontColorHex: String?
   private let isEditable: Bool
+  private let onCommandDelete: (() -> Void)?
 
   public init(
     text: Binding<String>,
     fontName: String?,
     fontSize: Double,
     fontColorHex: String?,
-    isEditable: Bool = true
+    isEditable: Bool = true,
+    onCommandDelete: (() -> Void)? = nil
   ) {
     _text = text
     self.fontName = fontName
     self.fontSize = fontSize
     self.fontColorHex = fontColorHex
     self.isEditable = isEditable
+    self.onCommandDelete = onCommandDelete
   }
 
   public func makeNSView(context: Context) -> NSView {
-    let textView = NSTextView()
+    let textView = StickyCommandTextView()
     textView.isRichText = false
     textView.importsGraphics = false
     textView.allowsImageEditing = false
@@ -68,6 +77,7 @@ public struct StickyTextEditor: NSViewRepresentable {
     )
     textView.delegate = context.coordinator
     textView.string = text
+    textView.onCommandDelete = onCommandDelete
     textView.textContainer?.widthTracksTextView = true
     textView.isVerticallyResizable = true
     textView.isHorizontallyResizable = false
@@ -147,8 +157,9 @@ public struct StickyTextEditor: NSViewRepresentable {
   public func updateNSView(_ nsView: NSView, context: Context) {
     context.coordinator.text = $text
     guard let scrollView = nsView.subviews.compactMap({ $0 as? NSScrollView }).first,
-      let textView = scrollView.documentView as? NSTextView
+      let textView = scrollView.documentView as? StickyCommandTextView
     else { return }
+    textView.onCommandDelete = onCommandDelete
     // While the editor is first responder the user is typing, so the text view is the
     // source of truth: never overwrite it from the model here. The model briefly lags
     // (debounced autosave, then an iCloud-monitor reload of the just-written file), and
@@ -217,6 +228,56 @@ public struct StickyTextEditor: NSViewRepresentable {
       // attributes to carry, so the saved note matches what is on screen.
       if text.wrappedValue != changedView.string {
         text.wrappedValue = changedView.string
+      }
+    }
+  }
+}
+
+// MARK: - StickyCommandTextView
+
+@MainActor
+final class StickyCommandTextView: NSTextView {
+  var onCommandDelete: (() -> Void)?
+
+  override func performKeyEquivalent(with event: NSEvent) -> Bool {
+    if shouldHandleCommandDelete(event) {
+      runCommandDelete()
+      return true
+    }
+    return super.performKeyEquivalent(with: event)
+  }
+
+  override func keyDown(with event: NSEvent) {
+    if shouldHandleCommandDelete(event) {
+      runCommandDelete()
+      return
+    }
+    super.keyDown(with: event)
+  }
+
+  private func shouldHandleCommandDelete(_ event: NSEvent) -> Bool {
+    guard onCommandDelete != nil else {
+      return false
+    }
+    guard event.keyCode == StickyCommandKey.commandDeleteKeyCode else {
+      return false
+    }
+    let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+    guard modifiers.contains(.command) else {
+      return false
+    }
+    if modifiers.contains(.control) || modifiers.contains(.option) || modifiers.contains(.shift) {
+      return false
+    }
+    return true
+  }
+
+  private func runCommandDelete() {
+    let hostWindow = window
+    onCommandDelete?()
+    DispatchQueue.main.async {
+      if hostWindow?.isVisible == true {
+        hostWindow?.close()
       }
     }
   }
