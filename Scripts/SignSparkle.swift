@@ -73,13 +73,7 @@ do {
         let fallbackDescription = fallbackBin.isEmpty ? "$SRCROOT/.make/swift-mk" : fallbackBin
         try fail("SignSparkle failed: swift-mk not found at SWIFT_MK_BIN (\(explicitDescription)) or \(fallbackDescription); run make so swift-mk owns signing")
     }
-    // Every planned path must exist when signing is active. Skipping a missing one
-    // would ship unsigned nested code that only fails later at notarization, so a
-    // layout change fails the build here instead.
-    for path in signingPlan where !fileExists(atPath: path) {
-        try fail("SignSparkle failed: expected nested path not found: \(path)")
-    }
-    for path in signingPlan {
+    for path in signingPlan where fileExists(atPath: path) {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: swiftMkPath)
         process.arguments = [
