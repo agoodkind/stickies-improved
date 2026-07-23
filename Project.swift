@@ -32,8 +32,6 @@ let release = Configuration.release(
 let settings = Settings.settings(
   base: [
     "SWIFT_VERSION": "6.0",
-    "MARKETING_VERSION": "$(MARKETING_VERSION)",
-    "CURRENT_PROJECT_VERSION": "$(CURRENT_PROJECT_VERSION)",
     "ENABLE_HARDENED_RUNTIME": "YES",
     "OTHER_CODE_SIGN_FLAGS": "--timestamp",
   ],
