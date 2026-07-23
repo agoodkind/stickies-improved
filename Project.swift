@@ -212,6 +212,10 @@ let domainTests = unitTestTarget(
   "StickiesDomainTests",
   dependencies: [.target(name: "StickiesDomain")]
 )
+let designSystemTests = unitTestTarget(
+  "StickiesDesignSystemTests",
+  dependencies: [.target(name: "StickiesDesignSystem")]
+)
 let persistenceTests = unitTestTarget(
   "StickiesPersistenceTests",
   dependencies: [
@@ -249,6 +253,7 @@ let project = Project(
     testSupport,
     app,
     domainTests,
+    designSystemTests,
     persistenceTests,
     crdtTests,
     applicationTests,
@@ -261,6 +266,7 @@ let project = Project(
       testAction: .targets(
         [
           "StickiesDomainTests",
+          "StickiesDesignSystemTests",
           "StickiesPersistenceTests",
           "StickiesCRDTTests",
           "StickiesApplicationTests",

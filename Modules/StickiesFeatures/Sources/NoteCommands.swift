@@ -6,6 +6,7 @@
 //  Copyright © 2026, all rights reserved.
 //
 
+import AppKit
 import CoreText
 import StickiesApplication
 import StickiesDesignSystem
@@ -52,9 +53,14 @@ public struct NoteCommands: Commands {
   }
 
   public var body: some Commands {
-    // Replace the standard Save item so "Export..." sits in the File menu
-    // where a save command would, exporting the focused note's plain text.
+    // Replace the standard Save item so command-S still gives the classic "nothing to
+    // save" feedback, while the focused note's explicit export stays in the File menu.
     CommandGroup(replacing: .saveItem) {
+      Button("Save") {
+        NSSound.beep()
+      }
+      .keyboardShortcut("s")
+
       Button("Export...") {
         exportTrigger?.wrappedValue = true
       }
