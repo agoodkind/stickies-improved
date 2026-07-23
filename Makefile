@@ -7,11 +7,6 @@ CODE_SIGN_IDENTITY ?= $(SIGNING_CERTIFICATE)
 
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
-# Local-dev defaults; the release workflow's release-meta overrides both via the
-# environment. They are not pinned in local.xcconfig, so the env value wins (a
-# makefile assignment from `-include` would otherwise shadow it).
-MARKETING_VERSION ?= 0.1.0
-CURRENT_PROJECT_VERSION ?= 1
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
 BUILD_DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -61,7 +56,7 @@ SWIFT_XCODE_GENERATOR := tuist
 SWIFT_XCODE_WORKSPACE := $(SWIFT_APP_NAME).xcworkspace
 SWIFT_XCODE_SCHEME := $(SWIFT_APP_NAME)
 SWIFT_XCODE_CONFIGURATION := $(CONFIGURATION)
-SWIFT_XCODE_BUILD_SETTINGS := MARKETING_VERSION="$(MARKETING_VERSION)" CURRENT_PROJECT_VERSION="$(CURRENT_PROJECT_VERSION)" GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)" SPARKLE_PUBLIC_ED_KEY="$(SPARKLE_PUBLIC_ED_KEY)"
+SWIFT_XCODE_BUILD_SETTINGS := GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)" SPARKLE_PUBLIC_ED_KEY="$(SPARKLE_PUBLIC_ED_KEY)"
 SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace StickiesImproved.xcodeproj
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
