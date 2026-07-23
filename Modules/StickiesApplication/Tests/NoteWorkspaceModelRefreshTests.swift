@@ -96,6 +96,27 @@ struct NoteWorkspaceModelRefreshTests {
     #expect(saved?.crdtData != nil)
   }
 
+  @Test func firstRefreshPreservesLoadedCRDTBytesWithoutReserializing() async {
+    // A CRDT note loaded from disk already carries persisted bytes. Bootstrap should
+    // not immediately compact those bytes through `save()` before the note is edited.
+    let store = InMemoryNoteStore()
+    let base = NoteDocument(plainText: "preserved bytes")
+    let baseData = NoteCRDT.seeded(from: base).serialized()
+    let duplicatedData = baseData + baseData
+    let loaded = NoteDocument(
+      metadata: base.metadata,
+      plainText: base.plainText,
+      crdtData: duplicatedData
+    )
+    await store.save(loaded)
+    let model = makeModel(store: store)
+
+    await model.refreshFromDisk()
+
+    #expect(model.note(for: loaded.id)?.plainText == "preserved bytes")
+    #expect(model.note(for: loaded.id)?.crdtData == duplicatedData)
+  }
+
   @Test func refreshFromDiskDropsNoteDeletedOnAnotherDevice() async {
     // A package removed on another device disappears from the loaded set; the note must
     // leave memory rather than linger from the live CRDT map.

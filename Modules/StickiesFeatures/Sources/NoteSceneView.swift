@@ -43,7 +43,7 @@ public struct NoteSceneView: View {
   public var body: some View {
     Group {
       if let noteID {
-        NoteEditorHost(noteID: noteID)
+        NoteEditorHost(noteID: noteID, isCollapsed: isCollapsed(noteID: noteID))
       } else {
         ContentUnavailableView("No Note", systemImage: "note.text")
       }
@@ -78,6 +78,10 @@ public struct NoteSceneView: View {
   private var navigationTitle: String {
     guard let noteID, let workspace else { return "Note" }
     return workspace.displayTitle(for: noteID)
+  }
+
+  private func isCollapsed(noteID: NoteID) -> Bool {
+    workspace?.isCollapsed(for: noteID) ?? false
   }
 
   private var unfocusedAlpha: Double {

@@ -27,10 +27,14 @@ import SwiftUI
 /// shrinks the window to the titlebar height and shows the note title, toggling back
 /// to the stored expanded height). Both are additive and never touch the chrome above.
 public struct StickyWindowChromeBridge: NSViewRepresentable {
-  private enum Fold {
+  enum Fold {
     /// Fallback expanded height when no height was ever stored, matching the
     /// SwiftUI default 400x400 note size.
     static let defaultExpandedHeight: CGFloat = 400
+    /// Slim folded strip height tuned to keep the traffic lights and title readable
+    /// while feeling visibly smaller than the previous collapsed shell.
+    static let collapsedHeight: CGFloat = 18
+    static let titlePrefix = "▸ "
   }
 
   // Named no-op defaults for the chrome-only path. Empty closure literals trip the
@@ -272,14 +276,6 @@ public struct StickyWindowChromeBridge: NSViewRepresentable {
 // MARK: - StickyWindowChromeBridge.Coordinator
 
 extension StickyWindowChromeBridge.Coordinator {
-  /// Content height that the titlebar occupies, computed as the window frame height
-  /// minus the content layout rect height. This is the strip that remains visible
-  /// when folded.
-  @MainActor
-  private func titlebarHeight(of window: NSWindow) -> CGFloat {
-    window.frame.height - window.contentLayoutRect.height
-  }
-
   @objc @MainActor func toggleFold() {
     guard let window else { return }
     if isCollapsed {
@@ -290,17 +286,16 @@ extension StickyWindowChromeBridge.Coordinator {
   }
 
   @MainActor func collapse(window: NSWindow, animate: Bool) {
-    let titlebar = titlebarHeight(of: window)
     expandedHeight = window.frame.height
     isCollapsed = true
     onCollapseChange(true, Double(expandedHeight))
     setTitleVisible(true, on: window)
-    lowerContentMinHeight(of: window, to: titlebar)
+    lowerContentMinHeight(of: window, to: StickyWindowChromeBridge.Fold.collapsedHeight)
 
     var frame = window.frame
     let topEdge = frame.maxY
-    frame.size.height = titlebar
-    frame.origin.y = topEdge - titlebar
+    frame.size.height = StickyWindowChromeBridge.Fold.collapsedHeight
+    frame.origin.y = topEdge - StickyWindowChromeBridge.Fold.collapsedHeight
     setFolding(window: window, to: frame, animate: animate)
   }
 
@@ -322,14 +317,13 @@ extension StickyWindowChromeBridge.Coordinator {
   /// `expandedHeight`); only the visible frame shrinks to the titlebar.
   @MainActor func applyCollapsedFrame(animate: Bool) {
     guard let window else { return }
-    let titlebar = titlebarHeight(of: window)
     setTitleVisible(true, on: window)
-    lowerContentMinHeight(of: window, to: titlebar)
+    lowerContentMinHeight(of: window, to: StickyWindowChromeBridge.Fold.collapsedHeight)
 
     var frame = window.frame
     let topEdge = frame.maxY
-    frame.size.height = titlebar
-    frame.origin.y = topEdge - titlebar
+    frame.size.height = StickyWindowChromeBridge.Fold.collapsedHeight
+    frame.origin.y = topEdge - StickyWindowChromeBridge.Fold.collapsedHeight
     setFolding(window: window, to: frame, animate: animate)
   }
 
@@ -363,7 +357,7 @@ extension StickyWindowChromeBridge.Coordinator {
   /// expand so the expanded note stays full-bleed with no title.
   @MainActor private func setTitleVisible(_ visible: Bool, on window: NSWindow) {
     if visible {
-      window.title = collapsedTitle()
+      window.title = StickyWindowChromeBridge.Fold.titlePrefix + collapsedTitle()
       window.titleVisibility = .visible
     } else {
       window.titleVisibility = .hidden
