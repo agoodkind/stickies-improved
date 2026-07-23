@@ -78,6 +78,25 @@ let infoPlist: [String: Plist.Value] = [
   "BuildDate": .string("$(BUILD_DATE)"),
 ]
 
+let sparkleCurrentPath =
+  "$(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).app/Contents/Frameworks/Sparkle.framework/Versions/Current"
+let sparkleXPCPath = "\(sparkleCurrentPath)/XPCServices"
+
+// Reserve scripting for Sparkle's documented inside-out signing requirement: the
+// nested helpers must be signed before the outer app. swift-mk owns the signing
+// flags; this phase only names the paths, so nothing here prescribes how to sign.
+let signSparkleScript = TargetScript.post(
+  path: "Scripts/SignSparkle.swift",
+  name: "Sign Sparkle nested code",
+  inputPaths: [
+    "\(sparkleCurrentPath)/Updater.app",
+    "\(sparkleXPCPath)/Downloader.xpc",
+    "\(sparkleXPCPath)/Installer.xpc",
+    "\(sparkleCurrentPath)/Autoupdate",
+    "$(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).app/Contents/Frameworks/Sparkle.framework",
+  ]
+)
+
 // MARK: - Module helpers
 
 func frameworkTarget(
@@ -168,6 +187,7 @@ let app: Target = .target(
   sources: ["App/**"],
   resources: [],
   entitlements: "Config/StickiesImproved.entitlements",
+  scripts: [signSparkleScript],
   dependencies: [
     .target(name: "StickiesFeatures"),
     .target(name: "StickiesApplication"),
