@@ -38,7 +38,9 @@ public struct SettingsView: View {
       appearanceSection
       diagnosticsSection
       editorSection
-      updatesSection
+      if isUpdaterConfigured {
+        updatesSection
+      }
     }
     .formStyle(.grouped)
     .padding(Layout.formPadding)
@@ -116,6 +118,10 @@ public struct SettingsView: View {
         updaterModel?.checkForUpdates()
       }
     }
+  }
+
+  private var isUpdaterConfigured: Bool {
+    updaterModel?.isConfigured ?? false
   }
 
   /// Switching the location persists the new mode first so the resolver points

@@ -94,11 +94,12 @@ public struct NoteCommands: Commands {
       }
     }
 
-    CommandGroup(after: .appInfo) {
-      Button("Check for Updates...") {
-        updaterModel.checkForUpdates()
+    if updaterModel.isConfigured {
+      CommandGroup(after: .appInfo) {
+        Button("Check for Updates...") {
+          updaterModel.checkForUpdates()
+        }
       }
-      .disabled(!updaterModel.isConfigured)
     }
 
     // Add to the system Window menu so "Show All Notes" sits next to the

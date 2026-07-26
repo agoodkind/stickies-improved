@@ -8,6 +8,8 @@ CODE_SIGN_IDENTITY ?= $(SIGNING_CERTIFICATE)
 CONFIGURATION ?= Release
 BUILD_DIR ?= build
 RELEASE_TAG ?= $(CURRENT_PROJECT_VERSION)-$(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
+RELEASE_TRACK ?= stable
+ARTIFACT_VERSION ?= Release
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
 BUILD_DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 SWIFT_SOURCE_TARGETS := Modules App Project.swift Tuist.swift Tuist/Package.swift
@@ -25,14 +27,18 @@ SWIFT_APP_DMG_VOLUME_NAME := $(SWIFT_APP_BUNDLE_NAME)
 SWIFT_APP_CONFIGURATION := $(CONFIGURATION)
 SWIFT_APP_BUILD_DIR := $(BUILD_DIR)
 SWIFT_APP_SIGN_IDENTITY := $(DMG_SIGN_IDENTITY)
+SWIFT_APP_RELEASE_DMG_NAME := $(SWIFT_APP_NAME)-$(ARTIFACT_VERSION).dmg
 SWIFT_APP_GITHUB_RELEASE_BASE_URL := https://github.com/agoodkind/stickies-improved/releases/download/$(RELEASE_TAG)/
 
 # Sparkle appcast generation is owned here, not by swift-mk. The engine exposes
 # only the generic signing primitive (codesign-run); this project locates its own
 # generate_appcast and produces the feed.
 SPARKLE_UPDATES_DIR := $(BUILD_DIR)/sparkle-updates
-SPARKLE_APPCAST_PATH := $(SPARKLE_UPDATES_DIR)/appcast.xml
+SPARKLE_GENERATED_APPCAST := $(SPARKLE_UPDATES_DIR)/appcast.xml
+SPARKLE_ASSET_TAGS := $(SPARKLE_UPDATES_DIR)/asset-tags.tsv
+SPARKLE_APPCAST_PATH := $(if $(filter prerelease,$(RELEASE_TRACK)),prerelease/appcast.xml,appcast.xml)
 GITHUB_RELEASE_BASE_URL := $(SWIFT_APP_GITHUB_RELEASE_BASE_URL)
+GH_REPOSITORY ?= agoodkind/stickies-improved
 
 # The Sparkle public key is the one release value not already constant in the
 # committed Config/local.xcconfig, so pass it as a top-precedence build setting
@@ -56,11 +62,12 @@ SWIFT_XCODE_GENERATOR := tuist
 SWIFT_XCODE_WORKSPACE := $(SWIFT_APP_NAME).xcworkspace
 SWIFT_XCODE_SCHEME := $(SWIFT_APP_NAME)
 SWIFT_XCODE_CONFIGURATION := $(CONFIGURATION)
-SWIFT_XCODE_BUILD_SETTINGS := GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)" SPARKLE_PUBLIC_ED_KEY="$(SPARKLE_PUBLIC_ED_KEY)"
+SWIFT_XCODE_BUILD_SETTINGS := GIT_BRANCH="$(GIT_BRANCH)" BUILD_DATE="$(BUILD_DATE)" SPARKLE_PUBLIC_ED_KEY="$(SPARKLE_PUBLIC_ED_KEY)" SPARKLE_APPCAST_PATH="$(SPARKLE_APPCAST_PATH)"
 SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace StickiesImproved.xcodeproj
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
+SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/rewrite-appcast-urls.sh
 
 include bootstrap.mk
 .DEFAULT_GOAL := check
@@ -73,32 +80,41 @@ install-dependencies: swift-mk-bin
 run: app
 	open "$(SWIFT_APP_DEST)"
 
-# Generate the signed Sparkle appcast from the released dmg. Owned by this project,
-# not swift-mk. appcast.yml downloads the dmg and passes CURRENT_PROJECT_VERSION,
-# RELEASE_TAG, and GITHUB_RELEASE_BASE_URL; SPARKLE_PRIVATE_KEY_FILE points at the
-# Ed25519 private key.
+# Generate a one-release appcast for local use. The deployment workflow stages the
+# newest matching release history first and calls generate-sparkle-appcast directly.
 .PHONY: prepare-sparkle-updates
 prepare-sparkle-updates:
 	@test -f "$(SWIFT_APP_RELEASE_DMG_PATH)"
 	@rm -rf "$(SPARKLE_UPDATES_DIR)"
 	@mkdir -p "$(SPARKLE_UPDATES_DIR)"
 	@cp "$(SWIFT_APP_RELEASE_DMG_PATH)" "$(SPARKLE_UPDATES_DIR)/"
+	@printf '%s\t%s\n' "$(RELEASE_TAG)" "$(SWIFT_APP_RELEASE_DMG_NAME)" > "$(SPARKLE_ASSET_TAGS)"
+	@$(MAKE) generate-sparkle-appcast
+
+.PHONY: generate-sparkle-appcast
+generate-sparkle-appcast:
+	@test -s "$(SPARKLE_ASSET_TAGS)"
+	@test "$$(find "$(SPARKLE_UPDATES_DIR)" -maxdepth 1 -name '$(SWIFT_APP_NAME)-*.dmg' -print | wc -l | tr -d ' ')" -gt 0
 	@if [ -z "$${SPARKLE_PRIVATE_KEY_FILE:-}" ] || [ ! -s "$${SPARKLE_PRIVATE_KEY_FILE:-}" ]; then \
-		echo "prepare-sparkle-updates: SPARKLE_PRIVATE_KEY_FILE must point at the Ed25519 private key."; \
+		echo "generate-sparkle-appcast: SPARKLE_PRIVATE_KEY_FILE must point at the Ed25519 private key."; \
 		echo "  Shipped apps embed SUPublicEDKey, so an unsigned appcast bricks every update."; \
 		exit 1; \
 	fi
 	@appcast_tool="$$(Scripts/find-sparkle-tool.sh "$(BUILD_DIR)" generate_appcast)"; \
-	if [ -z "$$appcast_tool" ]; then echo "prepare-sparkle-updates: could not locate generate_appcast"; exit 1; fi; \
+	if [ -z "$$appcast_tool" ]; then echo "generate-sparkle-appcast: could not locate generate_appcast"; exit 1; fi; \
 	"$$appcast_tool" \
 		--ed-key-file "$${SPARKLE_PRIVATE_KEY_FILE}" \
-		--download-url-prefix "$(GITHUB_RELEASE_BASE_URL)" \
+		--download-url-prefix "https://github.com/$(GH_REPOSITORY)/releases/download/__RELEASE_TAG__/" \
 		"$(SPARKLE_UPDATES_DIR)"
-	@unsigned="$$(awk '/<enclosure /{ if ($$0 !~ /sparkle:edSignature="/) print }' "$(SPARKLE_APPCAST_PATH)")"; \
+	@Scripts/RewriteAppcastURLs.swift \
+		--appcast "$(SPARKLE_GENERATED_APPCAST)" \
+		--mapping "$(SPARKLE_ASSET_TAGS)" \
+		--repository "$(GH_REPOSITORY)"
+	@unsigned="$$(awk '/<enclosure /{ if ($$0 !~ /sparkle:edSignature="/) print }' "$(SPARKLE_GENERATED_APPCAST)")"; \
 	if [ -n "$$unsigned" ]; then \
-		echo "prepare-sparkle-updates: generate_appcast produced unsigned enclosures:"; \
+		echo "generate-sparkle-appcast: generate_appcast produced unsigned enclosures:"; \
 		echo "$$unsigned"; \
 		echo "  This means the private key does not pair with SUPublicEDKey ($(SPARKLE_PUBLIC_ED_KEY))."; \
 		exit 1; \
 	fi
-	@echo "prepare-sparkle-updates: every enclosure carries an EdDSA signature."
+	@echo "generate-sparkle-appcast: every enclosure carries an EdDSA signature."

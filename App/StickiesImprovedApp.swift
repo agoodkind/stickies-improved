@@ -22,6 +22,13 @@ struct StickiesImprovedApp: App {
   }
 
   private static let managerWindowID = "manager"
+  private static var sparkleUpdatesEnabled: Bool {
+    #if DEBUG
+      false
+    #else
+      !RuntimeEnvironment.isRunningTests
+    #endif
+  }
 
   @NSApplicationDelegateAdaptor(StickiesAppDelegate.self) private var appDelegate
 
@@ -66,7 +73,7 @@ struct StickiesImprovedApp: App {
     let preferences = PreferencesModel()
     let updater = UpdaterModel(
       controller: SparkleUpdaterController(
-        enabled: !RuntimeEnvironment.isRunningTests
+        enabled: Self.sparkleUpdatesEnabled
       )
     )
 

@@ -39,7 +39,9 @@ public struct AboutView: View {
   public var body: some View {
     Form {
       heroSection
-      softwareUpdatesSection
+      if isUpdaterConfigured {
+        softwareUpdatesSection
+      }
       contactSection
       buildDetailsSection
     }
@@ -74,7 +76,7 @@ public struct AboutView: View {
   }
 
   @ViewBuilder private var updateStatusRow: some View {
-    if let updaterModel, updaterModel.isConfigured {
+    if let updaterModel {
       HStack {
         VStack(alignment: .leading, spacing: Layout.statusSpacing) {
           Label(updateStatusLabel, systemImage: "arrow.triangle.2.circlepath.circle")
@@ -87,10 +89,6 @@ public struct AboutView: View {
         Button("Check Now") { updaterModel.checkForUpdates() }
           .disabled(!updaterModel.canCheckForUpdates)
       }
-    } else {
-      Label("Software updates are available in release builds.", systemImage: "hammer")
-        .symbolRenderingMode(.hierarchical)
-        .foregroundStyle(.secondary)
     }
   }
 

@@ -68,9 +68,11 @@ let infoPlist: [String: Plist.Value] = [
   ]),
   "SUEnableAutomaticChecks": .boolean(true),
   "SUAllowsAutomaticUpdates": .boolean(true),
-  // Hardcoded rather than `$(SPARKLE_FEED_URL)`: an xcconfig value treats `//` as a
-  // comment, which truncates the URL to `https:` in the built Info.plist.
-  "SUFeedURL": .string("https://goodkind.io/stickies-improved/appcast.xml"),
+  // The URL prefix stays literal because xcconfig treats `//` as a comment. The
+  // build setting supplies only the track-specific path beneath that prefix.
+  "SUFeedURL": .string(
+    "https://goodkind.io/stickies-improved/$(SPARKLE_APPCAST_PATH)"
+  ),
   "SUPublicEDKey": .string("$(SPARKLE_PUBLIC_ED_KEY)"),
   "GitBranch": .string("$(GIT_BRANCH)"),
   "BuildDate": .string("$(BUILD_DATE)"),
