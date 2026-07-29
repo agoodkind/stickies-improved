@@ -67,7 +67,7 @@ SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace Sti
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
-SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/rewrite-appcast-urls.sh
+SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/rewrite-appcast-urls.sh && Scripts/Tests/generate-sparkle-appcast.sh
 
 include bootstrap.mk
 .DEFAULT_GOAL := check
@@ -105,6 +105,8 @@ generate-sparkle-appcast:
 	"$$appcast_tool" \
 		--ed-key-file "$${SPARKLE_PRIVATE_KEY_FILE}" \
 		--download-url-prefix "https://github.com/$(GH_REPOSITORY)/releases/download/__RELEASE_TAG__/" \
+		--maximum-versions 0 \
+		--maximum-deltas 0 \
 		"$(SPARKLE_UPDATES_DIR)"
 	@Scripts/RewriteAppcastURLs.swift \
 		--appcast "$(SPARKLE_GENERATED_APPCAST)" \
