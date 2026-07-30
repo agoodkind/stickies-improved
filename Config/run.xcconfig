@@ -1,0 +1,3 @@
+#include "../.make/signing.xcconfig"
+CODE_SIGNING_ALLOWED = YES
+CODE_SIGNING_REQUIRED = YES

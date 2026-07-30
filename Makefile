@@ -67,7 +67,7 @@ SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace Sti
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
-SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/rewrite-appcast-urls.sh && Scripts/Tests/generate-sparkle-appcast.sh
+SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/make-run-debug.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/rewrite-appcast-urls.sh && Scripts/Tests/generate-sparkle-appcast.sh
 
 include bootstrap.mk
 .DEFAULT_GOAL := check
@@ -77,7 +77,12 @@ install-dependencies: swift-mk-bin
 	"$(SWIFT_MK_BIN)" toolchain install --generator $(SWIFT_XCODE_GENERATOR)
 
 .PHONY: run
-run: app
+run:
+	env -u SWIFT_BUILD_CMD -u SWIFT_MK_FRESH_CONFIG_KEY \
+		$(MAKE) CONFIGURATION=Debug SWIFT_MK_REQUIRE_SIGNING=1 \
+		XCODE_XCCONFIG_FILE="$(CURDIR)/Config/run.xcconfig" \
+		app
+	/usr/bin/codesign --verify --deep --strict "$(SWIFT_APP_DEST)"
 	open "$(SWIFT_APP_DEST)"
 
 # Generate a one-release appcast for local use. The deployment workflow stages the
