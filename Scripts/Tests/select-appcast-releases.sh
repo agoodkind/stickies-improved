@@ -28,14 +28,15 @@ fi
 expected_stable=$(
     printf '%s\n' \
         $'26.7.26\tStickiesImproved-26.7.26.dmg' \
-        $'202607230033-34-93803d7\tStickiesImproved-20260723003352.dmg'
+        $'26.7.25-r1\tStickiesImproved-26.7.25-r1.dmg' \
+        $'26.7.24\tStickiesImproved-26.7.24.dmg'
 )
 actual_stable=$(
     jq --raw-output \
         --arg release_track stable \
         --arg asset_prefix "StickiesImproved-" \
         --arg asset_suffix ".dmg" \
-        --argjson release_limit 2 \
+        --argjson release_limit 3 \
         --from-file "${SELECTOR_PATH}" \
         "${FIXTURE_PATH}"
 )
