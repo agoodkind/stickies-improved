@@ -67,7 +67,7 @@ SWIFT_CLEAN_CMD := rm -rf $(BUILD_DIR) Products StickiesImproved.xcworkspace Sti
 SWIFTLINT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFT_FORMAT_TARGETS := $(SWIFT_SOURCE_TARGETS)
 SWIFTCHECK_EXTRA_TARGETS := $(SWIFT_SOURCE_TARGETS)
-SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/make-run-debug.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/rewrite-appcast-urls.sh && Scripts/Tests/generate-sparkle-appcast.sh
+SWIFT_AUDIT_EXTRA_CMD := Scripts/Tests/release-track-contract.sh && Scripts/Tests/make-run-debug.sh && Scripts/Tests/select-appcast-releases.sh && Scripts/Tests/prepare-appcast-history.sh && Scripts/Tests/deploy-appcast.sh && Scripts/Tests/rewrite-appcast-urls.sh && Scripts/Tests/generate-sparkle-appcast.sh
 
 include bootstrap.mk
 .DEFAULT_GOAL := check
