@@ -8,68 +8,72 @@
 
 import Foundation
 import StickiesDomain
+import StickiesTestSupport
 import Testing
 
 @testable import StickiesApplication
 
 @MainActor
 struct PreferencesModelTests {
-  private func makeModel() -> (PreferencesModel, UserDefaults) {
-    let suiteName = "io.goodkind.stickies-improved.tests.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suiteName) ?? .standard
-    return (PreferencesModel(defaults: defaults), defaults)
+  private func makeModel() throws -> (PreferencesModel, ScratchDefaults) {
+    let scratch = try ScratchDefaults(label: "preferences-model-tests")
+    return (PreferencesModel(defaults: scratch.defaults), scratch)
   }
 
-  @Test func storageModeDefaultsToiCloudAndPersists() {
-    let (model, defaults) = makeModel()
+  @Test func storageModeDefaultsToiCloudAndPersists() throws {
+    let (model, scratch) = try makeModel()
 
     #expect(model.storageMode == .default)
 
     model.storageMode = .local
 
     #expect(model.storageMode == .local)
-    #expect(defaults.string(forKey: StorageMode.defaultsKey) == StorageMode.local.rawValue)
+    #expect(
+      scratch.defaults.string(forKey: StorageMode.defaultsKey) == StorageMode.local.rawValue)
   }
 
-  @Test func unfocusedTransparencyPersistsToBridgeKey() {
-    let (model, defaults) = makeModel()
+  @Test func unfocusedTransparencyPersistsToBridgeKey() throws {
+    let (model, scratch) = try makeModel()
 
     model.unfocusedTransparency = 0.7
 
     #expect(model.unfocusedTransparency == 0.7)
-    #expect(defaults.double(forKey: "nonFocusTransparency") == 0.7)
+    #expect(scratch.defaults.double(forKey: "nonFocusTransparency") == 0.7)
   }
 
-  @Test func unfocusedTransparencyClampsToBounds() {
-    let (model, _) = makeModel()
+  @Test func unfocusedTransparencyClampsToBounds() throws {
+    let (model, scratch) = try makeModel()
+    withExtendedLifetime(scratch) {
+      model.unfocusedTransparency = 0.1
+      #expect(model.unfocusedTransparency == PreferencesModel.Bounds.minimumTransparency)
 
-    model.unfocusedTransparency = 0.1
-    #expect(model.unfocusedTransparency == PreferencesModel.Bounds.minimumTransparency)
-
-    model.unfocusedTransparency = 5
-    #expect(model.unfocusedTransparency == PreferencesModel.Bounds.maximumTransparency)
+      model.unfocusedTransparency = 5
+      #expect(model.unfocusedTransparency == PreferencesModel.Bounds.maximumTransparency)
+    }
   }
 
-  @Test func defaultColorPersistsAndReadsBack() {
-    let (model, _) = makeModel()
+  @Test func defaultColorPersistsAndReadsBack() throws {
+    let (model, scratch) = try makeModel()
+    withExtendedLifetime(scratch) {
+      #expect(model.defaultColor == .default)
 
-    #expect(model.defaultColor == .default)
+      model.defaultColor = .green
 
-    model.defaultColor = .green
-
-    #expect(model.defaultColor == .green)
+      #expect(model.defaultColor == .green)
+    }
   }
 
-  @Test func verbosityPersistsAndClamps() {
-    let (model, _) = makeModel()
+  @Test func verbosityPersistsAndClamps() throws {
+    let (model, scratch) = try makeModel()
+    withExtendedLifetime(scratch) {
+      model.verbosity = 2
+      #expect(model.verbosity == 2)
 
-    model.verbosity = 2
-    #expect(model.verbosity == 2)
+      model.verbosity = 9
+      #expect(model.verbosity == PreferencesModel.Bounds.maximumVerbosity)
 
-    model.verbosity = 9
-    #expect(model.verbosity == PreferencesModel.Bounds.maximumVerbosity)
-
-    model.verbosity = -4
-    #expect(model.verbosity == PreferencesModel.Bounds.minimumVerbosity)
+      model.verbosity = -4
+      #expect(model.verbosity == PreferencesModel.Bounds.minimumVerbosity)
+    }
   }
 }
