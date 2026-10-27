@@ -16,3 +16,19 @@ let package = Package(
     .package(url: "https://github.com/automerge/automerge-swift", from: "0.7.2"),
   ]
 )
+
+// Xcode 27.1 rejects macOS targets below 12.0; automerge-swift declares 10.15.
+// Remove this override after automerge-swift declares macOS 12.0 or later.
+#if TUIST
+  import ProjectDescription
+
+  let minimumDeploymentTarget: SettingsDictionary = ["MACOSX_DEPLOYMENT_TARGET": "12.0"]
+
+  let packageSettings = PackageSettings(
+    targetSettings: [
+      "Automerge": .settings(base: minimumDeploymentTarget),
+      "AutomergeUniffi": .settings(base: minimumDeploymentTarget),
+      "AutomergeUtilities": .settings(base: minimumDeploymentTarget),
+    ]
+  )
+#endif
