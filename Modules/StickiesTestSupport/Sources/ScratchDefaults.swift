@@ -11,7 +11,7 @@ import os
 
 /// ScratchDefaults stores test defaults in separate temporary folders.
 /// Each folder uses the layout `scratchRoot/<process ID>/<label>-<UUID>/`.
-/// The first instance in each process sweeps folders from processes that
+/// Every instance sweeps folders from processes that
 /// no longer exist.
 /// Call `remove()` at the end of the test to report deletion errors.
 /// `deinit` provides fallback cleanup if the test throws before that call.
@@ -26,9 +26,6 @@ public final class ScratchDefaults {
   private static let logger = Logger(
     subsystem: "io.goodkind.stickies-improved.tests", category: "ScratchDefaults")
   private static let folderLock = NSLock()
-  /// This flag records whether a sweep completed successfully.
-  /// `folderLock` guards every read and write.
-  nonisolated(unsafe) private static var hasCompletedSweep = false
 
   /// Scratch folders share the temporary folder's
   /// `io.goodkind.stickies-improved.scratch-defaults` subfolder.
@@ -40,10 +37,7 @@ public final class ScratchDefaults {
   public init(label: String) throws {
     Self.folderLock.lock()
     defer { Self.folderLock.unlock() }
-    if !Self.hasCompletedSweep {
-      try Self.sweepStaleFolders()
-      Self.hasCompletedSweep = true
-    }
+    try Self.sweepStaleFolders()
     let processFolder = Self.processFolder(processID: ProcessInfo.processInfo.processIdentifier)
     let directoryName = "\(label)-\(UUID().uuidString)"
     let scratchDirectory = processFolder.appendingPathComponent(directoryName, isDirectory: true)
@@ -84,7 +78,7 @@ public final class ScratchDefaults {
   /// It logs each path at info level before attempting deletion.
   /// It counts an already missing entry as swept and logs its path at notice level.
   /// It throws `ScratchDefaultsError.sweepFailed(path:reason:)` for other deletion errors.
-  public static func sweepStaleFolders() throws {
+  private static func sweepStaleFolders() throws {
     let root = scratchRoot
     guard FileManager.default.fileExists(atPath: root.path) else {
       return

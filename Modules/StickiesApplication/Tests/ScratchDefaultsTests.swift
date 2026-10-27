@@ -28,7 +28,6 @@ struct ScratchDefaultsTests {
 
     let scratch = try ScratchDefaults(label: "scratch-defaults-tests")
     let ownFolder = URL(fileURLWithPath: scratch.suiteName).deletingLastPathComponent()
-    try ScratchDefaults.sweepStaleFolders()
 
     #expect(!FileManager.default.fileExists(atPath: staleFolder.path))
     #expect(
