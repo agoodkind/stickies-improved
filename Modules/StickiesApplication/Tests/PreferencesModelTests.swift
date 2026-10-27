@@ -30,6 +30,8 @@ struct PreferencesModelTests {
     #expect(model.storageMode == .local)
     #expect(
       scratch.defaults.string(forKey: StorageMode.defaultsKey) == StorageMode.local.rawValue)
+
+    try scratch.remove()
   }
 
   @Test func unfocusedTransparencyPersistsToBridgeKey() throws {
@@ -39,41 +41,46 @@ struct PreferencesModelTests {
 
     #expect(model.unfocusedTransparency == 0.7)
     #expect(scratch.defaults.double(forKey: "nonFocusTransparency") == 0.7)
+
+    try scratch.remove()
   }
 
   @Test func unfocusedTransparencyClampsToBounds() throws {
     let (model, scratch) = try makeModel()
-    withExtendedLifetime(scratch) {
-      model.unfocusedTransparency = 0.1
-      #expect(model.unfocusedTransparency == PreferencesModel.Bounds.minimumTransparency)
 
-      model.unfocusedTransparency = 5
-      #expect(model.unfocusedTransparency == PreferencesModel.Bounds.maximumTransparency)
-    }
+    model.unfocusedTransparency = 0.1
+    #expect(model.unfocusedTransparency == PreferencesModel.Bounds.minimumTransparency)
+
+    model.unfocusedTransparency = 5
+    #expect(model.unfocusedTransparency == PreferencesModel.Bounds.maximumTransparency)
+
+    try scratch.remove()
   }
 
   @Test func defaultColorPersistsAndReadsBack() throws {
     let (model, scratch) = try makeModel()
-    withExtendedLifetime(scratch) {
-      #expect(model.defaultColor == .default)
 
-      model.defaultColor = .green
+    #expect(model.defaultColor == .default)
 
-      #expect(model.defaultColor == .green)
-    }
+    model.defaultColor = .green
+
+    #expect(model.defaultColor == .green)
+
+    try scratch.remove()
   }
 
   @Test func verbosityPersistsAndClamps() throws {
     let (model, scratch) = try makeModel()
-    withExtendedLifetime(scratch) {
-      model.verbosity = 2
-      #expect(model.verbosity == 2)
 
-      model.verbosity = 9
-      #expect(model.verbosity == PreferencesModel.Bounds.maximumVerbosity)
+    model.verbosity = 2
+    #expect(model.verbosity == 2)
 
-      model.verbosity = -4
-      #expect(model.verbosity == PreferencesModel.Bounds.minimumVerbosity)
-    }
+    model.verbosity = 9
+    #expect(model.verbosity == PreferencesModel.Bounds.maximumVerbosity)
+
+    model.verbosity = -4
+    #expect(model.verbosity == PreferencesModel.Bounds.minimumVerbosity)
+
+    try scratch.remove()
   }
 }

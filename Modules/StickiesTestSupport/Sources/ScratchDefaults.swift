@@ -9,15 +9,16 @@
 import Foundation
 import os
 
-/// ScratchDefaults manages a test defaults suite in a temporary folder.
-/// cfprefsd writes the suite's plist there instead of ~/Library/Preferences.
-/// The instance deletes the folder on deallocation.
-/// Callers must keep the instance alive for the whole test.
+/// ScratchDefaults creates a temporary folder and uses a path inside it
+/// as the `UserDefaults` suite name.
+/// Call `remove()` at the end of the test to report deletion errors.
+/// `deinit` provides fallback cleanup if the test throws before that call.
 public final class ScratchDefaults {
   /// UserDefaults uses this absolute path as the suite name.
   public let suiteName: String
   public let defaults: UserDefaults
   private let directory: URL
+  private var isRemoved = false
   private let logger = Logger(
     subsystem: "io.goodkind.stickies-improved.tests", category: "ScratchDefaults")
 
@@ -31,6 +32,7 @@ public final class ScratchDefaults {
     )
     let scratchSuiteName = scratchDirectory.appendingPathComponent("defaults").path
     guard let scratchDefaults = UserDefaults(suiteName: scratchSuiteName) else {
+      try FileManager.default.removeItem(at: scratchDirectory)
       throw ScratchDefaultsError.suiteUnavailable(scratchSuiteName)
     }
     directory = scratchDirectory
@@ -38,10 +40,22 @@ public final class ScratchDefaults {
     defaults = scratchDefaults
   }
 
-  deinit {
+  /// This method removes the persistent domain and deletes the temporary folder.
+  /// It throws if folder deletion fails.
+  /// A second call returns immediately.
+  public func remove() throws {
+    guard !isRemoved else {
+      return
+    }
+    isRemoved = true
+    logger.debug("Removing scratch defaults suite")
     defaults.removePersistentDomain(forName: suiteName)
+    try FileManager.default.removeItem(at: directory)
+  }
+
+  deinit {
     do {
-      try FileManager.default.removeItem(at: directory)
+      try remove()
     } catch {
       logger.error(
         "Scratch defaults cleanup failed: \(error.localizedDescription, privacy: .public)")
