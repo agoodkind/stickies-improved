@@ -26,9 +26,9 @@ public final class ScratchDefaults {
   private static let logger = Logger(
     subsystem: "io.goodkind.stickies-improved.tests", category: "ScratchDefaults")
   private static let folderLock = NSLock()
-  private static let firstSweepResult = Result<Void, any Error> {
-    try sweepStaleFolders()
-  }
+  /// This flag records whether a sweep completed successfully.
+  /// `folderLock` guards every read and write.
+  nonisolated(unsafe) private static var hasCompletedSweep = false
 
   /// Scratch folders share the temporary folder's
   /// `io.goodkind.stickies-improved.scratch-defaults` subfolder.
@@ -38,12 +38,15 @@ public final class ScratchDefaults {
   }
 
   public init(label: String) throws {
-    try Self.firstSweepResult.get()
+    Self.folderLock.lock()
+    defer { Self.folderLock.unlock() }
+    if !Self.hasCompletedSweep {
+      try Self.sweepStaleFolders()
+      Self.hasCompletedSweep = true
+    }
     let processFolder = Self.processFolder(processID: ProcessInfo.processInfo.processIdentifier)
     let directoryName = "\(label)-\(UUID().uuidString)"
     let scratchDirectory = processFolder.appendingPathComponent(directoryName, isDirectory: true)
-    Self.folderLock.lock()
-    defer { Self.folderLock.unlock() }
     try FileManager.default.createDirectory(
       at: scratchDirectory,
       withIntermediateDirectories: true
@@ -77,9 +80,10 @@ public final class ScratchDefaults {
 
   /// This method deletes process folders when `kill(pid, 0)` fails with `ESRCH`.
   /// It preserves folders for running processes, including the current process,
-  /// and skips entries without a process ID as their name.
+  /// and skips entries that do not use a process ID as their name.
   /// It logs each path at info level before attempting deletion.
-  /// It throws `ScratchDefaultsError.sweepFailed(path:reason:)` if deletion fails.
+  /// It counts an already missing entry as swept and logs its path at notice level.
+  /// It throws `ScratchDefaultsError.sweepFailed(path:reason:)` for other deletion errors.
   public static func sweepStaleFolders() throws {
     let root = scratchRoot
     guard FileManager.default.fileExists(atPath: root.path) else {
@@ -98,6 +102,10 @@ public final class ScratchDefaults {
       logger.info("Deleting stale scratch folder \(entry.path, privacy: .public)")
       do {
         try FileManager.default.removeItem(at: entry)
+      } catch let cocoaError as CocoaError
+        where cocoaError.code == .fileNoSuchFile || cocoaError.code == .fileReadNoSuchFile
+      {
+        logger.notice("Stale scratch folder already deleted \(entry.path, privacy: .public)")
       } catch {
         throw ScratchDefaultsError.sweepFailed(
           path: entry.path, reason: error.localizedDescription)
