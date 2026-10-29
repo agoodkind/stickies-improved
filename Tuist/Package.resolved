@@ -1,5 +1,5 @@
 {
-  "originHash" : "1518a12b78d70de4311a6721b73dbfa4a9b45c68ec3c605a66cd27c6bbae9eef",
+  "originHash" : "9ad56ac46d33b363b088db379b356eee061c382026b416bda05d026134662e23",
   "pins" : [
     {
       "identity" : "automerge-swift",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "b6496a74a087257ef5e6da1c5b29a447a60f5bd7",
-        "version" : "2.9.4"
+        "revision" : "ab7d71291238df6e0492143b120c9b696a35f603",
+        "version" : "2.10.1"
       }
     }
   ],
